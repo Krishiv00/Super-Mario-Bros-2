@@ -208,7 +208,7 @@ public:
 
     float CameraPosition;
 
-    bool TwoPlayerMode;
+    bool TwoPlayerMode = false;
 };
 
 #endif // !WORLD_HPP

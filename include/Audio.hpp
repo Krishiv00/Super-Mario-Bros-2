@@ -62,6 +62,7 @@ public:
         Death,
         Flag,
         Star,
+        GameOver,
         MainTheme,
         Count
     };
@@ -77,7 +78,6 @@ public:
     void LoadFromFile(uint8_t name, const std::string& path);
 
     void Play(uint8_t name, bool loop = false);
-    void PlayLast(bool loop = false);
     void Pause();
     void Resume(uint8_t step_ahead = 0);
     void Stop();
