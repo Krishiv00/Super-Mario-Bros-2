@@ -94,10 +94,6 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
         }
     }
 
-    else if (key == sf::Keyboard::Scancode::H) {
-        startBlackScreen(BlackScreenType::LevelTransition);
-    }
-
     else if (key == sf::Keyboard::Scancode::LShift) {
         if (m_OnTitleScreen && m_DemoStartTimer) {
             m_World.TwoPlayerMode ^= true;
@@ -200,7 +196,7 @@ void Game::exitTitleScreen() {
 }
 
 void Game::restartDemo() {
-    player = Player();
+    player.Data = PlayerData();
 
     pauseGameFor(24u);
     reload();
@@ -217,6 +213,8 @@ void Game::startBlackScreen(BlackScreenType type) {
     m_BlackScreenType = type;
     m_BlackScreenTimer = 200u;
 
+    loadMap(player.Data.World, player.Data.Level);
+
     Renderer::ResetAnimations();
     Renderer::SetGameTimeRendering(false);
 
@@ -224,23 +222,18 @@ void Game::startBlackScreen(BlackScreenType type) {
 }
 
 void Game::stopBlackScreen() {
-    // TODO: add logic
+    m_BlackScreenType = BlackScreenType::None;
+    
     Renderer::SetGameTimeRendering(true);
 
-    if (m_BlackScreenType == BlackScreenType::GameOver) {
-        player = Player();
-        m_World = World();
-        Renderer::SetPlayerTheme(0x00u); // change for luigi
-
-        loadMap(1u, 1u);
-    } else {
-        loadMap(player.Data.World, player.Data.Level);
-    }
+    musicPlayer.PlayLast(true);
 }
 
 void Game::pauseGameFor(uint8_t time) {
     m_BlackScreenType = BlackScreenType::None;
     m_BlackScreenTimer = time;
+
+    loadMap(player.Data.World, player.Data.Level);
 
     musicPlayer.Stop();
 }

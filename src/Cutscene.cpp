@@ -559,10 +559,12 @@ void DPipeScene::Update() {
 
 AutowalkScene::AutowalkScene(World& world) : Cutscene(world) {
     disablePlayerControls();
+    Renderer::SetGameTimeRendering(false);
 }
 
 AutowalkScene::~AutowalkScene() {
     enablePlayerControls();
+    Renderer::SetGameTimeRendering(true);
 }
 
 void AutowalkScene::Update() {

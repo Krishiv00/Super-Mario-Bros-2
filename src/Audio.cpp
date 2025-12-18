@@ -116,6 +116,10 @@ void MusicPlayer::Play(uint8_t name, bool loop) {
     music->play();
 }
 
+void MusicPlayer::PlayLast(bool loop) {
+    Play(m_CurrentlyPlayingMusic, loop);
+}
+
 void MusicPlayer::Pause() {
     m_MusicBuffers[m_CurrentlyPlayingMusic]->pause();
 }
