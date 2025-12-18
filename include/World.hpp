@@ -138,8 +138,6 @@ private:
     uint8_t m_RequiredCoinsForOneUp = 0;
     bool m_SpawnOneUp;
 
-    uint8_t m_Level;
-
     bool m_CheckEnemyCollisions;
 
     bool m_AutoScroll;
@@ -173,18 +171,6 @@ public:
 
     void StartCutscene(std::unique_ptr<Cutscene> scene);
 
-    inline void setLevel(uint8_t level, uint8_t stage) {
-        m_Level = ((level - 1) << 2) | ((stage - 1) & 3);
-    }
-
-    inline uint8_t getLevel() const {
-        return (m_Level >> 2) + 1u;
-    }
-
-    inline uint8_t getStage() const {
-        return (m_Level & 3) + 1u;
-    }
-
     inline bool cutscenePlaying() const {
         return m_Cutscene != nullptr;
     }
@@ -217,11 +203,8 @@ public:
         return m_ScrollLocked;
     }
 
-    inline const uint8_t& getLevelPointer() const {
-        return m_Level;
-    }
-
     uint8_t CurrentTheme;
+    uint8_t HalfwayPage;
 
     float CameraPosition;
 

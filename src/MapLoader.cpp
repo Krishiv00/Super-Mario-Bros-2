@@ -1354,7 +1354,7 @@ void MapLoader::onMazeTrigger(uint8_t targetPage) {
 }
 
 void MapLoader::handleMaze(World& world) {
-    if (world.m_Level == 15u) { // level 4-4
+    if (player.Data.GetLevelPointer() == 15u) { // level 4-4
         if (CurrentPage == 5u) {
             if (player.yPosition() >= 65.f) {
                 onMazeTrigger(1u);
@@ -1364,9 +1364,9 @@ void MapLoader::handleMaze(World& world) {
                 onMazeTrigger(5u);
             }
         }
-    } else if (world.m_Level == 27u) { // level 7-4
+    } else if (player.Data.GetLevelPointer() == 27u) { // level 7-4
 
-    } else if (world.m_Level == 31u) { // level 8-4
+    } else if (player.Data.GetLevelPointer() == 31u) { // level 8-4
 
     }
 }
@@ -1388,16 +1388,16 @@ void MapLoader::placeBlockIfEmpty(const unsigned int& tileIndex, std::unique_ptr
 }
 
 void MapLoader::hiddenOneUpLogic(World& world) {
-    uint8_t level = world.getLevel();
-    uint8_t stage = world.getStage();
+    uint8_t worldNumber = player.Data.World;
+    uint8_t levelNumber = player.Data.Level;
 
-    if (level == 1 && stage == 1) {
+    if (worldNumber == 1 && levelNumber == 1) {
         world.m_SpawnOneUp = true;
-    } else if (level < 8u && stage == 3u) {
+    } else if (worldNumber < 8u && levelNumber == 3u) {
         // constexpr uint8_t CoinRequirements[] = {21u, 35u, 22u, 27u, 23u, 24u, 35u, 99u};
         constexpr uint8_t CoinRequirements[] = {35u, 22u, 27u, 23u, 24u, 35u}; // removed unnecessary
 
-        world.m_RequiredCoinsForOneUp = CoinRequirements[level - 2];
+        world.m_RequiredCoinsForOneUp = CoinRequirements[worldNumber - 2];
     }
 }
 
@@ -1436,7 +1436,7 @@ void MapLoader::loadMapProperties(World& world) {
     }
 
     // halfway page
-    HalfwayPage = b3 & 0x0Fu;
+    world.HalfwayPage = b3 & 0x0Fu;
 
     // enable swimming physics
     player.m_SwimmingPhysics = world.CurrentTheme == 0x00u;
@@ -1901,7 +1901,7 @@ void MapLoader::placePipe(const uint8_t& length, bool enterable, const unsigned 
 
     placeVerticalRow<Blocks::RenderableCollideable>(tileIndex + 14u, length - 1, 0u, world, gbl::TextureId::Block::Pipe_4);
 
-    if (world.m_Level > 0x00u) {
+    if (player.Data.GetLevelPointer() > 0x00u) {
         spawnSprite(std::make_unique<PiranhaPlant>(sf::Vector2f(pageColumnOffset + xPos + 0.5f, yPos) * TileSize), world);
     }
 }
@@ -1982,7 +1982,7 @@ void MapLoader::parseTileObject(const uint8_t& b1, const uint8_t& b2, World& wor
         }
 
         else if (metadata == 0x03u) {
-            if (world.m_SpawnOneUp || world.getStage() != 0x01u) {
+            if (world.m_SpawnOneUp || player.Data.Level != 0x01u) {
                 world.m_Tiles[tileIndex] = std::make_unique<Blocks::Hidden>(gbl::ItemType::OneUp);
                 world.m_AttributeTable[tileIndex] = 1u;
 
@@ -2424,7 +2424,7 @@ void MapLoader::loadPage(World& world) {
     }
 
     if (CurrentPage >= BadGuysSkipToPage) {
-        const bool globalDifficulty = World::Difficulty || world.m_Level >= 18u;
+        const bool globalDifficulty = World::Difficulty || player.Data.GetLevelPointer() >= 18u;
 
         // load bad guys
         while (true) {

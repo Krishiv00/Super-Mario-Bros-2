@@ -151,7 +151,7 @@ bool World::collisions_FlagCheck(Blocks::Block* block, const unsigned int& index
                 score = 5000u;
             }
 
-            player.m_Score += score;
+            player.Data.Score += score;
             m_FloateyNums[SpecialSpriteSlot] = FloateyNum(sf::Vector2f(x + TileSize, (gbl::Rows - 4) * TileSize), CameraPosition, FloateyNum::GetType(score));
 
             return true;
@@ -272,7 +272,7 @@ bool World::resolvePlayerHeadCollisions(float playerTop) {
                             block_ptr.reset();
                             audioPlayer.Play(AudioPlayer::BrickSmash);
 
-                            player.m_Score += 50u;
+                            player.Data.Score += 50u;
 
                             handleBlockDefeat(sf::Vector2f(col, row) * TileSize);
                         } else {

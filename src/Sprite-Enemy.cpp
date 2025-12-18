@@ -28,7 +28,7 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
 }
 
 void Enemy::givePlayerScore(uint16_t score, World& world) noexcept {
-    player.m_Score += score;
+    player.Data.Score += score;
     world.SpawnFloateyNum(FloateyNum(sf::Vector2f(xPosition(), yPosition()), world.CameraPosition, FloateyNum::GetType(score)), SlotIndex);
 }
 

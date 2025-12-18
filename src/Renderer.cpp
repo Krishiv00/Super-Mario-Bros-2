@@ -413,14 +413,14 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target, const
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 
     // world
-    std::string worldText = "WORLD " + std::to_string(world.getLevel()) + "-" + std::to_string(world.getStage());
+    std::string worldText = "WORLD " + std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
     textAddString(worldText, sf::Vector2f(88.f, 80.f), vertices);
 
     // cross
     textAddChar('x', sf::Vector2f(120.f, 113.f), vertices);
 
     // lives
-    textAddChar('0' + player.m_Lives, sf::Vector2f(144.f, 112.f), vertices);
+    textAddChar('0' + player.Data.Lives, sf::Vector2f(144.f, 112.f), vertices);
 
     textFlush(target, vertices);
 
@@ -864,13 +864,13 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 
     // name
-    textAddString("MARIO", sf::Vector2f(24.f, 10.f), vertices);
+    textAddString(player.Name(), sf::Vector2f(24.f, 10.f), vertices);
 
     // score
-    textAddString(intToStringFixedSize(player.m_Score, 6u), sf::Vector2f(24.f, 20.f), vertices);
+    textAddString(intToStringFixedSize(player.Data.Score, 6u), sf::Vector2f(24.f, 20.f), vertices);
 
     // coins
-    std::string coinsText = "x" + intToStringFixedSize(player.m_Coins, 2u);
+    std::string coinsText = "x" + intToStringFixedSize(player.Data.Coins, 2u);
     textAddString(coinsText, sf::Vector2f(96.f, 20.f), vertices);
 
     /* coin graphic */ {
@@ -889,7 +889,7 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool
     // world
     textAddString("WORLD", sf::Vector2f(144.f, 10.f), vertices);
 
-    std::string worldText = std::to_string(world.getLevel()) + "-" + std::to_string(world.getStage());
+    std::string worldText = std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
     textAddString(worldText, sf::Vector2f(152.f, 20.f), vertices);
 
     // time

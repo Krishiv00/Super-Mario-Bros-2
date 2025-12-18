@@ -38,7 +38,7 @@ void Game::Create(int argc, char** argv) {
 }
 
 void Game::reload() {
-    loadMap(m_World.getLevel(), m_World.getStage());
+    loadMap(player.Data.World, player.Data.Level);
 }
 
 void Game::setPaused(bool paused) {
@@ -111,7 +111,7 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
             m_FrameruleTimer = 21u;
 
             reload();
-            m_ScriptRecorder.StartRecording(m_World.m_Level);
+            m_ScriptRecorder.StartRecording(player.Data.GetLevelPointer());
         }
 
         else if (key == sf::Keyboard::Scancode::X) {
@@ -134,16 +134,22 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
         else if (key == sf::Keyboard::Scancode::Right || key == sf::Keyboard::Scancode::Left) {
             if (!m_OnTitleScreen) {
                 if (key == sf::Keyboard::Scancode::Right) {
-                    if (m_World.m_Level < 31u) {
-                        ++m_World.m_Level;
+                    if (player.Data.GetLevelPointer() < 31u) {
+                        if (++player.Data.Level == 5u) {
+                            player.Data.Level = 1u;
+                            ++player.Data.World;
+                        }
                     }
                 } else {
-                    if (m_World.m_Level) {
-                        --m_World.m_Level;
+                    if (player.Data.GetLevelPointer()) {
+                        if (--player.Data.Level == 0u) {
+                            player.Data.Level = 4u;
+                            --player.Data.World;
+                        }
                     }
                 }
 
-                loadMap(m_World.getLevel(), m_World.getStage());
+                loadMap(player.Data.World, player.Data.Level);
             }
         }
     }
@@ -228,7 +234,7 @@ void Game::stopBlackScreen() {
 
         loadMap(1u, 1u);
     } else {
-        loadMap(m_World.getLevel(), m_World.getStage());
+        loadMap(player.Data.World, player.Data.Level);
     }
 }
 
@@ -293,13 +299,12 @@ void Game::Update() {
 
 #pragma region Map
 
-void Game::loadMap(uint8_t level, uint8_t stage) {
-    m_World.setLevel(level, stage);
+void Game::loadMap(uint8_t world, uint8_t level) {
+    player.Data.World = world;
+    player.Data.Level = level;
 
-    const uint8_t loadlevel = MapLoader::GetIfDuplicate(level, stage);
-
-    uint8_t areaPointer = ((loadlevel - 1) << 2u) | (stage - 1);
-    MapLoader::NewLevel(m_World, areaPointer);
+    const uint8_t loadlevel = MapLoader::GetIfDuplicate(world, level);
+    MapLoader::NewLevel(m_World, PlayerData::GetLevelPointer(loadlevel, level));
 
     m_World.StartThemeMusic();
 }
@@ -457,9 +462,11 @@ void Game::makeScriptFromTas(const std::string& filename) {
             continue;
         }
 
-        if (line.substr(0, 5) == "Level") {
-            m_World.setLevel(line[6] - '0', line[8] - '0');
-            m_ScriptRecorder.StartRecording(m_World.m_Level);
+        if (line.substr(0, 5) == "World") {
+            player.Data.World = line[6] - '0';
+            player.Data.Level = line[8] - '0';
+
+            m_ScriptRecorder.StartRecording(player.Data.GetLevelPointer());
             continue;
         }
 

@@ -17,8 +17,28 @@ private:
 public:
     void operator=(uint32_t val) noexcept;
     void operator+=(uint32_t val) noexcept;
-    
+
     operator uint32_t() const noexcept;
+};
+
+struct PlayerData {
+    static constexpr inline uint8_t GetLevelPointer(const uint8_t& world, const uint8_t& level) noexcept {
+        return ((world - 1) << 2u) | (level - 1);
+    }
+
+    constexpr inline uint8_t GetLevelPointer() const noexcept {
+        return GetLevelPointer(World, Level);
+    }
+
+    bool Type = 0u;
+    bool DiedAfterHalfPage = false;
+
+    uint8_t World = 1u;
+    uint8_t Level = 1u;
+    uint8_t Lives = 3u;
+    uint8_t Coins = 0u;
+
+    uint24_t Score;
 };
 
 class Player : public Sprite {
@@ -167,11 +187,7 @@ private:
 
     bool m_AnimatePallete;
 
-    // properties
-    uint8_t m_Lives = 3u;
-    uint8_t m_Coins = 0u;
-
-    uint24_t m_Score;
+    PlayerData m_SecondPlayerData;
 
 public:
     Player();
@@ -193,6 +209,8 @@ public:
     void Kill(World& world, bool pit_death);
 
     void Reset();
+
+    void Swap();
 
     inline const uint8_t& getState() const {
         return m_State;
@@ -291,6 +309,12 @@ public:
     inline void setYVelocity(float vel) {
         m_Velocity.y = vel;
     }
+
+    inline std::string Name() const {
+        return Data.Type ? "LUIGI" : "MARIO";
+    }
+
+    PlayerData Data;
 };
 
 extern Player player;

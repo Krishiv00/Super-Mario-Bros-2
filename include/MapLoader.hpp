@@ -88,7 +88,6 @@ private:
     static inline uint8_t CurrentBackgroundType;
     static inline uint8_t CurrentPage;
     static inline uint8_t MapType;
-    static inline uint8_t HalfwayPage;
 
     static inline const uint8_t* TileData;
     static inline uint8_t TileDataIterator;

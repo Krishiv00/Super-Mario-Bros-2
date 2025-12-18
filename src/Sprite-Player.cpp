@@ -10,7 +10,14 @@ Player::Player() {
     m_AcceptPlayerControls = true;
     m_TasMode = false;
 
+    m_SecondPlayerData.Type = 1u;
+
     Reset();
+}
+
+void Player::Swap() {
+    std::swap(Data, m_SecondPlayerData);
+    Renderer::SetPlayerTheme(Data.Type);
 }
 
 void Player::Update(World& world) {
@@ -125,7 +132,7 @@ void Player::ShootFireball() {
 }
 
 void Player::ExtraLife() {
-    ++m_Lives;
+    ++Data.Lives;
 
     audioPlayer.Play(AudioPlayer::ExtraLife);
 }

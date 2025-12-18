@@ -24,7 +24,7 @@ void Cutscene::unFreezePlayer() {
 }
 
 void Cutscene::killPlayer() {
-    --player.m_Lives;
+    --player.Data.Lives;
 }
 
 void Cutscene::landPlayer() {
@@ -150,18 +150,23 @@ void Cutscene::disableAutoScroll() const {
     m_WorldRef.m_AutoScroll = false;
 }
 
-void Cutscene::restartFromCheckpoint() const {
-
-}
-
-void Cutscene::startLevel(uint8_t newLevel, uint8_t newStage, bool levelTransition) const {
+void Cutscene::startLevel(uint8_t newWorld, uint8_t newLevel, bool levelTransition) const {
     if (levelTransition) {
         m_WorldRef.m_NewLevel = true;
     } else {
         m_WorldRef.m_NewArea = true;
     }
 
-    m_WorldRef.setLevel(newLevel, newStage);
+    player.Data.World = std::move(newWorld);
+    player.Data.Level = std::move(newLevel);
+}
+
+void Cutscene::restartLevel() const {
+    if (m_WorldRef.TwoPlayerMode && player.m_SecondPlayerData.Lives) {
+        player.Swap();
+    }
+
+    startLevel(player.Data.World, player.Data.Level, true);
 }
 
 void Cutscene::moveFlagNum() const {
@@ -170,7 +175,7 @@ void Cutscene::moveFlagNum() const {
 
 void Cutscene::timerCountDown() const {
     --m_WorldRef.m_GameTime;
-    player.m_Score += 50u;
+    player.Data.Score += 50u;
 
     constexpr uint8_t Delay = 6u;
 
@@ -303,7 +308,7 @@ DeathScene::~DeathScene() {
 
     killPlayer();
 
-    startLevel(m_WorldRef.getLevel(), m_WorldRef.getStage(), true);
+    restartLevel();
 }
 
 void DeathScene::OnFramerule() {
@@ -462,7 +467,7 @@ void FlagpoleScene::Update() {
 
 void FlagpoleScene::OnFramerule() {
     if (--m_LevelClearTimer == 0u) {
-        startLevel(m_WorldRef.getLevel(), m_WorldRef.getStage() + 1u, true);
+        startLevel(player.Data.World, player.Data.Level + 1u, true);
     }
 }
 
@@ -477,7 +482,7 @@ AxeScene::~AxeScene() {
 }
 
 void AxeScene::Update() {
-    startLevel(m_WorldRef.getLevel() + 1u, 1u, true);
+    startLevel(player.Data.World + 1u, 1u, true);
 }
 
 #pragma region Warp
@@ -508,7 +513,7 @@ void LPipeScene::Update() {
             handlePlayerAutowalk();
         }
     } else if (--m_LevelEndTimer == 0u) {
-        startLevel(m_WorldRef.getLevel(), m_WorldRef.getStage() + 1u, true);
+        startLevel(player.Data.World, player.Data.Level + 1u, true);
     }
 }
 
@@ -537,7 +542,7 @@ DPipeScene::~DPipeScene() {
 
 void DPipeScene::Update() {
     if (--m_LevelEndTimer == 0u) {
-        startLevel(m_WorldRef.getLevel(), m_WorldRef.getStage(), false);
+        startLevel(player.Data.World, player.Data.Level, false);
         return;
     }
 

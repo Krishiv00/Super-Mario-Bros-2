@@ -49,7 +49,7 @@ private:
     void loadSoundEffects();
     void loadMusic();
 
-    void loadMap(uint8_t level, uint8_t stage);
+    void loadMap(uint8_t world, uint8_t level);
 
     sf::View generateCameraView();
 

@@ -225,7 +225,7 @@ void World::handleBlockDefeat(sf::Vector2f blockPosition) {
                     audioPlayer.Play(AudioPlayer::Kick);
 
                     uint16_t score = enemy->m_Type == EnemyType::HammerBrother ? 1000u : 100u;
-                    player.m_Score += score;
+                    player.Data.Score += score;
                     SpawnFloateyNum(FloateyNum(enemyPosition, CameraPosition, FloateyNum::GetType(score)), enemy->SlotIndex);
 
                     break;
@@ -277,7 +277,7 @@ void World::handlePowerupCollisions() {
             uint16_t score = powerup->m_Type == gbl::PowerupType::OneUp ? 0u : 1000u;
 
             if (score) {
-                player.m_Score += score;
+                player.Data.Score += score;
             }
 
             SpawnFloateyNum(FloateyNum(sf::Vector2f(powerup->xPosition(), powerup->yPosition()), CameraPosition, FloateyNum::GetType(score)));

@@ -53,8 +53,8 @@ protected:
     void enableAutoScroll() const;
     void disableAutoScroll() const;
 
-    void restartFromCheckpoint() const;
-    void startLevel(uint8_t newLevel, uint8_t newStage, bool levelTransition) const;
+    void startLevel(uint8_t newWorld, uint8_t newLevel, bool levelTransition) const;
+    void restartLevel() const;
 
     void moveFlagNum() const;
 

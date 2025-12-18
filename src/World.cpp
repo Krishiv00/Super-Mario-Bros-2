@@ -97,7 +97,7 @@ void World::OnFramerule() {
 void World::TickDownTimer() {
     m_GameTimeUpdateTimer = GameTimerUpdateLength;
 
-    if (--m_GameTime == 0) {
+    if (--m_GameTime == 0u) {
         player.Kill(*this, false);
     }
 }
@@ -199,18 +199,18 @@ void World::StartThemeMusic() {
 #pragma region Routines
 
 void World::give_coin() {
-    if (getStage() == 3u && m_RequiredCoinsForOneUp) {
+    if (player.Data.Level == 3u && m_RequiredCoinsForOneUp) {
         m_SpawnOneUp = --m_RequiredCoinsForOneUp == 0;
     }
 
-    if (++player.m_Coins == 100u) {
-        player.m_Coins = 0u;
+    if (++player.Data.Coins == 100u) {
+        player.Data.Coins = 0u;
         player.ExtraLife();
     } else {
         audioPlayer.Play(AudioPlayer::CoinAcquire);
     }
 
-    player.m_Score += 200u;
+    player.Data.Score += 200u;
 }
 
 void World::StartCutscene(std::unique_ptr<Cutscene> scene) {
