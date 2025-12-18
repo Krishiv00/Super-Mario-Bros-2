@@ -172,6 +172,10 @@ void Game::tickFramerule() {
 
 void Game::enterTitleScreen() {
     m_OnTitleScreen = true;
+
+    if (player.Data.Type == 1u) {
+        player.Swap();
+    }
     
     player.Data.World = 1u;
     player.Data.Level = 1u;
