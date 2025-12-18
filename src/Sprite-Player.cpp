@@ -98,7 +98,7 @@ bool Player::Damage(World& world) {
 
     if (isBig()) {
         if (isFiery()) {
-            Renderer::SetPlayerTheme(0u);
+            Renderer::SetPlayerTheme(Data.Type);
         }
 
         audioPlayer.Play(AudioPlayer::Damage);
@@ -120,7 +120,7 @@ bool Player::Damage(World& world) {
 void Player::Kill(World& world, bool pit_death) {
     if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::S)) {
         if (isFiery()) {
-            Renderer::SetPlayerTheme(0x0u);
+            Renderer::SetPlayerTheme(Data.Type);
         }
 
         m_Size = Small;
