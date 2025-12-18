@@ -177,17 +177,68 @@ sf::Image Renderer::loadPalleteFromMemory(const uint8_t data[][3], sf::Vector2u 
     return constructed;
 }
 
-void Renderer::SetBackgroundTheme(const std::array<std::array<uint8_t, 3u>, 16u>& colorData) noexcept {
+void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept {
+    constexpr std::array<uint8_t, 3u> BackgroundColorSets[] = {
+        {0u, 0u, 0u},
+        {93u, 150u, 255u}
+    };
+
+    constexpr std::array<std::array<uint8_t, 3u>, 3u> FolliageColorSets[] = {
+        {
+            {{231u, 0u, 89u}, {32u, 56u, 239u}, {255u, 117u, 182u}}
+        },
+        {
+            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 0u, 0u}}
+        },
+        {
+            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 69u, 0u}}
+        },
+        {
+            {{255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u}}
+        },
+        {
+            {{255u, 154u, 56u}, {219u, 40u, 0u}, {0u, 0u, 0u}}
+        },
+    };
+
+    constexpr std::array<std::array<uint8_t, 3u>, 12u> BodyColorSets[] = {
+        {{
+            {0u, 0u, 0u}, {170u, 243u, 190u}, {0u, 170u, 0u}, {0u, 0u, 0u},
+        {0u, 0u, 0u}, {255u, 255u, 255u}, {32u, 56u, 239u}, {0u, 0u, 0u},
+        {0u, 0u, 0u}, {255u, 154u, 56u}, {32u, 56u, 239u}, {0u, 0u, 0u}
+            }},
+        {{
+            {0u, 0u, 0u}, {255u, 190u, 178u}, {203u, 77u, 12u}, {0u, 0u, 0u},
+        {0u, 0u, 0u}, {255u, 255u, 255u}, {60u, 190u, 255u}, {0u, 0u, 0u},
+        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {0u, 0u, 0u}
+            }},
+        {{
+            {0u, 0u, 0u}, {158u, 255u, 243u}, {0u, 130u, 138u}, {0u, 0u, 0u},
+        {0u, 0u, 0u}, {255u, 255u, 255u}, {60u, 190u, 255u}, {0u, 130u, 138u},
+        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {0u, 130u, 138u}
+            }},
+        {{
+            {0u, 0u, 0u}, {255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u},
+        {0u, 0u, 0u}, {255u, 255u, 255u}, {219u, 40u, 0u}, {117u, 117u, 117u},
+        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {117u, 117u, 117u}
+            }}
+    };
+
     sf::Image img(sf::Vector2u(4u, 4u));
 
-    for (uint8_t y = 0u; y < 4u; ++y) {
-        uint8_t rowIndex = y * 4u;
+    {
+        const auto& c = BackgroundColorSets[skyColIndex];
+        img.setPixel(sf::Vector2u(0u, 0u), sf::Color(c[0u], c[1u], c[2u]));
+    }
 
-        for (uint8_t x = 0u; x < 4u; ++x) {
-            const std::array<uint8_t, 3u> color = colorData[rowIndex + x];
+    for (uint8_t i = 0u; i < 3u; ++i) {
+        const auto& c = FolliageColorSets[folliageColsIndex][i];
+        img.setPixel(sf::Vector2u(i + 1u, 0u), sf::Color(c[0u], c[1u], c[2u]));
+    }
 
-            img.setPixel(sf::Vector2u(x, y), sf::Color(color[0u], color[1u], color[2u]));
-        }
+    for (uint8_t i = 0u; i < 12u; ++i) {
+        const auto& c = BodyColorSets[bodyColsIndex][i];
+        img.setPixel(sf::Vector2u(i % 4u, i / 4u + 1u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
     if (!s_BackgroundPallete.loadFromImage(img)) {
@@ -195,6 +246,9 @@ void Renderer::SetBackgroundTheme(const std::array<std::array<uint8_t, 3u>, 16u>
     }
 
     BackgroundColor = s_BackgroundPallete.copyToImage().getPixel(sf::Vector2u(0u, 0u));
+
+    UpdatePalleteColors();
+
 }
 
 void Renderer::appendToSpritePallete(const sf::Image& image, sf::Vector2u dest) noexcept {
@@ -353,35 +407,35 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target, const
     // world
     std::string worldText = "WORLD " + std::to_string(world.getLevel()) + "-" + std::to_string(world.getStage());
     textAddString(worldText, sf::Vector2f(88.f, 80.f), vertices);
-    
+
     // cross
     textAddChar('x', sf::Vector2f(120.f, 113.f), vertices);
-    
+
     // lives
     textAddChar('0' + player.m_Lives, sf::Vector2f(144.f, 112.f), vertices);
-    
+
     textFlush(target, vertices);
-    
+
     /* player sprite */ {
         if (player.isFiery()) {
             SetPlayerTheme(0x00u); // change for luigi
         }
-        
+
         constexpr sf::Vector2f Position = sf::Vector2f(96.f, 105.f);
         constexpr sf::Vector2f TexturePos = sf::Vector2f(0.f, TileSize);
-        
+
         sf::Vertex playerVertices[6u];
-        
+
         createVertices(playerVertices, Position, TexturePos);
-        
+
         s_PaletteShader.setUniform("pallete", s_SpritePallete);
         s_PaletteShader.setUniform("subPallete", player.SubPalleteIndex * 0.25f);
-        
+
         sf::RenderStates state(&s_PlayerTexture);
         state.shader = &s_PaletteShader;
-        
+
         target.draw(playerVertices, 6u, sf::PrimitiveType::Triangles, state);
-        
+
         if (player.isFiery()) {
             SetPlayerTheme(0x02u);
         }
@@ -700,8 +754,8 @@ bool Renderer::hiddenPowerupSlot(Powerup* powerup) noexcept {
 
 std::string Renderer::intToStringFixedSize(unsigned int _int, uint8_t length) noexcept {
     std::stringstream ss;
-        ss << std::setw(length) << std::setfill('0') << _int;
-        return ss.str();
+    ss << std::setw(length) << std::setfill('0') << _int;
+    return ss.str();
 }
 
 void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool drawHidden) noexcept {
@@ -848,7 +902,7 @@ void Renderer::RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, b
     textAddString("1 PLAYER GAME", sf::Vector2f(88.f, 144.f), vertices);
     textAddString("2 PLAYER GAME", sf::Vector2f(88.f, 160.f), vertices);
     textAddString("TOP- " + intToStringFixedSize(highscore, 6u), sf::Vector2f(96.f, 184.f), vertices);
-    
+
     textFlush(target, vertices);
 
     vertices.clear();
@@ -909,7 +963,7 @@ void Renderer::textAddChar(char character, const sf::Vector2f& position, sf::Ver
 }
 
 void Renderer::textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept {
-    for (const char& c: string) {
+    for (const char& c : string) {
         textAddChar(c, position, vertices);
 
         position.x += 8.f;

@@ -80,7 +80,7 @@ private:
 public:
     static void LoadResources() noexcept;
 
-    static void SetBackgroundTheme(const std::array<std::array<uint8_t, 3u>, 16u>& colorData) noexcept;
+    static void SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept;
     static void SetSpriteTheme(const uint8_t& theme) noexcept;
     static void SetPlayerTheme(const uint8_t& theme) noexcept;
     static void SetGameTimeRendering(bool state) noexcept;

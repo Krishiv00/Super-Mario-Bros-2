@@ -1457,55 +1457,7 @@ void MapLoader::loadMapProperties(World& world) {
     }
 }
 
-void MapLoader::generateBackgroundTheme(const uint8_t& mapAttribute) {
-    constexpr std::array<uint8_t, 3u> BackgroundColorSets[] = {
-        {0u, 0u, 0u},
-        {93u, 150u, 255u}
-    };
-
-    constexpr std::array<std::array<uint8_t, 3u>, 3u> FolliageColorSets[] = {
-        {
-            {{231u, 0u, 89u}, {32u, 56u, 239u}, {255u, 117u, 182u}}
-        },
-        {
-            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 0u, 0u}}
-        },
-        {
-            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 69u, 0u}}
-        },
-        {
-            {{255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u}}
-        },
-        {
-            {{230u, 156u, 33u}, {181u, 49u, 33u}, {0u, 0u, 0u}}
-        },
-    };
-
-    constexpr std::array<std::array<uint8_t, 3u>, 12u> BodyColorSets[] = {
-        {{
-            {0u, 0u, 0u}, {170u, 243u, 190u}, {0u, 170u, 0u}, {0u, 0u, 0u},
-        {0u, 0u, 0u}, {255u, 255u, 255u}, {32u, 56u, 239u}, {0u, 0u, 0u},
-        {0u, 0u, 0u}, {255u, 154u, 56u}, {32u, 56u, 239u}, {0u, 0u, 0u}
-            }},
-        {{
-            {0u, 0u, 0u}, {255u, 190u, 178u}, {203u, 77u, 12u}, {0u, 0u, 0u},
-        {0u, 0u, 0u}, {255u, 255u, 255u}, {60u, 190u, 255u}, {0u, 0u, 0u},
-        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {0u, 0u, 0u}
-            }},
-        {{
-            {0u, 0u, 0u}, {158u, 255u, 243u}, {0u, 130u, 138u}, {0u, 0u, 0u},
-        {0u, 0u, 0u}, {255u, 255u, 255u}, {60u, 190u, 255u}, {0u, 130u, 138u},
-        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {0u, 130u, 138u}
-            }},
-        {{
-            {0u, 0u, 0u}, {255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u},
-        {0u, 0u, 0u}, {255u, 255u, 255u}, {219u, 40u, 0u}, {117u, 117u, 117u},
-        {0u, 0u, 0u}, {255u, 154u, 56u}, {203u, 77u, 12u}, {117u, 117u, 117u}
-            }}
-    };
-
-    std::array<std::array<uint8_t, 3u>, 16u> pallete;
-
+void MapLoader::setBackgroundTheme(const uint8_t& mapAttribute) {
     uint8_t colorBackground = TileData[0x00u] & 0x07u;
 
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiersForColor = getBackgroundodifiers();
@@ -1517,37 +1469,27 @@ void MapLoader::generateBackgroundTheme(const uint8_t& mapAttribute) {
 
     uint8_t colorAttribute = colorBackground == 7u ? 3u : mapAttribute;
 
+    bool skyColIndex;
+    uint8_t folliageColsIndex = colorAttribute;
+    uint8_t bodyColsIndex = colorAttribute;
+
     if (colorBackground == 0x04u || colorBackground == 0x06u || colorBackground == 0x07u) {
-        pallete[0u] = BackgroundColorSets[0u];
+        skyColIndex = false;
     } else if (colorBackground == 0x05u) {
-        pallete[0u] = BackgroundColorSets[1u];
+        skyColIndex = true;
     } else if (colorAttribute < 0x02u) {
-        pallete[0u] = BackgroundColorSets[1u];
+        skyColIndex = true;
     } else {
-        pallete[0u] = BackgroundColorSets[0u];
+        skyColIndex = false;
     }
 
-    std::array<std::array<uint8_t, 3u>, 3u> folliageColors;
     if (MapType == 0x01u) {
-        folliageColors = FolliageColorSets[4u];
+        folliageColsIndex = 4u;
     } else if (colorBackground == 0x05u || colorBackground == 0x06u) {
-        folliageColors = FolliageColorSets[3u];
-    } else {
-        folliageColors = FolliageColorSets[colorAttribute];
+        folliageColsIndex = 3u;
     }
 
-    for (uint8_t i = 0u; i < 3u; ++i) {
-        pallete[i + 1u] = std::move(folliageColors[i]);
-    }
-
-    const std::array<std::array<uint8_t, 3u>, 12u>& bodyColors = BodyColorSets[colorAttribute];
-
-    for (uint8_t i = 0u; i < 12u; ++i) {
-        pallete[i + 4u] = bodyColors[i];
-    }
-
-    Renderer::SetBackgroundTheme(pallete);
-    Renderer::UpdatePalleteColors();
+    Renderer::SetBackgroundTheme(skyColIndex, folliageColsIndex, bodyColsIndex);
 }
 
 void MapLoader::handleCellingTerrain(const uint8_t& length, const uint8_t& block, const unsigned int& colIndex, World& world) {
@@ -1993,7 +1935,7 @@ void MapLoader::NewLevel(World& world, const uint8_t& areaPointer) {
     HoleBufferLength = 0x00u;
 
     BackgroundModifiers = getBackgroundodifiers();
-    generateBackgroundTheme(world.CurrentTheme);
+    setBackgroundTheme(world.CurrentTheme);
 
     extendMap(world);
 
