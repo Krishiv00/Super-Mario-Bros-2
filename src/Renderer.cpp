@@ -163,20 +163,6 @@ void Renderer::LoadResources() noexcept {
 
 #pragma region Palletes
 
-sf::Image Renderer::loadPalleteFromMemory(const uint8_t data[][3], sf::Vector2u size) noexcept {
-    sf::Image constructed;
-    constructed.resize(size);
-
-    for (unsigned int y = 0; y < size.y; ++y) {
-        for (unsigned int x = 0; x < size.x; ++x) {
-            const uint8_t* color = data[y * size.x + x];
-            constructed.setPixel(sf::Vector2u(x, y), sf::Color(color[0], color[1], color[2]));
-        }
-    }
-
-    return constructed;
-}
-
 void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept {
     constexpr std::array<uint8_t, 3u> BackgroundColorSets[] = {
         {0u, 0u, 0u},
@@ -184,21 +170,21 @@ void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& follia
     };
 
     constexpr std::array<std::array<uint8_t, 3u>, 3u> FolliageColorSets[] = {
-        {
-            {{231u, 0u, 89u}, {32u, 56u, 239u}, {255u, 117u, 182u}}
-        },
-        {
-            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 0u, 0u}}
-        },
-        {
-            {{130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 69u, 0u}}
-        },
-        {
-            {{255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u}}
-        },
-        {
-            {{255u, 154u, 56u}, {219u, 40u, 0u}, {0u, 0u, 0u}}
-        },
+        {{
+            {231u, 0u, 89u}, {32u, 56u, 239u}, {255u, 117u, 182u}
+            }},
+        {{
+            {130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 0u, 0u}
+            }},
+        {{
+            {130u, 211u, 16u}, {0u, 170u, 0u}, {0u, 69u, 0u}
+            }},
+        {{
+            {255u, 255u, 255u}, {190u, 190u, 190u}, {117u, 117u, 117u}
+            }},
+        {{
+            {255u, 154u, 56u}, {219u, 40u, 0u}, {0u, 0u, 0u}
+            }},
     };
 
     constexpr std::array<std::array<uint8_t, 3u>, 12u> BodyColorSets[] = {
@@ -248,45 +234,67 @@ void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& follia
     BackgroundColor = s_BackgroundPallete.copyToImage().getPixel(sf::Vector2u(0u, 0u));
 
     UpdatePalleteColors();
-
-}
-
-void Renderer::appendToSpritePallete(const sf::Image& image, sf::Vector2u dest) noexcept {
-    sf::Image img = s_SpritePallete.copyToImage();
-
-    if (!img.copy(image, dest, sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(image.getSize())), false)) {
-        LOG_ERROR("Failed To Copy Image");
-
-        return;
-    }
-
-    if (!s_SpritePallete.loadFromImage(img)) {
-        LOG_ERROR("Failed To Copy To Image");
-
-        return;
-    }
 }
 
 void Renderer::SetSpriteTheme(const uint8_t& theme) noexcept {
-    sf::Image spritePallete;
-    if (!spritePallete.loadFromFile("Resources/Palletes/Sprite/" + std::to_string(static_cast<uint8_t>(theme)) + ".png")) {
-        LOG_ERROR("Failed To Load Sprite Pallete");
+    constexpr std::array<std::array<uint8_t, 4u>, 12u> SpriteColorSets[] = {
+        {{
+            {0u, 0u, 0u}, {190u, 190u, 190u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {0u, 0u, 0u}, {255u, 255u, 255u}, {190u, 190u, 190u}
+            }},
+        {{
+            {0u, 0u, 0u}, {0u, 170u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {0u, 0u, 0u}, {255u, 190u, 178u}, {203u, 77u, 12u}
+            }},
+        {{
+            {0u, 0u, 0u}, {0u, 130u, 138u}, {255u, 190u, 178u}, {203u, 77u, 12u},
+        {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {24u, 60u, 93u}, {158u, 255u, 243u}, {0u, 130u, 138u}
+            }},
+        {{
+            {0u, 0u, 0u}, {0u, 130u, 138u}, {255u, 190u, 178u}, {203u, 77u, 12u},
+        {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u},
+        {0u, 0u, 0u}, {117u, 117u, 117u}, {255u, 255u, 255u}, {190u, 190u, 190u}
+            }}
+    };
 
-        return;
+    sf::Image img = s_SpritePallete.copyToImage();
+
+    for (uint8_t i = 0u; i < 12u; ++i) {
+        const auto& c = SpriteColorSets[theme][i];
+        img.setPixel(sf::Vector2u(i % 4u, i / 4u + 1u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
-    appendToSpritePallete(spritePallete, sf::Vector2u(0u, 1u));
+    if (!s_SpritePallete.loadFromImage(img)) {
+        LOG_ERROR("Failed To Load Sprite Pallete");
+    }
 }
 
 void Renderer::SetPlayerTheme(const uint8_t& theme) noexcept {
-    sf::Image playerPallete;
-    if (!playerPallete.loadFromFile("Resources/Palletes/Player/" + std::to_string(static_cast<uint8_t>(theme)) + ".png")) {
-        LOG_ERROR("Failed To Load Player Pallete");
+    constexpr std::array<std::array<uint8_t, 4u>, 12u> PlayerColorSets[] = {
+        {{
+            {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 154u, 56u}, {138u, 113u, 0u}
+            }},
+        {{
+            {0u, 0u, 0u}, {255u, 255u, 255u}, {255u, 154u, 56u}, {0u, 170u, 0u}
+            }},
+        {{
+            {0u, 0u, 0u}, {255u, 219u, 170u}, {255u, 154u, 56u}, {219u, 40u, 0u}
+            }},
+    };
 
-        return;
+    sf::Image img = s_SpritePallete.copyToImage();
+
+    for (uint8_t i = 0u; i < 4u; ++i) {
+        const auto& c = PlayerColorSets[theme][i];
+        img.setPixel(sf::Vector2u(i, 0u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
-    appendToSpritePallete(playerPallete, sf::Vector2u(0u, 0u));
+    if (!s_SpritePallete.loadFromImage(img)) {
+        LOG_ERROR("Failed To Load Sprite Pallete");
+    }
 }
 
 #pragma region Animation

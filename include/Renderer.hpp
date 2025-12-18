@@ -12,15 +12,12 @@ public:
 private:
 #define RENDER_HITBOXES 0
 
-    static sf::Image loadPalleteFromMemory(const uint8_t data[][3], sf::Vector2u size) noexcept;
-
 #if RENDER_HITBOXES
     static void appendHitbox(sf::VertexArray& vertices, const sf::FloatRect& hitbox) noexcept;
 #endif // RENDER_HITBOXES
 
     static void createVertices(sf::Vertex vertices[6u], const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size, bool flipHorizontally, bool flipVertically) noexcept;
     static void renderVertices(sf::Vertex* vertices, uint8_t vertexCount, const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept;
-    static void appendToSpritePallete(const sf::Image& image, sf::Vector2u dest) noexcept;
 
     static void renderTile(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
     static void renderEnemy(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
