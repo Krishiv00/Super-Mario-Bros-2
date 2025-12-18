@@ -1,0 +1,231 @@
+#ifndef WORLD_HPP
+#define WORLD_HPP
+
+#include "Globals.hpp"
+#include "SFML/Graphics.hpp"
+
+#include "Cutscene.hpp"
+#include "Sprite/Enemy.hpp"
+#include "Sprite/Others.hpp"
+#include "Sprite/Player.hpp"
+#include "Blocks.hpp"
+
+class World {
+    friend class MapLoader;
+    friend class Game;
+    friend class Renderer;
+    friend class Enemy;
+    friend class JumpSpring;
+    friend class Cutscene;
+    friend class Powerup;
+    friend class GroundEnemy;
+    friend class EnemyComponents::Stompable;
+    friend class PiranhaPlant;
+    friend class Player;
+    friend class LiftBalance;
+    friend class Shell;
+    friend class BouncingBlock;
+
+public:
+    [[nodiscard]] static constexpr inline unsigned int GetIndex(unsigned int x, unsigned int y) noexcept {
+        return x * 13u + y;
+    }
+
+    static constexpr inline const uint8_t EnemySpriteSlots = 5u;
+    static constexpr inline const uint8_t SpecialSpriteSlot = EnemySpriteSlots + 0u;
+
+    static constexpr inline const int8_t MaxSpriteDistanceLeftNormal = 72u;
+    static constexpr inline const int8_t MaxSpriteDistanceLeftSpecial = 16u;
+
+    static inline bool Difficulty = false;
+
+private:
+    // events
+    void on_block_hit_from_bottom(unsigned int x, unsigned int y);
+    void on_enter_warp_zone();
+    void on_otaining_supermushroom();
+    void on_otaining_fireflower();
+    void on_otaining_starman();
+    void on_player_damage();
+    void on_player_death(bool pit_death);
+
+    // routines
+    void give_coin();
+    void stopCutscene();
+    void collectCoinAboveBlock(unsigned int x, unsigned int y);
+
+    // timers
+    void updateTimers();
+
+    // multi coin
+    bool m_MulticoinTimerActive;
+    uint8_t m_MultiCoinTimer;
+
+    // game time
+    static constexpr inline const uint8_t GameTimerUpdateLength = 24u;
+
+    void initGameTime(uint16_t duration);
+    void updateGameTime();
+
+    uint16_t m_GameTime;
+    uint8_t m_GameTimeUpdateTimer;
+
+    // sprites
+    void handleSpriteLoading();
+    void updateSprites();
+    void updateGrowingPowerup();
+    void updateFreezeIndependentSprites();
+    void activateJumpSpring();
+    void spawnCoinAnimation(unsigned int x, unsigned int y);
+
+    std::unique_ptr<Sprite> m_Sprites[EnemySpriteSlots + 1u]; // +1 special slot
+    std::vector<std::vector<std::unique_ptr<Sprite>>> m_SpritePool;
+
+    FloateyNum m_FloateyNums[EnemySpriteSlots + 1u]; // +1 flag num
+    std::unique_ptr<DecorSprite> m_MiscSprites[2u];
+
+    // bouncing block
+    void handleBlockDefeat(sf::Vector2f blockPosition);
+    void updateBouncingBlock();
+
+    uint8_t m_BumpTimer;
+    std::unique_ptr<BouncingBlock> m_BouncingBlock;
+
+    // powerup
+    void spawn_powerup(uint8_t id, sf::Vector2f position);
+    void handlePowerupCollisions();
+
+    // cutscene
+    std::unique_ptr<Cutscene> m_Cutscene;
+
+    // collision
+    static constexpr inline const uint8_t XCollision = 0b10;
+    static constexpr inline const uint8_t YCollision = 0b01;
+
+    static constexpr inline const float TilePenetrationThreshhold = 5.f;
+
+    void collisions_PushOutOfBlockRightwards();
+    void collisions_PushOutOfBlockLeftwards();
+
+    bool collisions_CollisionResolveSide(const float& pointX, const float& pointY, const unsigned int& row, const unsigned int& col, std::unique_ptr<Blocks::Block>& block_ptr, bool direction);
+
+    void collisions_LandOnTile(Blocks::Block*& block);
+    void collisions_LandOnLift(const float& liftTop);
+
+    void collisions_BonkHead();
+
+    Lift* collisions_PointInLift(const sf::Vector2f& point);
+
+    bool collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const unsigned int& col, const unsigned int& row);
+    bool collisions_FlagCheck(Blocks::Block* block, const unsigned int& index);
+    bool collisions_WarpPipeCheck(Blocks::Block* block);
+
+    void resolvePlayerTileCollisions();
+
+    bool resolvePlayerHeadCollisions(float playerTop);
+    bool resolvePlayerFootCollisions(float playerTop);
+    bool resolvePlayerSideCollisions(float playerTop);
+
+    uint8_t m_CollisionMode;
+
+    // camera
+    void moveCamera();
+    void clampPlayerLeft();
+
+    std::vector<std::unique_ptr<Blocks::Block>> m_Tiles;
+    std::vector<uint8_t> m_AttributeTable;
+
+    uint8_t m_RequiredCoinsForOneUp = 0;
+    bool m_SpawnOneUp;
+
+    uint8_t m_Level;
+
+    bool m_CheckEnemyCollisions;
+
+    bool m_AutoScroll;
+    bool m_ScrollLocked;
+
+    bool m_Frozen;
+
+    bool m_NewLevel;
+    bool m_NewArea;
+
+    uint8_t m_StompChain;
+
+public:
+    void Reset();
+
+    void Update();
+
+    void OnFramerule();
+
+    void TickDownTimer();
+
+    bool PointInTile(const sf::Vector2f& point) const;
+
+    bool AddSprite(std::unique_ptr<Sprite>& sprite);
+    void ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex);
+
+    void SpawnFloateyNum(const FloateyNum& num);
+    void SpawnFloateyNum(const FloateyNum& num, uint8_t index);
+
+    void StartThemeMusic();
+
+    void StartCutscene(std::unique_ptr<Cutscene> scene);
+
+    inline void setLevel(uint8_t level, uint8_t stage) {
+        m_Level = ((level - 1) << 2) | ((stage - 1) & 3);
+    }
+
+    inline uint8_t getLevel() const {
+        return (m_Level >> 2) + 1u;
+    }
+
+    inline uint8_t getStage() const {
+        return (m_Level & 3) + 1u;
+    }
+
+    inline bool cutscenePlaying() const {
+        return m_Cutscene != nullptr;
+    }
+
+    inline std::unique_ptr<Sprite>* getSprites() {
+        return m_Sprites;
+    }
+
+    inline const bool& getAutoScroll() const {
+        return m_AutoScroll;
+    }
+
+    inline const uint8_t& getStompChain() const {
+        return m_StompChain;
+    }
+
+    inline const uint16_t& getGameTime() const {
+        return m_GameTime;
+    }
+
+    inline bool reloadRequired() const {
+        return m_NewLevel || m_NewArea;
+    }
+
+    inline const bool& newLevel() const {
+        return m_NewLevel;
+    }
+
+    inline const bool& scrollLocked() const {
+        return m_ScrollLocked;
+    }
+
+    inline const uint8_t& getLevelPointer() const {
+        return m_Level;
+    }
+
+    uint8_t CurrentTheme;
+
+    float CameraPosition;
+
+    bool TwoPlayerMode;
+};
+
+#endif // !WORLD_HPP
