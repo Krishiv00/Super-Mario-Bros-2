@@ -30,6 +30,8 @@ struct PlayerData {
         return GetLevelPointer(World, Level);
     }
 
+    PlayerData(bool type) : Type(type) {}
+
     bool Type = 0u;
     bool DiedAfterHalfPage = false;
 
@@ -187,7 +189,7 @@ private:
 
     bool m_AnimatePallete;
 
-    PlayerData m_SecondPlayerData;
+    PlayerData m_SecondPlayerData{1u};
 
 public:
     Player();
@@ -211,6 +213,8 @@ public:
     void Reset();
 
     void Swap();
+
+    void ResetData();
 
     inline const uint8_t& getState() const {
         return m_State;
@@ -314,7 +318,7 @@ public:
         return Data.Type ? "LUIGI" : "MARIO";
     }
 
-    PlayerData Data;
+    PlayerData Data{0u};
 };
 
 extern Player player;

@@ -20,6 +20,12 @@ void Player::Swap() {
     Renderer::SetPlayerTheme(Data.Type);
 }
 
+void Player::ResetData() {
+    Data = PlayerData(0u);
+    m_SecondPlayerData = PlayerData(1u);
+    Renderer::SetPlayerTheme(0u);
+}
+
 void Player::Update(World& world) {
     handlePlayerInput();
 
@@ -79,7 +85,7 @@ void Player::Grow(World& world) {
     } else if (m_Size == Big) {
         m_Size = Fiery;
 
-        Renderer::SetPlayerTheme(0x02u);
+        Renderer::SetPlayerTheme(2u);
 
         world.on_otaining_fireflower();
     }
@@ -92,7 +98,7 @@ bool Player::Damage(World& world) {
 
     if (isBig()) {
         if (isFiery()) {
-            Renderer::SetPlayerTheme(0x0u);
+            Renderer::SetPlayerTheme(0u);
         }
 
         audioPlayer.Play(AudioPlayer::Damage);

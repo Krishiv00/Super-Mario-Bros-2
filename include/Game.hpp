@@ -26,6 +26,7 @@ private:
 
     void startBlackScreen(BlackScreenType type);
     void stopBlackScreen();
+    void temporaryBlackScreen(uint8_t time);
     void pauseGameFor(uint8_t time);
 
     void renderUi();

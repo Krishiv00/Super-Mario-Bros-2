@@ -162,7 +162,7 @@ void Cutscene::startLevel(uint8_t newWorld, uint8_t newLevel, bool levelTransiti
 }
 
 void Cutscene::restartLevel() const {
-    if (m_WorldRef.TwoPlayerMode && player.m_SecondPlayerData.Lives) {
+    if (m_WorldRef.TwoPlayerMode && player.Data.Lives && player.m_SecondPlayerData.Lives) {
         player.Swap();
     }
 

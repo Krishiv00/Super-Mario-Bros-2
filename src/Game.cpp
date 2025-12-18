@@ -7,7 +7,7 @@
 
 void Game::Create(int argc, char** argv) {
     Renderer::LoadResources();
-    Renderer::SetPlayerTheme(0x00u);
+    Renderer::SetPlayerTheme(0u);
 
     initWindowIcon();
 
@@ -145,6 +145,8 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
                     }
                 }
 
+                player.Data.Lives = std::max(uint8_t(1u), player.Data.Lives);
+
                 loadMap(player.Data.World, player.Data.Level);
             }
         }
@@ -160,7 +162,7 @@ void Game::tickFramerule() {
         if (m_OnTitleScreen && m_DemoStartTimer && --m_DemoStartTimer == 0u) {
             startDemoScript();
         }
-
+        
         player.OnFramerule(m_World);
         m_World.OnFramerule();
     }
@@ -170,18 +172,26 @@ void Game::tickFramerule() {
 
 void Game::enterTitleScreen() {
     m_OnTitleScreen = true;
+    
+    player.Data.World = 1u;
+    player.Data.Level = 1u;
 
     player.m_AcceptPlayerControls = false;
-    m_World.TwoPlayerMode = false;
 
     m_DemoStartTimer = 24u;
 
     audioPlayer.SetMuted(true);
     musicPlayer.SetMuted(true);
+
+    Renderer::SetGameTimeRendering(false);
+
+    reload();
 }
 
 void Game::exitTitleScreen() {
     startBlackScreen(BlackScreenType::LevelTransition);
+
+    player.ResetData();
 
     player.m_AcceptPlayerControls = true;
     player.m_TasMode = false;
@@ -196,11 +206,9 @@ void Game::exitTitleScreen() {
 }
 
 void Game::restartDemo() {
-    player.Data = PlayerData();
-
-    pauseGameFor(24u);
-    reload();
     enterTitleScreen();
+
+    pauseGameFor(21u);
 
     m_ScriptPlayer.Stop();
 
@@ -211,31 +219,67 @@ void Game::restartDemo() {
 
 void Game::startBlackScreen(BlackScreenType type) {
     m_BlackScreenType = type;
-    m_BlackScreenTimer = 200u;
 
-    loadMap(player.Data.World, player.Data.Level);
+    if (type == BlackScreenType::LevelTransition) {
+        reload();
+    }
 
+    musicPlayer.Stop();
+
+    pauseGameFor(5u);
+    
     Renderer::ResetAnimations();
     Renderer::SetGameTimeRendering(false);
 
-    musicPlayer.Stop();
+    if (type == BlackScreenType::GameOver) {
+        m_BlackScreenTimer = 252u;
+
+        musicPlayer.Play(MusicPlayer::GameOver);
+
+        if (m_World.m_GameTime == 0u) {
+            m_BlackScreenType = BlackScreenType::TimeUp;
+        }
+    } else {
+        m_BlackScreenTimer = 144u;
+    }
 }
 
 void Game::stopBlackScreen() {
-    m_BlackScreenType = BlackScreenType::None;
-    
-    Renderer::SetGameTimeRendering(true);
+    pauseGameFor(13u);
 
-    musicPlayer.PlayLast(true);
+    if (m_BlackScreenType == BlackScreenType::GameOver) {
+        if (m_World.TwoPlayerMode && player.m_SecondPlayerData.Lives) {
+            player.Swap();
+            startBlackScreen(BlackScreenType::LevelTransition);
+        } else {
+            enterTitleScreen();
+        }
+    } else {
+        Renderer::SetGameTimeRendering(true);
+
+        m_World.StartThemeMusic();
+    }
+}
+
+void Game::temporaryBlackScreen(uint8_t time) {
+    reload();
+
+    musicPlayer.Stop();
+
+    pauseGameFor(time);
+
+    m_World.StartThemeMusic();
 }
 
 void Game::pauseGameFor(uint8_t time) {
-    m_BlackScreenType = BlackScreenType::None;
-    m_BlackScreenTimer = time;
+    while (true) {
+        m_Window.clear();
+        m_Window.display();
 
-    loadMap(player.Data.World, player.Data.Level);
-
-    musicPlayer.Stop();
+        if (--time == 0u) {
+            break;
+        }
+    }
 }
 
 #pragma region Update
@@ -257,6 +301,8 @@ void Game::Update() {
     if (m_BlackScreenTimer) {
         if (--m_BlackScreenTimer == 0u) {
             stopBlackScreen();
+        } else if (m_BlackScreenType == BlackScreenType::TimeUp && m_BlackScreenTimer == 150u) {
+            m_BlackScreenType = BlackScreenType::GameOver;
         }
 
         return;
@@ -275,10 +321,12 @@ void Game::Update() {
     m_World.Update();
 
     if (m_World.reloadRequired()) {
-        if (m_World.newLevel()) {
+        if (player.Data.Lives == 0u) {
+            startBlackScreen(BlackScreenType::GameOver);
+        } else if (m_World.newLevel()) {
             startBlackScreen(BlackScreenType::LevelTransition);
         } else {
-            pauseGameFor(24u);
+            temporaryBlackScreen(21u);
             Renderer::ResetAnimations();
         }
 
@@ -328,16 +376,13 @@ void Game::Render() {
     if (m_BlackScreenTimer) {
         m_Window.clear();
 
-        if (
-            m_BlackScreenType != BlackScreenType::None &&
-            m_BlackScreenTimer > 14u && m_BlackScreenTimer < 186u
-        ) {
+        if (m_BlackScreenType != BlackScreenType::None) {
             if (m_BlackScreenType == BlackScreenType::LevelTransition) {
-                Renderer::RenderBlackScreen_LevelTransition(m_Window, m_World);
+                Renderer::RenderBlackScreen_LevelTransition(m_Window);
             } else if (m_BlackScreenType == BlackScreenType::TimeUp) {
-                Renderer::RenderBlackScreen_TimeUp(m_Window);
+                Renderer::RenderBlackScreen_TimeUp(m_Window, m_World.TwoPlayerMode);
             } else /* if (m_BlackScreenType == BlackScreenType::GameOver) */ {
-                Renderer::RenderBlackScreen_GameOver(m_Window);
+                Renderer::RenderBlackScreen_GameOver(m_Window, m_World.TwoPlayerMode);
             }
 
             renderUi();

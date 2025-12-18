@@ -409,7 +409,7 @@ void Renderer::renderVertices(sf::Vertex* vertices, uint8_t vertexCount, const s
 
 #pragma region Black Screen
 
-void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target, const World& world) noexcept {
+void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexcept {
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 
     // world
@@ -450,18 +450,26 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target, const
     }
 }
 
-void Renderer::RenderBlackScreen_TimeUp(sf::RenderTarget& target) noexcept {
+void Renderer::RenderBlackScreen_TimeUp(sf::RenderTarget& target, bool twoPlayerMode) noexcept {
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
+
+    if (twoPlayerMode) {
+        textAddString(player.Name(), sf::Vector2f(104.f, 112.f), vertices);
+    }
 
     textAddString("TIME UP", sf::Vector2f(96.f, 128.f), vertices);
 
     textFlush(target, vertices);
 }
 
-void Renderer::RenderBlackScreen_GameOver(sf::RenderTarget& target) noexcept {
+void Renderer::RenderBlackScreen_GameOver(sf::RenderTarget& target, bool twoPlayerMode) noexcept {
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 
-    textAddString("GAME OVER", sf::Vector2f(88.f, 120.f), vertices);
+    if (twoPlayerMode) {
+        textAddString(player.Name(), sf::Vector2f(104.f, 112.f), vertices);
+    }
+
+    textAddString("GAME OVER", sf::Vector2f(88.f, 128.f), vertices);
 
     textFlush(target, vertices);
 }

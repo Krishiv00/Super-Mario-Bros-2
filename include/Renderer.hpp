@@ -90,9 +90,9 @@ public:
     static void RenderGame(sf::RenderTarget& target, const World& world) noexcept;
     static void RenderPlayer(sf::RenderTarget& target) noexcept;
 
-    static void RenderBlackScreen_LevelTransition(sf::RenderTarget& target, const World& world) noexcept;
-    static void RenderBlackScreen_TimeUp(sf::RenderTarget& target) noexcept;
-    static void RenderBlackScreen_GameOver(sf::RenderTarget& target) noexcept;
+    static void RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexcept;
+    static void RenderBlackScreen_TimeUp(sf::RenderTarget& target, bool twoPlayerMode) noexcept;
+    static void RenderBlackScreen_GameOver(sf::RenderTarget& target, bool twoPlayerMode) noexcept;
 
     static void RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, bool secondPlayerMode) noexcept;
 
