@@ -1377,7 +1377,14 @@ void MapLoader::placeBlock(const unsigned int& tileIndex, std::unique_ptr<Blocks
 }
 
 void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
-    world.m_SpritePool.emplace_back().push_back(std::move(sprite));
+    auto it = std::lower_bound(
+        world.m_SpritePool.begin(), world.m_SpritePool.end(), sprite->Position.x,
+        [](const std::vector<std::unique_ptr<Sprite>>& group, const float& xValue) {
+            return group.front()->Position.x < xValue;
+        }
+    );
+
+    world.m_SpritePool.insert(it, std::vector<std::unique_ptr<Sprite>>{})->push_back(std::move(sprite));
 }
 
 void MapLoader::placeBlockIfEmpty(const unsigned int& tileIndex, std::unique_ptr<Blocks::Block> block, const uint8_t& subPalleteIndex, World& world) {
@@ -2465,13 +2472,6 @@ void MapLoader::loadPage(World& world) {
             } else if (globalDifficulty || (b2 & 0x40u) == 0x00u) {
                 parseBadGuysObject(b1, b2, globalDifficulty, world, pageOffset);
             }
-        }
-
-        if (world.m_SpritePool.size() > 1u) {
-            std::sort(world.m_SpritePool.begin(), world.m_SpritePool.end(),
-            [](const std::vector<std::unique_ptr<Sprite>>& a, const std::vector<std::unique_ptr<Sprite>>& b) {
-                return a.front()->Position.x < b.front()->Position.x;
-            });
         }
     }
 

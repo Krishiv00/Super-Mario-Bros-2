@@ -50,13 +50,20 @@ private:
 
     template <typename EnemyType>
     static inline void spawnEnemyGroup(const float& xPos, uint8_t y, const uint8_t& count, World& world) {
-        world.m_SpritePool.emplace_back();
+        const float yPos = (y + 1u) * 16.f;
 
-        float yPos = (y + 1u) * 16.f;
+        auto it = std::lower_bound(
+            world.m_SpritePool.begin(), world.m_SpritePool.end(), xPos,
+            [](const std::vector<std::unique_ptr<Sprite>>& group, const float& xValue) {
+            return group.front()->Position.x < xValue;
+        }
+        );
 
-        for (uint8_t i = 0u; i < count; ++i) {
-            sf::Vector2f position = sf::Vector2f(xPos + i * 24.f, yPos);
-            world.m_SpritePool.back().push_back(std::make_unique<EnemyType>(position));
+        std::vector<std::unique_ptr<Sprite>>& newGroup = *world.m_SpritePool.insert(it, std::vector<std::unique_ptr<Sprite>>{});
+
+        newGroup.reserve(count);
+        for (uint8_t i = 0; i < count; ++i) {
+            newGroup.push_back(std::make_unique<EnemyType>(sf::Vector2f(xPos + i * 24.f, yPos)));
         }
     }
 
