@@ -236,7 +236,7 @@ void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& follia
     UpdatePalleteColors();
 }
 
-void Renderer::SetSpriteTheme(const uint8_t& theme) noexcept {
+void Renderer::SetSpriteTheme(const uint8_t& theme, uint8_t endIndex) noexcept {
     constexpr std::array<std::array<uint8_t, 4u>, 12u> SpriteColorSets[] = {
         {{
             {0u, 0u, 0u}, {190u, 190u, 190u}, {255u, 255u, 255u}, {255u, 154u, 56u},
@@ -262,7 +262,7 @@ void Renderer::SetSpriteTheme(const uint8_t& theme) noexcept {
 
     sf::Image img = s_SpritePallete.copyToImage();
 
-    for (uint8_t i = 0u; i < 12u; ++i) {
+    for (uint8_t i = 0u; i < endIndex; ++i) {
         const auto& c = SpriteColorSets[theme][i];
         img.setPixel(sf::Vector2u(i % 4u, i / 4u + 1u), sf::Color(c[0u], c[1u], c[2u]));
     }

@@ -1,6 +1,8 @@
 #include "Sprite/Enemy.hpp"
 #include "World.hpp"
 
+#include "Renderer.hpp"
+
 #pragma region Enemy
 
 Enemy::Enemy(EnemyType::Type type, sf::Vector2f position) : m_Type(type) {
@@ -355,8 +357,6 @@ namespace EnemyComponents {
 
         m_Animate = false;
     }
-
-#include "Renderer.hpp"
 
     void Shell::giveKickPoints(World& world) {
         uint16_t score;
@@ -917,6 +917,8 @@ Axe::Axe(sf::Vector2f position) : Enemy(EnemyType::Axe, position) {
     SubPalleteIndex = 3u;
 
     m_Animate = false;
+
+    Renderer::SetSpriteTheme(1u, 4u);
 }
 
 void Axe::OnCollisionWithPlayer(World& world) {

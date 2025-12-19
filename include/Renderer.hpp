@@ -78,7 +78,7 @@ public:
     static void LoadResources() noexcept;
 
     static void SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept;
-    static void SetSpriteTheme(const uint8_t& theme) noexcept;
+    static void SetSpriteTheme(const uint8_t& theme, uint8_t endIndex = 12u) noexcept;
     static void SetPlayerTheme(const uint8_t& theme) noexcept;
     static void SetGameTimeRendering(bool state) noexcept;
 
