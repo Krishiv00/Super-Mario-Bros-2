@@ -2466,6 +2466,13 @@ void MapLoader::loadPage(World& world) {
                 parseBadGuysObject(b1, b2, globalDifficulty, world, pageOffset);
             }
         }
+
+        if (world.m_SpritePool.size() > 1u) {
+            std::sort(world.m_SpritePool.begin(), world.m_SpritePool.end(),
+            [](const std::vector<std::unique_ptr<Sprite>>& a, const std::vector<std::unique_ptr<Sprite>>& b) {
+                return a.front()->Position.x < b.front()->Position.x;
+            });
+        }
     }
 
     ++CurrentPage;

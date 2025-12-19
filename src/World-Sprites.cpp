@@ -64,10 +64,10 @@ void World::ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex) {
 }
 
 void World::handleSpriteLoading() {
-    float threshold = CameraPosition + gbl::Width + TileSize * 3.f;
+    if (!m_SpritePool.empty()) {
+        const float threshold = CameraPosition + gbl::Width + TileSize * 3.f;
 
-    for (auto it = m_SpritePool.begin(); it != m_SpritePool.end(); ++it) {
-        std::vector<std::unique_ptr<Sprite>>& spriteGroup = *it;
+        std::vector<std::unique_ptr<Sprite>>& spriteGroup = m_SpritePool[0u];
 
         if (spriteGroup.front()->Position.x <= threshold) {
             for (std::unique_ptr<Sprite>& sprite : spriteGroup) {
@@ -76,9 +76,7 @@ void World::handleSpriteLoading() {
                 }
             }
 
-            m_SpritePool.erase(it);
-
-            break;
+            m_SpritePool.erase(m_SpritePool.begin());
         }
     }
 }
