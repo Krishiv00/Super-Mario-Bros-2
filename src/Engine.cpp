@@ -47,6 +47,10 @@ void Engine::ProcessEvents() {
             else if (key->scancode == sf::Keyboard::Scancode::Insert) {
                 setPaused(false);
             }
+
+            else if (key->scancode == sf::Keyboard::Scancode::F2) {
+                saveScreenshot();
+            }
         }
         
         else if (const auto* key = event->getIf<sf::Event::KeyReleased>()) {
@@ -75,6 +79,30 @@ void Engine::update_internal() {
     m_Game.Update();
 
     Rand::Update();
+}
+
+void Engine::saveScreenshot() {
+    const std::string baseName = "Screenshots";
+    const std::string extension = ".png";
+    const std::string directory = "Screenshots/";
+
+    if (!std::filesystem::exists(directory)) {
+        std::filesystem::create_directory(directory);
+    }
+
+    std::string filepath = directory + baseName + extension;
+    {
+        uint8_t count = 1u;
+
+        while (std::filesystem::exists(filepath)) {
+            filepath = directory + baseName + " " + std::to_string(count) + extension;
+            ++count;
+        }
+    }
+
+    if (!m_Game.GetScreenshot().saveToFile(filepath)) {
+        LOG_ERROR("Failed To Save Screenshot");
+    }
 }
 
 void Engine::Update() {

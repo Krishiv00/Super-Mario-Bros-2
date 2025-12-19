@@ -13,6 +13,8 @@ private:
 
     void update_internal();
 
+    void saveScreenshot();
+
     sf::RenderWindow m_Window;
     sf::Vector2u m_LastWindowSize;
 

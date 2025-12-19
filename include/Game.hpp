@@ -45,14 +45,12 @@ private:
 
     void initWindowIcon();
 
-    void takeScreenshot();
-
     void loadSoundEffects();
     void loadMusic();
 
     void loadMap(uint8_t world, uint8_t level);
 
-    sf::View generateCameraView();
+    sf::View generateCameraView() const;
 
     World m_World;
 
@@ -83,6 +81,8 @@ public:
     void Render();
 
     void ProcessEvents(const sf::Event& event);
+
+    sf::Image GetScreenshot() const noexcept;
 
     inline const bool& SoundDisabled() const noexcept {
         return m_OnTitleScreen;

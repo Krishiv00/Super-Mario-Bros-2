@@ -78,10 +78,6 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
         }
     }
 
-    else if (key == sf::Keyboard::Scancode::F2) {
-        takeScreenshot();
-    }
-
     else if (key == sf::Keyboard::Scancode::LControl) {
         if (player.isFiery() && !player.m_Frozen) {
             player.ShootFireball();
@@ -356,7 +352,7 @@ void Game::loadMap(uint8_t world, uint8_t level) {
 
 #pragma region Rendering
 
-sf::View Game::generateCameraView() {
+sf::View Game::generateCameraView() const {
     return sf::View(sf::FloatRect(sf::Vector2f(m_World.CameraPosition, 0.f), sf::Vector2f(gbl::Width, gbl::Height)));
 }
 
@@ -426,40 +422,24 @@ void Game::initWindowIcon() {
     m_Window.setIcon(icon);
 }
 
-void Game::takeScreenshot() {
-    sf::RenderTexture renderTexture(sf::Vector2u(gbl::Width, gbl::Height));
+sf::Image Game::GetScreenshot() const noexcept {
+    constexpr uint8_t Scale = 4u;
+    sf::RenderTexture renderTexture(sf::Vector2u(gbl::Width * Scale, gbl::Height * Scale));
 
     renderTexture.clear(Renderer::BackgroundColor);
 
     renderTexture.setView(generateCameraView());
 
+    Renderer::RenderUi(renderTexture, m_World, m_OnTitleScreen);
     Renderer::RenderGame(renderTexture, m_World);
+
+    if (m_OnTitleScreen && MapLoader::GetCurrentPage() <= 3u && m_World.CameraPosition < 256.f) {
+        Renderer::RenderTitleScreen(renderTexture, m_Highscore, m_World.TwoPlayerMode);
+    }
 
     renderTexture.display();
 
-    sf::Image screenshot = renderTexture.getTexture().copyToImage();
-
-    const std::string baseName = "Screenshots";
-    const std::string extension = ".png";
-    const std::string directory = "Screenshots/";
-
-    if (!std::filesystem::exists(directory)) {
-        std::filesystem::create_directory(directory);
-    }
-
-    std::string filepath = directory + baseName + extension;
-    {
-        uint8_t count = 1u;
-
-        while (std::filesystem::exists(filepath)) {
-            filepath = directory + baseName + " " + std::to_string(count) + extension;
-            ++count;
-        }
-    }
-
-    if (!screenshot.saveToFile(filepath)) {
-        LOG_ERROR("Failed To Save Screenshot");
-    }
+    return renderTexture.getTexture().copyToImage();
 }
 
 void Game::loadSoundEffects() {
