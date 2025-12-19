@@ -79,14 +79,20 @@ Perfect for runners validating setups, testing theories, or hunting new tech.
 
 ## 🖼️ Screenshots
 
-<p align="center">
-  <img src="Screenshots/Title.png"/>
-  <img src="Screenshots/Gameplay.png"/>
+<p align="left">
+  <img src="Screenshots/Title.png" width="50%"/>
 </p>
 
-<p align="center">
-  <img src="Screenshots/Flagpole.png"/>
-  <img src="Screenshots/Wrong Warp.png"/>
+<p align="left">
+  <img src="Screenshots/Gameplay.png" width="50%"/>
+</p>
+
+<p align="left">
+  <img src="Screenshots/Flagpole.png" width="50%"/>
+</p>
+
+<p align="left">
+  <img src="Screenshots/Wrong Warp.png" width="50%"/>
 </p>
 
 ---

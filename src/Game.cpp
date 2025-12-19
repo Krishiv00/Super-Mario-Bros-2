@@ -428,9 +428,12 @@ sf::Image Game::GetScreenshot() const noexcept {
 
     renderTexture.clear(Renderer::BackgroundColor);
 
-    renderTexture.setView(generateCameraView());
+    renderTexture.setView(sf::View(sf::FloatRect({0.f, 0.f}, {gbl::Width, gbl::Height})));
 
     Renderer::RenderUi(renderTexture, m_World, m_OnTitleScreen);
+    
+    renderTexture.setView(generateCameraView());
+    
     Renderer::RenderGame(renderTexture, m_World);
 
     if (m_OnTitleScreen && MapLoader::GetCurrentPage() <= 3u && m_World.CameraPosition < 256.f) {
