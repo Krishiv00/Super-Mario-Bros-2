@@ -81,7 +81,7 @@ private:
     std::unique_ptr<Sprite> m_Sprites[EnemySpriteSlots + 1u]; // +1 special slot
     std::vector<std::vector<std::unique_ptr<Sprite>>> m_SpritePool;
 
-    FloateyNum m_FloateyNums[EnemySpriteSlots + 1u]; // +1 flag num
+    FloateyNum m_FloateyNums[EnemySpriteSlots];
     std::unique_ptr<DecorSprite> m_MiscSprites[2u];
 
     // bouncing block

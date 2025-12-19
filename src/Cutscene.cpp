@@ -169,10 +169,6 @@ void Cutscene::restartLevel() const {
     startLevel(player.Data.World, player.Data.Level, true);
 }
 
-void Cutscene::moveFlagNum() const {
-    m_WorldRef.m_FloateyNums[World::SpecialSpriteSlot].m_Position.y -= 2;
-}
-
 void Cutscene::timerCountDown() const {
     --m_WorldRef.m_GameTime;
     player.Data.Score += 50u;
@@ -394,8 +390,6 @@ FlagpoleScene::~FlagpoleScene() {
 void FlagpoleScene::handleRoutineSlidingDown() {
     stepPlayerAnimation();
     stepPlayerMovement();
-
-    moveFlagNum();
 
     // end this routine
     if (!m_FlagRef || m_FlagRef->ReachedBottom()) {

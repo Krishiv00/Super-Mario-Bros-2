@@ -51,11 +51,14 @@ public:
 
 class Flag : public Sprite {
     friend class MapLoader;
+    friend class World;
+    friend class Renderer;
 
 private:
-    static constexpr inline const float Threshold = 171.f;
-
     bool m_Moving;
+
+    int8_t m_FloateyNumType = -1;
+    uint8_t m_FloateyNumYPos = (gbl::Rows - 4) * TileSize;
 
 public:
     Flag(sf::Vector2f position);
@@ -65,7 +68,7 @@ public:
     void SetMoving(bool moving);
 
     inline bool ReachedBottom() const {
-        return Position.y >= Threshold;
+        return Position.y >= 171.f;
     }
 };
 

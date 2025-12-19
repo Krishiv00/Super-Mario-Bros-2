@@ -105,9 +105,10 @@ void Flag::SetMoving(bool moving) {
     m_Moving = moving;
 }
 
-void Flag::Update(World&) {
+void Flag::Update(World& world) {
     if (m_Moving) {
-        Position.y = std::min(Position.y + 2.f, Threshold);
+        Position.y += 2.f;
+        m_FloateyNumYPos -= 2;
     }
 }
 

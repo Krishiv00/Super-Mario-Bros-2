@@ -17,7 +17,7 @@ private:
     static void placeBlockIfEmpty(const unsigned int& tileIndex, std::unique_ptr<Blocks::Block> block, const uint8_t& subPalleteIndex, World& world);
     static void hiddenOneUpLogic(World& world);
     static void loadMapProperties(World& world);
-    static void setBackgroundTheme(const uint8_t& mapAttribute);
+    static void setTheme(const uint8_t& mapAttribute);
     static void createNewPage(World& world);
     static void loadPage(World& world);
     static void parseTileObject(const uint8_t& b1, const uint8_t& b2, World& world, const unsigned int& pageColumnOffset);

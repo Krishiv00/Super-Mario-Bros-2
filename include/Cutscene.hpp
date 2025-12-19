@@ -56,8 +56,6 @@ protected:
     void startLevel(uint8_t newWorld, uint8_t newLevel, bool levelTransition) const;
     void restartLevel() const;
 
-    void moveFlagNum() const;
-
     void timerCountDown() const;
 
     static void bouncePlayer();

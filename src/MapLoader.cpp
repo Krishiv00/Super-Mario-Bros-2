@@ -1432,7 +1432,6 @@ void MapLoader::loadMapProperties(World& world) {
         const uint8_t mapAttribute = b3 >> 0x04u;
 
         world.CurrentTheme = mapAttribute;
-        Renderer::SetSpriteTheme(mapAttribute);
     }
 
     // halfway page
@@ -1457,7 +1456,7 @@ void MapLoader::loadMapProperties(World& world) {
     }
 }
 
-void MapLoader::setBackgroundTheme(const uint8_t& mapAttribute) {
+void MapLoader::setTheme(const uint8_t& mapAttribute) {
     uint8_t colorBackground = TileData[0x00u] & 0x07u;
 
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiersForColor = getBackgroundodifiers();
@@ -1490,6 +1489,7 @@ void MapLoader::setBackgroundTheme(const uint8_t& mapAttribute) {
     }
 
     Renderer::SetBackgroundTheme(skyColIndex, folliageColsIndex, bodyColsIndex);
+    Renderer::SetSpriteTheme(colorAttribute);
 }
 
 void MapLoader::handleCellingTerrain(const uint8_t& length, const uint8_t& block, const unsigned int& colIndex, World& world) {
@@ -1935,7 +1935,7 @@ void MapLoader::NewLevel(World& world, const uint8_t& areaPointer) {
     HoleBufferLength = 0x00u;
 
     BackgroundModifiers = getBackgroundodifiers();
-    setBackgroundTheme(world.CurrentTheme);
+    setTheme(world.CurrentTheme);
 
     extendMap(world);
 

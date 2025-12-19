@@ -623,12 +623,18 @@ void Renderer::renderJumpSpring(sf::RenderTarget& target, const JumpSpring& spri
 #pragma region Flag
 
 void Renderer::renderFlag(sf::RenderTarget& target, const Flag& flag) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f();
-
     sf::Vertex vertices[6u];
 
-    createVertices(vertices, flag.Position, texturePos);
+    createVertices(vertices, flag.Position, sf::Vector2f());
     renderVertices(vertices, 6u, s_EndOfLevelSpritesTexture, flag.SubPalleteIndex, target);
+
+    if (flag.m_FloateyNumType >= 0) {
+        sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
+        sf::Vector2f texturePos = sf::Vector2f(flag.m_FloateyNumType * TileSize, 0.f);
+    
+        createVertices(vertices, position, texturePos);
+        renderVertices(vertices, 6u, s_FloateyNumsTexture, flag.SubPalleteIndex, target);
+    }
 }
 
 #pragma region Star Flag
@@ -837,10 +843,6 @@ void Renderer::renderOtherSprites(sf::RenderTarget& target, const World& world) 
         if (const FloateyNum& floateyNum = world.m_FloateyNums[i]) {
             renderFloateyNum(target, floateyNum, 2u, world.CameraPosition);
         }
-    }
-
-    if (const FloateyNum& floateyNum = world.m_FloateyNums[World::SpecialSpriteSlot]) {
-        renderFloateyNum(target, floateyNum, 3u, world.CameraPosition);
     }
 }
 

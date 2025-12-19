@@ -152,7 +152,10 @@ bool World::collisions_FlagCheck(Blocks::Block* block, const unsigned int& index
             }
 
             player.Data.Score += score;
-            m_FloateyNums[SpecialSpriteSlot] = FloateyNum(sf::Vector2f(x + TileSize, (gbl::Rows - 4) * TileSize), CameraPosition, FloateyNum::GetType(score));
+            
+            if (Flag* flag = GetIf(m_Sprites[SpecialSpriteSlot].get(), Flag)) {
+                flag->m_FloateyNumType = FloateyNum::GetType(score);
+            }
 
             return true;
         }
