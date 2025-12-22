@@ -16,8 +16,8 @@ private:
     static void appendHitbox(sf::VertexArray& vertices, const sf::FloatRect& hitbox) noexcept;
 #endif // RENDER_HITBOXES
 
-    static void createVertices(sf::Vertex vertices[6u], const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size, bool flipHorizontally, bool flipVertically) noexcept;
-    static void renderVertices(sf::Vertex* vertices, uint8_t vertexCount, const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept;
+    static void createVertices(const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size, bool flipHorizontally, bool flipVertically) noexcept;
+    static void renderVertices(const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept;
 
     static void renderTile(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
     static void renderEnemy(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
@@ -56,13 +56,14 @@ private:
     static inline sf::Texture s_BannerTexture;
     static inline sf::Texture s_FloateyNumsTexture;
     static inline sf::Texture s_MiscSpritesTexture;
+    static inline sf::Texture s_FontTexture;
 
     static inline sf::Texture s_BackgroundPallete;
     static inline sf::Texture s_SpritePallete;
 
-    static inline sf::Texture s_FontTexture;
-
     static inline sf::Shader s_PaletteShader;
+
+    static inline sf::Vertex s_Vertices[6u];
 
     static constexpr inline const uint8_t AnimationTimerDuration = 8u;
     static inline uint8_t s_BlinkAnimationTimer = AnimationTimerDuration;
