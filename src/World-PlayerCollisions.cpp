@@ -459,11 +459,6 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 
             auto& block_ptr = m_Tiles[index];
 
-            // touched flag
-            if (collisions_FlagCheck(block_ptr.get(), index)) {
-                return ROUTINE_END_SIGNAL;
-            }
-
             if (collisions_CollisionResolveSide(pointX, pointY, row, col, block_ptr, gbl::Direction::Left)) {
                 return ROUTINE_END_SIGNAL;
             }
@@ -497,11 +492,6 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
             unsigned int index = World::GetIndex(col, row);
 
             auto& block_ptr = m_Tiles[index];
-
-            // touched flag
-            if (collisions_FlagCheck(block_ptr.get(), index)) {
-                return ROUTINE_END_SIGNAL;
-            }
 
             // collided with pipe
             if (collisions_WarpPipeCheck(block_ptr.get())) {
