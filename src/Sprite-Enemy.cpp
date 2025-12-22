@@ -42,7 +42,7 @@ void Enemy::spawnDeathAnimation(World& world) noexcept {
             m_Type == EnemyType::BuzzyBeetle
         ) ? EnemyType::BuzzyBeetleShell : m_Type;
     
-        world.m_DeathAnimations[SlotIndex] = std::make_unique<DeathAnimation>(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type);
+        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, SlotIndex);
     }
 }
 
