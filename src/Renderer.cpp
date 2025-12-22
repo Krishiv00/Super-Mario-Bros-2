@@ -429,9 +429,19 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexc
 
         constexpr sf::Vector2f Position = sf::Vector2f(96.f, 105.f);
         constexpr sf::Vector2f TexturePos = sf::Vector2f(0.f, TileSize);
+
+        const bool isFiery = player.isFiery();
+
+        if (isFiery) {
+            SetPlayerTheme(player.Data.Type);
+        }
         
         createVertices(Position, TexturePos);
         renderVertices(s_PlayerTexture, player.SubPalleteIndex, target);
+
+        if (isFiery) {
+            SetPlayerTheme(0x02u);
+        }
     }
 }
 
