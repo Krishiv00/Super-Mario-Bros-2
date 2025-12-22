@@ -83,6 +83,7 @@ private:
 
     FloateyNum m_FloateyNums[EnemySpriteSlots];
     std::unique_ptr<DecorSprite> m_MiscSprites[2u];
+    std::unique_ptr<DeathAnimation> m_DeathAnimations[EnemySpriteSlots];
 
     // bouncing block
     void handleBlockDefeat(sf::Vector2f blockPosition);

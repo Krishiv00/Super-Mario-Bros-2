@@ -123,6 +123,19 @@ void StarFlag::Update(World&) {
     
 }
 
+#pragma region Death Animation
+
+DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type) : Sprite(position, subPalleteIndex), m_Type(type) {
+    m_Velocity = -3.f;
+}
+
+void DeathAnimation::Update(World & world) {
+    m_Velocity = std::min(m_Velocity + 0.195f, 3.f);
+    Position.y += m_Velocity;
+
+    ToRemove = Position.y >= gbl::Height;
+}
+
 #pragma region Coin Animation
 
 CoinAnimation::CoinAnimation(sf::Vector2f position) {

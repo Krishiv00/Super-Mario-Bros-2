@@ -2522,6 +2522,12 @@ void MapLoader::Update(World& world) {
             }
         }
 
+        for (auto& animation : world.m_DeathAnimations) {
+            if (animation) {
+                animation->Position.x -= Factor;
+            }
+        }
+
         world.m_Tiles.erase(world.m_Tiles.begin(), world.m_Tiles.begin() + 208u);
         world.m_AttributeTable.erase(world.m_AttributeTable.begin(), world.m_AttributeTable.begin() + 208u);
 

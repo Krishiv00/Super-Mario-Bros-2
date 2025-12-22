@@ -81,6 +81,20 @@ public:
     virtual void Update(World& world) override;
 };
 
+class DeathAnimation : public Sprite {
+    friend class Renderer;
+    
+private:
+    uint8_t m_Type;
+
+    float m_Velocity;
+
+public:
+    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type);
+
+    virtual void Update(World& world) override;
+};
+
 class DecorSprite {
     friend class MapLoader;
 

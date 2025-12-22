@@ -26,6 +26,10 @@ void World::Reset() {
         sprite.reset();
     }
 
+    for (auto& sprite : m_DeathAnimations) {
+        sprite.reset();
+    }
+
     m_CheckEnemyCollisions = false;
     m_AutoScroll = false;
     m_ScrollLocked = false;

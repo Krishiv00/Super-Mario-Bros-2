@@ -712,6 +712,15 @@ void Renderer::renderFloateyNum(sf::RenderTarget& target, const FloateyNum& floa
     renderVertices(vertices, 6u, s_FloateyNumsTexture, subPalleteIndex, target);
 }
 
+void Renderer::renderDeathAnimation(sf::RenderTarget& target, const DeathAnimation& animation) noexcept {
+    sf::Vector2f texturePos = sf::Vector2f(0.f, animation.m_Type * 2u * TileSize);
+
+    sf::Vertex vertices[6u];
+
+    createVertices(vertices, animation.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), false, true);
+    renderVertices(vertices, 6u, s_SpritesTexture, animation.SubPalleteIndex, target);
+}
+
 #pragma region Tiles
 
 void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcept {
@@ -839,9 +848,15 @@ void Renderer::renderOtherSprites(sf::RenderTarget& target, const World& world) 
         }
     }
 
-    for (uint8_t i = 0u; i < World::EnemySpriteSlots; ++i) {
-        if (const FloateyNum& floateyNum = world.m_FloateyNums[i]) {
+    for (const auto& floateyNum : world.m_FloateyNums) {
+        if (floateyNum) {
             renderFloateyNum(target, floateyNum, 2u, world.CameraPosition);
+        }
+    }
+
+    for (const auto& animation : world.m_DeathAnimations) {
+        if (animation) {
+            renderDeathAnimation(target, *animation);
         }
     }
 }

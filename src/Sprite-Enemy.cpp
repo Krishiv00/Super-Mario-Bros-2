@@ -29,6 +29,11 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
     }
 }
 
+void Enemy::spawnDeathAnimation(World& world) noexcept {
+    float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
+    world.m_DeathAnimations[SlotIndex] = std::make_unique<DeathAnimation>(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, m_Type);
+}
+
 void Enemy::givePlayerScore(uint16_t score, World& world) noexcept {
     player.Data.Score += score;
     world.SpawnFloateyNum(FloateyNum(sf::Vector2f(xPosition(), yPosition()), world.CameraPosition, FloateyNum::GetType(score)), SlotIndex);
@@ -46,6 +51,8 @@ void Enemy::setDirectionRelativeToPlayer() noexcept {
 void Enemy::onShellDeath(World& world, uint8_t killChain) noexcept {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::Kick);
+
+    spawnDeathAnimation(world);
 
     if (uint16_t score = GetShellScore(killChain)) {
         givePlayerScore(score, world);
@@ -73,8 +80,9 @@ void Enemy::onCollide(World& world) {
     }
 }
 
-void Enemy::onBlockDefeat(World&, float) {
+void Enemy::onBlockDefeat(World& world, float) {
     ToRemove = true;
+    spawnDeathAnimation(world);
 }
 
 void Enemy::OnCollisionWithPlayer(World& world) {
@@ -99,6 +107,8 @@ void Enemy::OnCollisionWithPlayer(World& world) {
         }
 
         givePlayerScore(score, world);
+
+        spawnDeathAnimation(world);
     } else {
         EnemyComponents::Stompable* stompable = GetComponent(this, EnemyComponents::Stompable);
 

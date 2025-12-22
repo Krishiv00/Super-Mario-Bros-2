@@ -189,6 +189,16 @@ void World::updateFreezeIndependentSprites() {
             }
         }
     }
+
+    for (auto& animation : m_DeathAnimations) {
+        if (animation) {
+            animation->Update(*this);
+
+            if (animation->ToRemove) {
+                animation.reset();
+            }
+        }
+    }
 }
 
 #pragma region Bouncing Block

@@ -44,7 +44,13 @@ private:
     template <typename BlockType, typename... Args>
     static inline void placeVerticalRow(const unsigned int& index, const uint8_t& length, const uint8_t& subPalleteIndex, World& world, Args&&... args) {
         for (uint8_t i = 0u; i < length; ++i) {
-            placeBlock(index + i, std::make_unique<BlockType>(std::forward<Args>(args)...), subPalleteIndex, world);
+            unsigned int tileIndex = index + i;
+
+            auto& block = world.m_Tiles[tileIndex];
+            
+            if (!block || !GetIf(block.get(), Blocks::Coin)) {
+                placeBlock(tileIndex, std::make_unique<BlockType>(std::forward<Args>(args)...), subPalleteIndex, world);
+            }
         }
     }
 
