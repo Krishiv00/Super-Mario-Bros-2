@@ -30,8 +30,20 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
 }
 
 void Enemy::spawnDeathAnimation(World& world) noexcept {
-    float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
-    world.m_DeathAnimations[SlotIndex] = std::make_unique<DeathAnimation>(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, m_Type);
+    if (m_Type != EnemyType::PiranhaPlant) {
+        float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
+    
+        uint8_t type = (
+            m_Type == EnemyType::KoopaTroopa ||
+            m_Type == EnemyType::KoopaParatroopa ||
+            m_Type == EnemyType::RedKoopaTroopa ||
+            m_Type == EnemyType::RedKoopaParatroopa
+        ) ? EnemyType::KoopaTroopaShell : (
+            m_Type == EnemyType::BuzzyBeetle
+        ) ? EnemyType::BuzzyBeetleShell : m_Type;
+    
+        world.m_DeathAnimations[SlotIndex] = std::make_unique<DeathAnimation>(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type);
+    }
 }
 
 void Enemy::givePlayerScore(uint16_t score, World& world) noexcept {
@@ -82,7 +94,10 @@ void Enemy::onCollide(World& world) {
 
 void Enemy::onBlockDefeat(World& world, float) {
     ToRemove = true;
-    spawnDeathAnimation(world);
+
+    if (!GetComponent(this, EnemyComponents::ShellEnemy)) {
+        spawnDeathAnimation(world);
+    }
 }
 
 void Enemy::OnCollisionWithPlayer(World& world) {
