@@ -170,6 +170,9 @@ void Game::enterTitleScreen() {
     player.Data.World = 1u;
     player.Data.Level = 1u;
 
+    player.m_Size = Player::Small;
+    Renderer::SetPlayerTheme(0x00u);
+
     player.m_AcceptPlayerControls = false;
 
     m_DemoStartTimer = 24u;

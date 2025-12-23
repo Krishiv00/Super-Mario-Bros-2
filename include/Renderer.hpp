@@ -19,29 +19,29 @@ private:
     static void createVertices(const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size, bool flipHorizontally, bool flipVertically) noexcept;
     static void renderVertices(const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept;
 
-    static void renderTile(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
-    static void renderEnemy(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
-    static void renderShell(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
-    static void renderFirebar(sf::RenderTarget& target, const Firebar& firebar) noexcept;
-    static void renderPowerup(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept;
-    static void renderFireFlowerStem(sf::RenderTarget& target, const Powerup& powerup) noexcept;
-    static void renderJumpSpring(sf::RenderTarget& target, const JumpSpring& spring) noexcept;
-    static void renderFlag(sf::RenderTarget& target, const Flag& flag) noexcept;
-    static void renderStarFlag(sf::RenderTarget& target, const StarFlag& flag) noexcept;
-    static void renderAxe(sf::RenderTarget& target, const Axe& axe) noexcept;
-    static void renderLift(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept;
-    static void renderFireball(sf::RenderTarget& target, const Fireball& ball) noexcept;
-    static void renderMiscSprite(sf::RenderTarget& target, const DecorSprite& sprite) noexcept;
-    static void renderFloateyNum(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept;
-    static void renderDeathAnimation(sf::RenderTarget& target, const DeathAnimation& animation) noexcept;
+    static void render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
+    static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const Firebar& firebar) noexcept;
+    static void render(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const JumpSpring& spring) noexcept;
+    static void render(sf::RenderTarget& target, const Flag& flag) noexcept;
+    static void render(sf::RenderTarget& target, const StarFlag& flag) noexcept;
+    static void render(sf::RenderTarget& target, const Axe& axe) noexcept;
+    static void render(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept;
+    static void render(sf::RenderTarget& target, const Fireball& ball) noexcept;
+    static void render(sf::RenderTarget& target, const DecorSprite& sprite) noexcept;
+    static void render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept;
+    static void render(sf::RenderTarget& target, const DeathAnimation& animation) noexcept;
+
     static void renderTiles(sf::RenderTarget& target, const World& world) noexcept;
     static void renderSprites(sf::RenderTarget& target, const World& world, bool drawHidden) noexcept;
-    static void renderOtherSprites(sf::RenderTarget& target, const World& world) noexcept;
 
     static bool hiddenEnemySlot(Enemy* enemy) noexcept;
     static bool hiddenPowerupSlot(Powerup* powerup) noexcept;
 
     static std::string intToStringFixedSize(unsigned int _int, uint8_t length) noexcept;
+    static sf::Vector2f fireballTexturePos();
 
     static void textAddChar(char character, const sf::Vector2f& position, sf::VertexArray& vertices) noexcept;
     static void textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept;

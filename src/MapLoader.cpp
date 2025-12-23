@@ -2479,11 +2479,9 @@ void MapLoader::loadPage(World& world) {
 }
 
 void MapLoader::Update(World& world) {
-    float cameraLeft = world.CameraPosition - gbl::Width * 0.5f;
-
     constexpr float Factor = 256.f;
 
-    if (cameraLeft >= Factor) {
+    if (world.CameraPosition >= (Factor + gbl::Width * 0.5f)) {
         world.CameraPosition -= Factor;
         player.Position.x -= Factor;
 

@@ -500,7 +500,7 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
 
 #pragma region Tile
 
-void Renderer::renderTile(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept {
+void Renderer::render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept {
     sf::Vector2f texturePos = sf::Vector2f((textureId - 1) * TileSize, 0.f);
 
     createVertices(position, texturePos);
@@ -509,7 +509,7 @@ void Renderer::renderTile(sf::RenderTarget& target, const uint8_t& textureId, co
 
 #pragma region Enemy
 
-void Renderer::renderEnemy(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept {
+void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(
         enemy.m_Animate && s_EnemyAnimation, (enemy.m_Type & 0x7F) * 2u
     ) * TileSize;
@@ -524,7 +524,7 @@ void Renderer::renderEnemy(sf::RenderTarget& target, const Enemy& enemy, sf::Ver
 
 #pragma region Shell
 
-void Renderer::renderShell(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept {
+void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept {
     sf::Vector2f position = shell.Position;
 
     sf::Vector2f texturePos = sf::Vector2f(
@@ -545,10 +545,8 @@ void Renderer::renderShell(sf::RenderTarget& target, const EnemyComponents::Shel
 
 #pragma region Firebar
 
-void Renderer::renderFirebar(sf::RenderTarget& target, const Firebar& firebar) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(
-        s_EnemyAnimation, EnemyType::Firebar * 2u + (s_SpriteAnimationTimer <= 3u)
-    ) * TileSize;
+void Renderer::render(sf::RenderTarget& target, const Firebar& firebar) noexcept {
+    sf::Vector2f texturePos = fireballTexturePos();
 
     const float angleRad = firebar.getAngle();
     const float angleSin = std::sin(angleRad);
@@ -569,7 +567,14 @@ void Renderer::renderFirebar(sf::RenderTarget& target, const Firebar& firebar) n
 
 #pragma region Powerup
 
-void Renderer::renderPowerup(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept {
+void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept {
+    if (powerup.m_Type == gbl::PowerupType::FireFlower) {
+        sf::Vector2f texturePos = sf::Vector2f((gbl::PowerupType::FireFlower + 1u) * TileSize, 0.f);
+
+        createVertices(powerup.Position, texturePos);
+        renderVertices(s_PowerupsTexture, 1u, target);
+    }
+
     sf::Vector2f texturePos = sf::Vector2f(powerup.m_Type * TileSize, 0.f);
 
     createVertices(powerup.Position, texturePos);
@@ -580,16 +585,9 @@ void Renderer::renderPowerup(sf::RenderTarget& target, const Powerup& powerup, s
 #endif // RENDER_HITBOXES
 }
 
-void Renderer::renderFireFlowerStem(sf::RenderTarget& target, const Powerup& powerup) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f((gbl::PowerupType::FireFlower + 1u) * TileSize, 0.f);
-
-    createVertices(powerup.Position, texturePos);
-    renderVertices(s_PowerupsTexture, 1u, target);
-}
-
 #pragma region Jump Spring
 
-void Renderer::renderJumpSpring(sf::RenderTarget& target, const JumpSpring& spring) noexcept {
+void Renderer::render(sf::RenderTarget& target, const JumpSpring& spring) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(spring.m_Stage * TileSize, 0.f);
 
     createVertices(spring.Position, texturePos, sf::Vector2f(TileSize, TileSize * 1.5f));
@@ -598,7 +596,7 @@ void Renderer::renderJumpSpring(sf::RenderTarget& target, const JumpSpring& spri
 
 #pragma region Flag
 
-void Renderer::renderFlag(sf::RenderTarget& target, const Flag& flag) noexcept {
+void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
     createVertices(flag.Position, sf::Vector2f());
     renderVertices(s_EndOfLevelSpritesTexture, flag.SubPalleteIndex, target);
 
@@ -613,7 +611,7 @@ void Renderer::renderFlag(sf::RenderTarget& target, const Flag& flag) noexcept {
 
 #pragma region Star Flag
 
-void Renderer::renderStarFlag(sf::RenderTarget& target, const StarFlag& flag) noexcept {
+void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(1.f * TileSize, 0.f);
 
     createVertices(flag.Position, texturePos);
@@ -622,7 +620,7 @@ void Renderer::renderStarFlag(sf::RenderTarget& target, const StarFlag& flag) no
 
 #pragma region Axe
 
-void Renderer::renderAxe(sf::RenderTarget& target, const Axe& axe) noexcept {
+void Renderer::render(sf::RenderTarget& target, const Axe& axe) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(0.f, EnemyType::Axe * 2u * TileSize);
 
     s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
@@ -635,11 +633,11 @@ void Renderer::renderAxe(sf::RenderTarget& target, const Axe& axe) noexcept {
 
 #pragma region Lift
 
-void Renderer::renderLift(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept {
+void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept {
     if (balanceLift && lift.Position.y > 48.f) {
         s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
 
-        renderTile(target, gbl::TextureId::Block::String_2, 1u, sf::Vector2f(lift.Position.x + 16.f, std::max(40.f, lift.Position.y - 16.f)));
+        render(target, gbl::TextureId::Block::String_2, 1u, sf::Vector2f(lift.Position.x + 16.f, std::max(40.f, lift.Position.y - 16.f)));
 
         s_PaletteShader.setUniform("pallete", s_SpritePallete);
     }
@@ -656,10 +654,8 @@ void Renderer::renderLift(sf::RenderTarget& target, const Lift& lift, bool balan
 
 #pragma region Fireball
 
-void Renderer::renderFireball(sf::RenderTarget& target, const Fireball& ball) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(
-        s_EnemyAnimation, EnemyType::Firebar * 2u + (s_SpriteAnimationTimer <= 3u)
-    ) * TileSize;
+void Renderer::render(sf::RenderTarget& target, const Fireball& ball) noexcept {
+    sf::Vector2f texturePos = fireballTexturePos();
 
     createVertices(ball.Position, texturePos);
     renderVertices(s_SpritesTexture, ball.SubPalleteIndex, target);
@@ -667,7 +663,7 @@ void Renderer::renderFireball(sf::RenderTarget& target, const Fireball& ball) no
 
 #pragma region Misc Sprite
 
-void Renderer::renderMiscSprite(sf::RenderTarget& target, const DecorSprite& sprite) noexcept {
+void Renderer::render(sf::RenderTarget& target, const DecorSprite& sprite) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(sprite.GetTextureIndex() * TileSize, 0.f);
 
     createVertices(sprite.Position, texturePos);
@@ -676,7 +672,7 @@ void Renderer::renderMiscSprite(sf::RenderTarget& target, const DecorSprite& spr
 
 #pragma region Floatey Num
 
-void Renderer::renderFloateyNum(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept {
+void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept {
     sf::Vector2f position = floateyNum.getPosition(cameraPos);
     sf::Vector2f texturePos = sf::Vector2f(floateyNum.m_Type * TileSize, 0.f);
 
@@ -684,11 +680,33 @@ void Renderer::renderFloateyNum(sf::RenderTarget& target, const FloateyNum& floa
     renderVertices(s_FloateyNumsTexture, subPalleteIndex, target);
 }
 
-void Renderer::renderDeathAnimation(sf::RenderTarget& target, const DeathAnimation& animation) noexcept {
+#pragma region Death Animation
+
+void Renderer::render(sf::RenderTarget& target, const DeathAnimation& animation) noexcept {
     sf::Vector2f texturePos = sf::Vector2f(0.f, animation.m_Type * 2u * TileSize);
 
     createVertices(animation.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), false, true);
     renderVertices(s_SpritesTexture, animation.SubPalleteIndex, target);
+}
+
+#pragma region Utils
+
+bool Renderer::hiddenEnemySlot(Enemy* enemy) noexcept {
+    return enemy->m_Type == EnemyType::PiranhaPlant;
+}
+
+bool Renderer::hiddenPowerupSlot(Powerup* powerup) noexcept {
+    return powerup->m_GetOutTimer;
+}
+
+std::string Renderer::intToStringFixedSize(unsigned int _int, uint8_t length) noexcept {
+    std::stringstream ss;
+    ss << std::setw(length) << std::setfill('0') << _int;
+    return ss.str();
+}
+
+sf::Vector2f Renderer::fireballTexturePos() {
+    return sf::Vector2f(s_EnemyAnimation, EnemyType::Firebar * 2u + (s_SpriteAnimationTimer <= 3u)) * TileSize;
 }
 
 #pragma region Tiles
@@ -714,17 +732,17 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
                         world.CurrentTheme == 0x00u &&
                         (renderComponent->TextureId == gbl::TextureId::Block::Coin || renderComponent->TextureId == gbl::TextureId::Block::SeaWeed)
                     ) {
-                        renderTile(target, gbl::TextureId::Block::Liquid_2, 2u, position);
+                        render(target, gbl::TextureId::Block::Liquid_2, 2u, position);
                     }
 
-                    renderTile(target, renderComponent->TextureId, world.m_AttributeTable[colIndex + y], position);
+                    render(target, renderComponent->TextureId, world.m_AttributeTable[colIndex + y], position);
                 }
             }
         }
     }
 
     if (BouncingBlock* bouncingBlock = world.m_BouncingBlock.get()) {
-        renderTile(target, GetComponent(bouncingBlock->m_Block.get(), Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
+        render(target, GetComponent(bouncingBlock->m_Block.get(), Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
     }
 
     // draw page borders
@@ -745,20 +763,6 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
 
 #pragma region Sprites
 
-bool Renderer::hiddenEnemySlot(Enemy* enemy) noexcept {
-    return enemy->m_Type == EnemyType::PiranhaPlant;
-}
-
-bool Renderer::hiddenPowerupSlot(Powerup* powerup) noexcept {
-    return powerup->m_GetOutTimer;
-}
-
-std::string Renderer::intToStringFixedSize(unsigned int _int, uint8_t length) noexcept {
-    std::stringstream ss;
-    ss << std::setw(length) << std::setfill('0') << _int;
-    return ss.str();
-}
-
 void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool drawHidden) noexcept {
     s_PaletteShader.setUniform("pallete", s_SpritePallete);
 
@@ -769,74 +773,66 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
             if (Enemy* enemy = GetIf(slot.get(), Enemy)) {
                 if (hiddenEnemySlot(enemy) == drawHidden) {
                     if (EnemyComponents::Shell* shell = GetIf(enemy, EnemyComponents::Shell)) {
-                        renderShell(target, *shell, hitboxes);
+                        render(target, *shell, hitboxes);
                     } else if (Firebar* firebar = GetIf(enemy, Firebar)) {
-                        renderFirebar(target, *firebar);
+                        render(target, *firebar);
                     } else if (Lift* lift = GetIf(enemy, Lift)) {
-                        renderLift(target, *lift, GetIf(enemy, LiftBalance));
+                        render(target, *lift, GetIf(enemy, LiftBalance));
                     } else if (Axe* axe = GetIf(enemy, Axe)) {
-                        renderAxe(target, *axe);
+                        render(target, *axe);
                     } else {
-                        renderEnemy(target, *enemy, hitboxes);
+                        render(target, *enemy, hitboxes);
                     }
                 }
             } else if (JumpSpring* spring = GetIf(slot.get(), JumpSpring)) {
-                renderJumpSpring(target, *spring);
+                render(target, *spring);
             } else if (Powerup* powerup = GetIf(slot.get(), Powerup)) {
                 if (hiddenPowerupSlot(powerup) == drawHidden) {
-                    if (powerup->m_Type == gbl::PowerupType::FireFlower) {
-                        renderFireFlowerStem(target, *powerup);
-                    }
-
-                    renderPowerup(target, *powerup, hitboxes);
+                    render(target, *powerup, hitboxes);
                 }
             } else {
                 if (drawHidden) {
                     if (StarFlag* flag = GetIf(slot.get(), StarFlag)) {
-                        renderStarFlag(target, *flag);
+                        render(target, *flag);
                     }
                 } else {
                     if (Flag* flag = GetIf(slot.get(), Flag)) {
-                        renderFlag(target, *flag);
+                        render(target, *flag);
                     }
                 }
+            }
+        }
+    }
+
+    if (!drawHidden) {
+        if (player.isFiery()) {
+            for (const auto& ball : world.m_Fireballs) {
+                if (ball) {
+                    render(target, *ball);
+                }
+            }
+        }
+    
+        for (const auto& sprite : world.m_MiscSprites) {
+            if (sprite) {
+                render(target, *sprite);
+            }
+        }
+    
+        for (const auto& floateyNum : world.m_FloateyNums) {
+            if (floateyNum) {
+                render(target, floateyNum, 2u, world.CameraPosition);
+            }
+        }
+    
+        for (const auto& animation : world.m_DeathAnimations) {
+            if (animation) {
+                render(target, *animation);
             }
         }
     }
 
     target.draw(hitboxes);
-}
-
-#pragma region Other Sprites
-
-void Renderer::renderOtherSprites(sf::RenderTarget& target, const World& world) noexcept {
-    s_PaletteShader.setUniform("pallete", s_SpritePallete);
-
-    if (player.isFiery()) {
-        for (const auto& ball : world.m_Fireballs) {
-            if (ball) {
-                renderFireball(target, *ball);
-            }
-        }
-    }
-
-    for (const auto& sprite : world.m_MiscSprites) {
-        if (sprite) {
-            renderMiscSprite(target, *sprite);
-        }
-    }
-
-    for (const auto& floateyNum : world.m_FloateyNums) {
-        if (floateyNum) {
-            renderFloateyNum(target, floateyNum, 2u, world.CameraPosition);
-        }
-    }
-
-    for (const auto& animation : world.m_DeathAnimations) {
-        if (animation) {
-            renderDeathAnimation(target, *animation);
-        }
-    }
 }
 
 #pragma region Master
@@ -853,8 +849,6 @@ void Renderer::RenderGame(sf::RenderTarget& target, const World& world) noexcept
     renderTiles(target, world);
 
     renderSprites(target, world, false); // draw non hidden sprites
-
-    renderOtherSprites(target, world);
 
     if (!player.IsHidden()) {
         RenderPlayer(target);
