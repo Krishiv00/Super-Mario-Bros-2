@@ -27,7 +27,11 @@ bool World::AddSprite(std::unique_ptr<Sprite>& sprite) {
                     LiftBalance* friendLift = nullptr;
 
                     for (uint8_t j = 0u; j < EnemySpriteSlots; ++j) {
-                        if (friendLift = GetIf(m_Sprites[j].get(), LiftBalance)) {
+                        if (
+                            LiftBalance* otherLift = GetIf(m_Sprites[j].get(), LiftBalance);
+                            otherLift && otherLift->m_FriendSlot == 255u && otherLift->Position.x < lift->Position.x
+                        ) {
+                            friendLift = otherLift;
                             break;
                         }
                     }

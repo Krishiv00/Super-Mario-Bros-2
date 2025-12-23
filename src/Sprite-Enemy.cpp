@@ -1035,10 +1035,14 @@ void LiftFall::OnPlayerLand(World&) {
 }
 
 LiftBalance::LiftBalance(sf::Vector2f position) : Lift(position, true) {
-
+    m_FriendSlot = 255u;
 }
 
 Enemy* LiftBalance::getFriend(World& world) const noexcept {
+    if (m_FriendSlot == 255u) {
+        return nullptr;
+    }
+
     return dynamic_cast<Enemy*>(world.getSprites()[m_FriendSlot].get());
 }
 
