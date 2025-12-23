@@ -18,6 +18,10 @@ void World::Reset() {
         slot.reset();
     }
 
+    for (auto& ball : m_Fireballs) {
+        ball.reset();
+    }
+
     for (FloateyNum& floateyNum : m_FloateyNums) {
         floateyNum.Reset();
     }
@@ -110,9 +114,9 @@ bool World::PointInTile(const sf::Vector2f& point) const {
     const unsigned int col = static_cast<unsigned int>(point.x / TileSize);
     const unsigned int row = static_cast<unsigned int>(point.y / TileSize) - 2;
 
-    const auto& block = m_Tiles[World::GetIndex(col, row)];
+    Blocks::Block* block = m_Tiles[World::GetIndex(col, row)].get();
 
-    return block && GetComponent(block.get(), Components::Collision);
+    return block && GetComponent(block, Components::Collision);
 }
 
 #pragma region Events
@@ -177,6 +181,10 @@ void World::on_otaining_supermushroom() {
 
 void World::on_otaining_fireflower() {
     StartCutscene(std::make_unique<FireFlowerScene>(*this));
+
+    for (auto& ball : m_Fireballs) {
+        ball.reset();
+    }
 }
 
 void World::on_otaining_starman() {

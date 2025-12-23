@@ -39,6 +39,8 @@ void Player::Update(World& world) {
     clampVelocity();
     applyVelocity(world);
 
+    handleFireballShooting(world);
+
     updateState();
     updateDirection();
     updateInputTimers();
@@ -127,14 +129,6 @@ void Player::Kill(World& world, bool pit_death) {
 
         world.on_player_death(pit_death);
     }
-}
-
-void Player::ShootFireball() {
-    if (m_AnimationTimer == 0u) {
-        m_AnimationTimer = getAnimationTimer();
-    }
-
-    m_FireballThrowAnimation = true;
 }
 
 void Player::ExtraLife() {
@@ -527,6 +521,25 @@ void Player::handleJump() {
     }
 
     m_JumpKeyHeldLastFrame = m_JumpKeyHeld;
+}
+
+#pragma region Fireball
+
+void Player::handleFireballShooting(World& world) {
+    if (!m_Frozen) {
+        const bool sprintPressedThisFrame = m_SprintKeyHeld == SprintBufferLength;
+
+        if (m_Size == Fiery && sprintPressedThisFrame && !m_SprintKeyHeldLastFrame) {
+            if (world.SpawnFireball(sf::Vector2f(Position.x, Position.y + 2.f), m_Direction)) {
+                m_AnimationTimer = getAnimationTimer();
+                m_FireballThrowAnimation = true;
+
+                audioPlayer.Play(AudioPlayer::FireballThrow);
+            }
+        }
+
+        m_SprintKeyHeldLastFrame = sprintPressedThisFrame;
+    }
 }
 
 #pragma region Direction

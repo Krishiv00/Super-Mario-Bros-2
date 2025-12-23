@@ -30,6 +30,7 @@ private:
     static void renderStarFlag(sf::RenderTarget& target, const StarFlag& flag) noexcept;
     static void renderAxe(sf::RenderTarget& target, const Axe& axe) noexcept;
     static void renderLift(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept;
+    static void renderFireball(sf::RenderTarget& target, const Fireball& ball) noexcept;
     static void renderMiscSprite(sf::RenderTarget& target, const DecorSprite& sprite) noexcept;
     static void renderFloateyNum(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept;
     static void renderDeathAnimation(sf::RenderTarget& target, const DeathAnimation& animation) noexcept;

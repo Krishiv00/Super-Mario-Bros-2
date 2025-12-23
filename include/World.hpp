@@ -81,6 +81,8 @@ private:
     std::unique_ptr<Sprite> m_Sprites[EnemySpriteSlots + 1u]; // +1 special slot
     std::vector<std::vector<std::unique_ptr<Sprite>>> m_SpritePool;
 
+    std::unique_ptr<Fireball> m_Fireballs[2u];
+
     FloateyNum m_FloateyNums[EnemySpriteSlots];
     std::unique_ptr<DecorSprite> m_MiscSprites[2u];
     std::unique_ptr<DeathAnimation> m_DeathAnimations[EnemySpriteSlots];
@@ -169,6 +171,9 @@ public:
 
     void SpawnFloateyNum(const FloateyNum& num);
     void SpawnFloateyNum(const FloateyNum& num, uint8_t index);
+
+    bool SpawnFireball(sf::Vector2f position, bool direction);
+    void SpawnFirework(sf::Vector2f position, bool type);
 
     void StartThemeMusic();
 

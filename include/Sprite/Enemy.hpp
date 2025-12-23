@@ -63,6 +63,7 @@ protected:
 
     virtual void onCollide(World& world);
     virtual void onBlockDefeat(World& world, float blockPosition);
+    virtual void onFireballDeath(World& world);
     void onShellDeath(World& world, uint8_t killChain) noexcept;
 
     int8_t m_Direction = -1;
@@ -277,6 +278,9 @@ public:
 };
 
 class BuzzyBeetle final : public EnemyComponents::ShellEnemy {
+private:
+    virtual void onFireballDeath(World& world) override;
+
 public:
     BuzzyBeetle(sf::Vector2f position);
 
@@ -284,6 +288,9 @@ public:
 };
 
 class BuzzyBeetleShell final : public EnemyComponents::Shell {
+private:
+    virtual void onFireballDeath(World& world) override;
+
 public:
     BuzzyBeetleShell(sf::Vector2f position);
 
@@ -438,7 +445,7 @@ public:
 
 class LiftOscilating final : public Lift, public EnemyComponents::OscillatingMovement {
     friend class MapLoader;
-    
+
 private:
     float& getMovementAxis() {
         return m_Axis ? Position.y : Position.x;

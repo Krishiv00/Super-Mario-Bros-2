@@ -111,6 +111,7 @@ private:
     bool m_DownKeyHeld;
     bool m_JumpKeyHeld;
     bool m_JumpKeyHeldLastFrame;
+    bool m_SprintKeyHeldLastFrame;
 
     bool m_AcceptPlayerControls;
     bool m_TasMode;
@@ -148,6 +149,9 @@ private:
 
     bool m_OnGround;
     bool m_RisingFromJump;
+
+    // fireball
+    void handleFireballShooting(World& world);
 
     // direction
     void updateDirection();
@@ -197,8 +201,6 @@ public:
     void Update(World& world);
 
     void OnFramerule(World& world);
-
-    void ShootFireball();
 
     void ExtraLife();
 

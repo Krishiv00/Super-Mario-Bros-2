@@ -83,7 +83,7 @@ public:
 
 class DeathAnimation : public Sprite {
     friend class Renderer;
-    
+
 private:
     uint8_t m_Type;
 
@@ -93,6 +93,21 @@ public:
     DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity);
 
     virtual void Update(World& world) override;
+};
+
+class Fireball : public Sprite {
+private:
+    int8_t m_Direction;
+    float m_Velocity;
+
+public:
+    Fireball(sf::Vector2f position, bool direction);
+
+    virtual void Update(World& world) override;
+
+    [[nodiscard]] inline sf::FloatRect getHitbox() const {
+        return sf::FloatRect(sf::Vector2f(xPosition() + 6.f, yPosition() + 5.f), sf::Vector2f(5.f, 5.f));
+    }
 };
 
 class DecorSprite {
@@ -127,8 +142,12 @@ public:
 };
 
 class Firework : public DecorSprite {
+private:
+    // true ? fireball : confetti
+    bool m_Type;
+
 public:
-    Firework(sf::Vector2f position);
+    Firework(sf::Vector2f position, bool type);
 
     virtual uint8_t GetTextureIndex() const override;
 };

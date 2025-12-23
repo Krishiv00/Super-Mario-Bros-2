@@ -78,12 +78,6 @@ void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
         }
     }
 
-    else if (key == sf::Keyboard::Scancode::LControl) {
-        if (player.isFiery() && !player.m_Frozen) {
-            player.ShootFireball();
-        }
-    }
-
     else if (key == sf::Keyboard::Scancode::G) {
         if (!m_World.cutscenePlaying()) {
             FireFlower({}).GrantPower(m_World);
@@ -158,7 +152,7 @@ void Game::tickFramerule() {
         if (m_OnTitleScreen && m_DemoStartTimer && --m_DemoStartTimer == 0u) {
             startDemoScript();
         }
-        
+
         player.OnFramerule(m_World);
         m_World.OnFramerule();
     }
@@ -172,7 +166,7 @@ void Game::enterTitleScreen() {
     if (player.Data.Type == 1u) {
         player.Swap();
     }
-    
+
     player.Data.World = 1u;
     player.Data.Level = 1u;
 
@@ -227,7 +221,7 @@ void Game::startBlackScreen(BlackScreenType type) {
     musicPlayer.Stop();
 
     pauseGameFor(5u);
-    
+
     Renderer::ResetAnimations();
     Renderer::SetGameTimeRendering(false);
 
@@ -431,9 +425,9 @@ sf::Image Game::GetScreenshot() const noexcept {
     renderTexture.setView(sf::View(sf::FloatRect({0.f, 0.f}, {gbl::Width, gbl::Height})));
 
     Renderer::RenderUi(renderTexture, m_World, m_OnTitleScreen);
-    
+
     renderTexture.setView(generateCameraView());
-    
+
     Renderer::RenderGame(renderTexture, m_World);
 
     if (m_OnTitleScreen && MapLoader::GetCurrentPage() <= 3u && m_World.CameraPosition < 256.f) {

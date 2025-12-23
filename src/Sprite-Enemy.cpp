@@ -32,7 +32,7 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
 void Enemy::spawnDeathAnimation(World& world, float initialVelocity = -3.f) noexcept {
     if (m_Type != EnemyType::PiranhaPlant) {
         float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
-    
+
         uint8_t type = (
             m_Type == EnemyType::KoopaTroopa ||
             m_Type == EnemyType::KoopaParatroopa ||
@@ -98,6 +98,13 @@ void Enemy::onBlockDefeat(World& world, float) {
     if (!GetComponent(this, EnemyComponents::ShellEnemy)) {
         spawnDeathAnimation(world);
     }
+}
+
+void Enemy::onFireballDeath(World& world) {
+    ToRemove = true;
+    audioPlayer.Play(AudioPlayer::FireballKill);
+
+    spawnDeathAnimation(world);
 }
 
 void Enemy::OnCollisionWithPlayer(World& world) {
@@ -683,6 +690,10 @@ BuzzyBeetle::BuzzyBeetle(sf::Vector2f position) : Enemy(EnemyType::BuzzyBeetle, 
     SubPalleteIndex = 3u;
 }
 
+void BuzzyBeetle::onFireballDeath(World& world) {
+    audioPlayer.Play(AudioPlayer::BlockHit);
+}
+
 sf::FloatRect BuzzyBeetle::getHitbox() const {
     return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 16.f), sf::Vector2f(12.f, 13.f));
 }
@@ -691,6 +702,10 @@ sf::FloatRect BuzzyBeetle::getHitbox() const {
 
 BuzzyBeetleShell::BuzzyBeetleShell(sf::Vector2f position) : Enemy(EnemyType::BuzzyBeetleShell, position) {
     m_Animate = false;
+}
+
+void BuzzyBeetleShell::onFireballDeath(World& world) {
+    audioPlayer.Play(AudioPlayer::BlockHit);
 }
 
 sf::FloatRect BuzzyBeetleShell::getHitbox() const {

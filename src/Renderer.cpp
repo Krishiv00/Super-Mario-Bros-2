@@ -435,7 +435,7 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexc
         if (isFiery) {
             SetPlayerTheme(player.Data.Type);
         }
-        
+
         createVertices(Position, TexturePos);
         renderVertices(s_PlayerTexture, player.SubPalleteIndex, target);
 
@@ -605,7 +605,7 @@ void Renderer::renderFlag(sf::RenderTarget& target, const Flag& flag) noexcept {
     if (flag.m_FloateyNumType >= 0) {
         sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
         sf::Vector2f texturePos = sf::Vector2f(flag.m_FloateyNumType * TileSize, 0.f);
-    
+
         createVertices(position, texturePos);
         renderVertices(s_FloateyNumsTexture, flag.SubPalleteIndex, target);
     }
@@ -652,6 +652,17 @@ void Renderer::renderLift(sf::RenderTarget& target, const Lift& lift, bool balan
         createVertices(position, texturePos);
         renderVertices(s_SpritesTexture, lift.SubPalleteIndex, target);
     }
+}
+
+#pragma region Fireball
+
+void Renderer::renderFireball(sf::RenderTarget& target, const Fireball& ball) noexcept {
+    sf::Vector2f texturePos = sf::Vector2f(
+        s_EnemyAnimation, EnemyType::Firebar * 2u + (s_SpriteAnimationTimer <= 3u)
+    ) * TileSize;
+
+    createVertices(ball.Position, texturePos);
+    renderVertices(s_SpritesTexture, ball.SubPalleteIndex, target);
 }
 
 #pragma region Misc Sprite
@@ -800,6 +811,14 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
 
 void Renderer::renderOtherSprites(sf::RenderTarget& target, const World& world) noexcept {
     s_PaletteShader.setUniform("pallete", s_SpritePallete);
+
+    if (player.isFiery()) {
+        for (const auto& ball : world.m_Fireballs) {
+            if (ball) {
+                renderFireball(target, *ball);
+            }
+        }
+    }
 
     for (const auto& sprite : world.m_MiscSprites) {
         if (sprite) {

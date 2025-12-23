@@ -65,7 +65,7 @@ void World::ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex) {
 
 void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity, uint8_t slotIndex) {
     auto& slot = m_DeathAnimations[slotIndex];
-    
+
     if (slot) {
         for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
             if (!m_DeathAnimations[i]) {
@@ -107,6 +107,22 @@ void World::SpawnFloateyNum(const FloateyNum& num) {
 
 void World::SpawnFloateyNum(const FloateyNum& num, uint8_t index) {
     m_FloateyNums[index] = std::move(num);
+}
+
+bool World::SpawnFireball(sf::Vector2f position, bool direction) {
+    for (auto& slot : m_Fireballs) {
+        if (!slot) {
+            slot = std::make_unique<Fireball>(position, direction);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void World::SpawnFirework(sf::Vector2f position, bool type) {
+    m_MiscSprites[1u] = std::make_unique<Firework>(position, type);
 }
 
 void World::activateJumpSpring() {
@@ -160,6 +176,36 @@ void World::updateSprites() {
         }
     }
 
+    if (player.isFiery()) {
+        for (auto& ball : m_Fireballs) {
+            if (ball) {
+                ball->Update(*this);
+
+                if (ball->ToRemove) {
+                    ball.reset();
+                    continue;
+                }
+
+                sf::FloatRect ballHitbox = ball->getHitbox();
+
+                for (auto& sprite : m_Sprites) {
+                    if (
+                        Enemy* enemy = GetIf(sprite.get(), Enemy);
+                        enemy && enemy->m_Type != EnemyType::DeadGoomba &&
+                        enemy->getHitbox().findIntersection(ballHitbox)
+                    ) {
+                        SpawnFirework(ball->Position, true);
+                        ball.reset();
+
+                        enemy->onFireballDeath(*this);
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     // sprite removal
     for (auto& sprite : m_Sprites) {
         if (sprite && sprite->ToRemove) {
@@ -169,6 +215,16 @@ void World::updateSprites() {
 
     // flip enemy collisions check as mario can only interact with enemies every other frame
     m_CheckEnemyCollisions ^= 1u;
+
+    for (auto& animation : m_DeathAnimations) {
+        if (animation) {
+            animation->Update(*this);
+
+            if (animation->ToRemove) {
+                animation.reset();
+            }
+        }
+    }
 
     updateBouncingBlock();
 
@@ -201,16 +257,6 @@ void World::updateFreezeIndependentSprites() {
                 }
 
                 sprite.reset();
-            }
-        }
-    }
-
-    for (auto& animation : m_DeathAnimations) {
-        if (animation) {
-            animation->Update(*this);
-
-            if (animation->ToRemove) {
-                animation.reset();
             }
         }
     }

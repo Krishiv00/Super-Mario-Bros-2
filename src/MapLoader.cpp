@@ -1380,8 +1380,8 @@ void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
     auto it = std::lower_bound(
         world.m_SpritePool.begin(), world.m_SpritePool.end(), sprite->Position.x,
         [](const std::vector<std::unique_ptr<Sprite>>& group, const float& xValue) {
-            return group.front()->Position.x < xValue;
-        }
+        return group.front()->Position.x < xValue;
+    }
     );
 
     world.m_SpritePool.insert(it, std::vector<std::unique_ptr<Sprite>>{})->push_back(std::move(sprite));
@@ -2509,6 +2509,12 @@ void MapLoader::Update(World& world) {
                 if (sprite) {
                     MoveSprite(sprite.get());
                 }
+            }
+        }
+
+        for (auto& ball : world.m_Fireballs) {
+            if (ball) {
+                MoveSprite(ball.get());
             }
         }
 

@@ -16,6 +16,7 @@ public:
         Swim = Stomp,
         Kick,
         StarmanKill = Kick,
+        FireballKill = Kick,
         BlockHit,
         PowerupSpawn,
         PowerupAcquire,
@@ -26,6 +27,7 @@ public:
         Damage = Pipe,
         Pause,
         UnPause = Pause,
+        FireballThrow,
         Count
     };
 

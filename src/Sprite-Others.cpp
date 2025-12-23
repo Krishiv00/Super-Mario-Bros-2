@@ -120,7 +120,7 @@ StarFlag::StarFlag(sf::Vector2f position) {
 }
 
 void StarFlag::Update(World&) {
-    
+
 }
 
 #pragma region Death Animation
@@ -129,11 +129,65 @@ DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, u
     m_Velocity = initialVelocity;
 }
 
-void DeathAnimation::Update(World & world) {
-    m_Velocity = std::min(m_Velocity + 0.195f, 3.f);
+void DeathAnimation::Update(World& world) {
     Position.y += m_Velocity;
+    m_Velocity = std::min(m_Velocity + 0.195f, 3.f);
 
     ToRemove = Position.y >= gbl::Height;
+}
+
+#pragma region Fireball
+
+Fireball::Fireball(sf::Vector2f position, bool direction) : Sprite(position, 2u) {
+    m_Direction = direction == gbl::Direction::Right ? 1 : -1;
+    m_Velocity = 3.f;
+}
+
+void Fireball::Update(World& world) {
+    Position.x += 4.f * m_Direction;
+
+    if (m_Direction == 1 ? Position.x >= world.CameraPosition + gbl::Width : Position.x <= std::max(world.CameraPosition - 8.f, 0.f)) {
+        ToRemove = true;
+        return;
+    }
+
+    Position.y += m_Velocity;
+    m_Velocity = std::min(m_Velocity + 3.f / 10.f, 3.f);
+
+    float top = yPosition();
+
+    if (top >= gbl::Height) {
+        ToRemove = true;
+        return;
+    }
+
+    if (top >= 215.f || top < 24.f) {
+        return;
+    }
+
+    float left = xPosition();
+
+    if (m_Velocity > 0.f) {
+        sf::Vector2f feetPoint = sf::Vector2f(left + 8.f, top + 8.f);
+
+        if (world.PointInTile(feetPoint)) {
+            Position.y = static_cast<int>((top + 16.f) / 16.f) * 16.f - 8.f;
+            top = yPosition();
+            m_Velocity = -3.f;
+        }
+    }
+
+    if (top < 56.f) {
+        return;
+    }
+
+    sf::Vector2f sidePoint = sf::Vector2f(left + 12.f + 4.f * m_Direction, top + 4.f);
+
+    if (world.PointInTile(sidePoint)) {
+        ToRemove = true;
+        audioPlayer.Play(AudioPlayer::BlockHit);
+        world.SpawnFirework(Position, true);
+    }
 }
 
 #pragma region Coin Animation
@@ -158,13 +212,13 @@ uint8_t CoinAnimation::GetTextureIndex() const {
 
 #pragma region Firework
 
-Firework::Firework(sf::Vector2f position) {
+Firework::Firework(sf::Vector2f position, bool type) : m_Type(type) {
     Position = position;
-    m_Timer = 23u;
+    m_Timer = m_Type ? 6u : 23u;
 }
 
 uint8_t Firework::GetTextureIndex() const {
-    return 6u - m_Timer / 8u;
+    return 6u - m_Timer / (m_Type ? 2u : 8u);
 }
 
 #pragma region Floatey Num
@@ -181,7 +235,7 @@ FloateyNum::FloateyNum(sf::Vector2f position, float cameraPosition, uint8_t type
 
 uint8_t FloateyNum::GetType(uint16_t points) {
     constexpr uint8_t Table[] = {1u, 2u, 4u, 5u, 8u, 10u, 20u, 40u, 50u, 80u};
-    
+
     uint8_t counter = 0u;
 
     for (; counter < sizeof(Table); ++counter) {
