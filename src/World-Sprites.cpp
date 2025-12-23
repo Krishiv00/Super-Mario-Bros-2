@@ -63,7 +63,7 @@ void World::ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex) {
     m_Sprites[slotIndex] = std::move(sprite);
 }
 
-void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, uint8_t slotIndex) {
+void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity, uint8_t slotIndex) {
     auto& slot = m_DeathAnimations[slotIndex];
     
     if (slot) {
@@ -75,7 +75,7 @@ void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, 
         }
     }
 
-    slot = std::make_unique<DeathAnimation>(position, subPalleteIndex, type);
+    slot = std::make_unique<DeathAnimation>(position, subPalleteIndex, type, initialVelocity);
 }
 
 void World::handleSpriteLoading() {

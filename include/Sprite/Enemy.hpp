@@ -52,7 +52,7 @@ protected:
     [[nodiscard]] static uint16_t GetStompScore(const uint8_t& stompChain) noexcept;
     [[nodiscard]] static uint16_t GetShellScore(const uint8_t& shellChain) noexcept;
 
-    void spawnDeathAnimation(World& world) noexcept;
+    void spawnDeathAnimation(World& world, float initialVelocity) noexcept;
 
     void givePlayerScore(uint16_t score, World& world) noexcept;
     void givePlayerLife(World& world) noexcept;

@@ -125,8 +125,8 @@ void StarFlag::Update(World&) {
 
 #pragma region Death Animation
 
-DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type) : Sprite(position, subPalleteIndex), m_Type(type) {
-    m_Velocity = -3.f;
+DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity) : Sprite(position, subPalleteIndex), m_Type(type) {
+    m_Velocity = initialVelocity;
 }
 
 void DeathAnimation::Update(World & world) {

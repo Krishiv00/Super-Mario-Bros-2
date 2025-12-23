@@ -90,7 +90,7 @@ private:
     float m_Velocity;
 
 public:
-    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type);
+    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity);
 
     virtual void Update(World& world) override;
 };

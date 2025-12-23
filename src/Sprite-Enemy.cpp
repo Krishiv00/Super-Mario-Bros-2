@@ -29,7 +29,7 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
     }
 }
 
-void Enemy::spawnDeathAnimation(World& world) noexcept {
+void Enemy::spawnDeathAnimation(World& world, float initialVelocity = -3.f) noexcept {
     if (m_Type != EnemyType::PiranhaPlant) {
         float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
     
@@ -41,8 +41,8 @@ void Enemy::spawnDeathAnimation(World& world) noexcept {
         ) ? EnemyType::KoopaTroopaShell : (
             m_Type == EnemyType::BuzzyBeetle
         ) ? EnemyType::BuzzyBeetleShell : m_Type;
-    
-        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, SlotIndex);
+
+        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, initialVelocity, SlotIndex);
     }
 }
 
@@ -245,6 +245,14 @@ namespace EnemyComponents {
             givePlayerScore(score, world);
         } else {
             givePlayerLife(world);
+        }
+
+        if (
+            m_Type == EnemyType::HammerBrother ||
+            m_Type == EnemyType::Lakitu ||
+            m_Type == EnemyType::BulletBill
+        ) {
+            spawnDeathAnimation(world, 0.f);
         }
     }
 
