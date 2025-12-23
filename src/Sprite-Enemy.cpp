@@ -104,6 +104,18 @@ void Enemy::onFireballDeath(World& world) {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::FireballKill);
 
+    uint16_t score;
+
+    if (m_Type == EnemyType::Goomba) {
+        score = 100u;
+    } else if (m_Type == EnemyType::HammerBrother) {
+        score = 1000u;
+    } else {
+        score = 200u;
+    }
+
+    givePlayerScore(score, world);
+
     spawnDeathAnimation(world);
 }
 
