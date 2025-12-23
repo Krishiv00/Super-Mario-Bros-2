@@ -194,7 +194,6 @@ void Player::resetInputs() {
     m_UpKeyHeld = false;
     m_DownKeyHeld = false;
     m_JumpKeyHeld = false;
-    m_JumpKeyHeldLastFrame = false;
 }
 
 void Player::keyboardControl() {
@@ -526,7 +525,7 @@ void Player::handleJump() {
 #pragma region Fireball
 
 void Player::handleFireballShooting(World& world) {
-    if (!m_Frozen) {
+    if (!m_Frozen && m_AcceptPlayerControls) {
         const bool sprintPressedThisFrame = m_SprintKeyHeld == SprintBufferLength;
 
         if (m_Size == Fiery && sprintPressedThisFrame && !m_SprintKeyHeldLastFrame) {
