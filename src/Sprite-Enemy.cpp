@@ -991,20 +991,20 @@ sf::FloatRect Axe::getHitbox() const {
 
 #pragma region Lift
 
-Lift::Lift(sf::Vector2f position, bool size) : Enemy(EnemyType::Lift, position), m_Size(4u + size * 2u) {
+Lift::Lift(sf::Vector2f position, bool size) : Enemy(EnemyType::Lift, position), m_Size(2u + size) {
     SubPalleteIndex = 2u;
     m_Animate = false;
 }
 
 void Lift::Update(World& world) {
-    if (shouldDespawn(world.CameraPosition)) {
+    if (shouldDespawn(world.CameraPosition, World::MaxSpriteDistanceLeftSpecial + (m_Size - 1) * TileSize)) {
         ToRemove = true;
         return;
     }
 }
 
 sf::FloatRect Lift::getHitbox() const {
-    return sf::FloatRect(Position, sf::Vector2f(m_Size * 8.f, 8.f));
+    return sf::FloatRect(Position, sf::Vector2f(m_Size * TileSize, 8.f));
 }
 
 LiftConstant::LiftConstant(sf::Vector2f position, bool size, bool movesDown) : Lift(position, size), m_MovesDown(movesDown) {

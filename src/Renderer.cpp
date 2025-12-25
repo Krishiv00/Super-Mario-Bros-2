@@ -653,7 +653,7 @@ void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLi
     sf::Vector2f texturePos = sf::Vector2f(lift.m_Animate, EnemyType::Lift * 2u + 1u) * TileSize;
 
     for (uint8_t i = 0u; i < lift.m_Size; ++i) {
-        sf::Vector2f position = sf::Vector2f(lift.Position.x + i * 8.f, lift.Position.y);
+        sf::Vector2f position = sf::Vector2f(lift.Position.x + i * TileSize, lift.Position.y);
 
         createVertices(position, texturePos);
         renderVertices(s_SpritesTexture, lift.SubPalleteIndex, target);

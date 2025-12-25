@@ -195,12 +195,12 @@ void World::updateSprites() {
                     continue;
                 }
 
-                sf::FloatRect ballHitbox = ball->getHitbox();
+                const sf::FloatRect ballHitbox = ball->getHitbox();
 
                 for (auto& sprite : m_Sprites) {
                     if (
-                        Enemy* enemy = GetIf(sprite.get(), Enemy);
-                        enemy && enemy->m_Type != EnemyType::DeadGoomba && !GetIf(sprite.get(), Lift) &&
+                        Enemy* enemy = GetIf(sprite.get(), Enemy); enemy &&
+                        enemy->m_Type != EnemyType::DeadGoomba && enemy->m_Type != EnemyType::Lift &&
                         enemy->getHitbox().findIntersection(ballHitbox)
                     ) {
                         SpawnFirework(ball->Position, true);
@@ -285,7 +285,7 @@ void World::handleBlockDefeat(sf::Vector2f blockPosition) {
             ) {
                 powerup->m_Velocity = -3.f;
                 powerup->Position.y -= 2.f;
-                powerup->m_Direction = powerupPosition.x > blockPosition.x ? 1 : -1;
+                powerup->m_Direction = powerupPosition.x >= blockPosition.x ? 1 : -1;
             }
         }
     }
