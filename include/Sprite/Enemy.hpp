@@ -29,6 +29,8 @@ namespace EnemyType {
         Podoboo,
         Axe,
         Lift,
+        NPC,
+        Flag,
 
         // enemies which are actually different but uses the same texture in the renderer
         RedKoopaTroopa = 0x80 | KoopaTroopa,
@@ -52,7 +54,7 @@ protected:
     [[nodiscard]] static uint16_t GetStompScore(const uint8_t& stompChain) noexcept;
     [[nodiscard]] static uint16_t GetShellScore(const uint8_t& shellChain) noexcept;
 
-    void spawnDeathAnimation(World& world, float initialVelocity) noexcept;
+    void spawnDeathAnimation(World& world, int8_t direction, float initialVelocity) noexcept;
 
     void givePlayerScore(uint16_t score, World& world) noexcept;
     void givePlayerLife(World& world) noexcept;
@@ -63,8 +65,8 @@ protected:
 
     virtual void onCollide(World& world);
     virtual void onBlockDefeat(World& world, float blockPosition);
-    virtual void onFireballDeath(World& world);
-    void onShellDeath(World& world, uint8_t killChain) noexcept;
+    virtual void onFireballDeath(World& world, int8_t fireballDirection);
+    void onShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept;
 
     int8_t m_Direction = -1;
 
@@ -174,6 +176,10 @@ namespace EnemyComponents {
     protected:
         [[nodiscard]] float getOffset(uint8_t phaseDuration, uint8_t halfwayDistance);
     };
+
+    class BowserPart : public Enemy {
+
+    };
 }
 
 class Goomba final : public EnemyComponents::GroundEnemy, public EnemyComponents::Stompable {
@@ -279,7 +285,7 @@ public:
 
 class BuzzyBeetle final : public EnemyComponents::ShellEnemy {
 private:
-    virtual void onFireballDeath(World& world) override;
+    virtual void onFireballDeath(World& world, int8_t fireballDirection) override;
 
 public:
     BuzzyBeetle(sf::Vector2f position);
@@ -289,7 +295,7 @@ public:
 
 class BuzzyBeetleShell final : public EnemyComponents::Shell {
 private:
-    virtual void onFireballDeath(World& world) override;
+    virtual void onFireballDeath(World& world, int8_t fireballDirection) override;
 
 public:
     BuzzyBeetleShell(sf::Vector2f position);
@@ -480,6 +486,21 @@ public:
     LiftBalance(sf::Vector2f position);
 
     virtual void OnPlayerLand(World& world) override;
+};
+
+class NPC : public Enemy {
+public:
+    NPC(sf::Vector2f position, bool type);
+
+    virtual void Update(World&) override {}
+};
+
+class BowserPart_1 final : public EnemyComponents::BowserPart {
+
+};
+
+class BowserPart_2 final : public EnemyComponents::BowserPart {
+    
 };
 
 #endif // !ENEMY_HPP

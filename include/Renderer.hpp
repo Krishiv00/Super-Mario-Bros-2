@@ -21,6 +21,7 @@ private:
 
     static void render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
     static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const NPC& npc) noexcept;
     static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const Firebar& firebar) noexcept;
     static void render(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept;
@@ -53,7 +54,6 @@ private:
     static inline sf::Texture s_TilesetTexture;
     static inline sf::Texture s_UiTexture;
     static inline sf::Texture s_JumpSpringTexture;
-    static inline sf::Texture s_EndOfLevelSpritesTexture;
     static inline sf::Texture s_BannerTexture;
     static inline sf::Texture s_FloateyNumsTexture;
     static inline sf::Texture s_MiscSpritesTexture;

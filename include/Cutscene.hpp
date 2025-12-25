@@ -203,6 +203,7 @@ public:
     ~AxeScene();
 
     virtual void Update() override;
+    virtual void OnFramerule() override;
 };
 
 class LPipeScene : public LevelClearScene {

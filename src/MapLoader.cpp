@@ -63,6 +63,10 @@ constexpr inline uint8_t ObjectIsPageSkip(const uint8_t& b1, const uint8_t& b2) 
     }
 }
 
+inline bool getLiftSize(const bool& globalDifficulty) {
+    return !globalDifficulty && player.Data.Level < 4u;
+}
+
 constexpr inline uint8_t getbackgroundTile(const uint8_t& x, const uint8_t& y, const uint8_t& page, const uint8_t& scenery) {
     constexpr uint8_t BackgroundSets[][3u][16u * 11u] = {
         {
@@ -2227,6 +2231,12 @@ void MapLoader::parseBadGuysObject(const uint8_t& b1, const uint8_t& b2, const b
         spawnSprite(std::make_unique<Firebar>(position, true, gbl::Direction::Right, false), world);
     }
 
+    else if (category == 0x35u) {
+        const unsigned int colIndex = (pageColumnOffset + xPos) * 13u;
+        placeBlock(colIndex + 10u, std::make_unique<Blocks::Collideable>(), 0u, world);
+        spawnSprite(std::make_unique<NPC>(sf::Vector2f(position.x, 11.f * TileSize), player.Data.World >= 8u), world);
+    }
+
     else if (category == 0x37u) {
         if (World::Difficulty) {
             spawnEnemyGroup<BuzzyBeetle>(x, 10u, 2u, world);
@@ -2268,23 +2278,23 @@ void MapLoader::parseBadGuysObject(const uint8_t& b1, const uint8_t& b2, const b
     }
 
     else if (category == 0x25u) {
-        spawnSprite(std::make_unique<LiftOscilating>(position, !globalDifficulty, true), world);
+        spawnSprite(std::make_unique<LiftOscilating>(position, getLiftSize(globalDifficulty), true), world);
     }
 
     else if (category == 0x28u) {
-        spawnSprite(std::make_unique<LiftOscilating>(position, !globalDifficulty, false), world);
+        spawnSprite(std::make_unique<LiftOscilating>(position, getLiftSize(globalDifficulty), false), world);
     }
 
     else if (category == 0x27u) {
-        spawnSprite(std::make_unique<LiftConstant>(position, !globalDifficulty, true), world);
+        spawnSprite(std::make_unique<LiftConstant>(position, getLiftSize(globalDifficulty), true), world);
     }
 
     else if (category == 0x26u) {
-        spawnSprite(std::make_unique<LiftConstant>(position, !globalDifficulty, false), world);
+        spawnSprite(std::make_unique<LiftConstant>(position, getLiftSize(globalDifficulty), false), world);
     }
 
     else if (category == 0x29u) {
-        spawnSprite(std::make_unique<LiftFall>(position, !globalDifficulty), world);
+        spawnSprite(std::make_unique<LiftFall>(position, getLiftSize(globalDifficulty)), world);
     }
 
     else if (category == 0x24u) {

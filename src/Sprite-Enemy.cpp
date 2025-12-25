@@ -29,7 +29,7 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
     }
 }
 
-void Enemy::spawnDeathAnimation(World& world, float initialVelocity = -3.f) noexcept {
+void Enemy::spawnDeathAnimation(World& world, int8_t direction, float initialVelocity = -3.f) noexcept {
     if (m_Type != EnemyType::PiranhaPlant) {
         float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
 
@@ -42,7 +42,7 @@ void Enemy::spawnDeathAnimation(World& world, float initialVelocity = -3.f) noex
             m_Type == EnemyType::BuzzyBeetle
         ) ? EnemyType::BuzzyBeetleShell : m_Type;
 
-        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, initialVelocity, SlotIndex);
+        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, direction, initialVelocity, SlotIndex);
     }
 }
 
@@ -60,11 +60,11 @@ void Enemy::setDirectionRelativeToPlayer() noexcept {
     m_Direction = -gbl::sign(xPosition() - player.xPosition());
 }
 
-void Enemy::onShellDeath(World& world, uint8_t killChain) noexcept {
+void Enemy::onShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::Kick);
 
-    spawnDeathAnimation(world);
+    spawnDeathAnimation(world, shellDirection);
 
     if (uint16_t score = GetShellScore(killChain)) {
         givePlayerScore(score, world);
@@ -92,15 +92,15 @@ void Enemy::onCollide(World& world) {
     }
 }
 
-void Enemy::onBlockDefeat(World& world, float) {
+void Enemy::onBlockDefeat(World& world, float blockPosition) {
     ToRemove = true;
 
     if (!GetComponent(this, EnemyComponents::ShellEnemy)) {
-        spawnDeathAnimation(world);
+        spawnDeathAnimation(world, xPosition() >= blockPosition ? 1 : -1);
     }
 }
 
-void Enemy::onFireballDeath(World& world) {
+void Enemy::onFireballDeath(World& world, int8_t fireballDirection) {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::FireballKill);
 
@@ -116,7 +116,7 @@ void Enemy::onFireballDeath(World& world) {
 
     givePlayerScore(score, world);
 
-    spawnDeathAnimation(world);
+    spawnDeathAnimation(world, fireballDirection);
 }
 
 void Enemy::OnCollisionWithPlayer(World& world) {
@@ -142,7 +142,7 @@ void Enemy::OnCollisionWithPlayer(World& world) {
 
         givePlayerScore(score, world);
 
-        spawnDeathAnimation(world);
+        spawnDeathAnimation(world, player.getVelocity().x ? gbl::sign(player.getVelocity().x) : 0);
     } else {
         EnemyComponents::Stompable* stompable = GetComponent(this, EnemyComponents::Stompable);
 
@@ -271,7 +271,7 @@ namespace EnemyComponents {
             m_Type == EnemyType::Lakitu ||
             m_Type == EnemyType::BulletBill
         ) {
-            spawnDeathAnimation(world, 0.f);
+            spawnDeathAnimation(world, 0, 0.f);
         }
     }
 
@@ -385,7 +385,7 @@ namespace EnemyComponents {
                 !GetIf(other, Lift) &&
                 other->getHitbox().findIntersection(getHitbox())
             ) {
-                other->onShellDeath(world, m_KillChain++);
+                other->onShellDeath(world, m_KillChain++, m_Direction);
             }
         }
     }
@@ -702,7 +702,7 @@ BuzzyBeetle::BuzzyBeetle(sf::Vector2f position) : Enemy(EnemyType::BuzzyBeetle, 
     SubPalleteIndex = 3u;
 }
 
-void BuzzyBeetle::onFireballDeath(World& world) {
+void BuzzyBeetle::onFireballDeath(World&, int8_t) {
     audioPlayer.Play(AudioPlayer::BlockHit);
 }
 
@@ -716,7 +716,7 @@ BuzzyBeetleShell::BuzzyBeetleShell(sf::Vector2f position) : Enemy(EnemyType::Buz
     m_Animate = false;
 }
 
-void BuzzyBeetleShell::onFireballDeath(World& world) {
+void BuzzyBeetleShell::onFireballDeath(World&, int8_t) {
     audioPlayer.Play(AudioPlayer::BlockHit);
 }
 
@@ -1069,4 +1069,11 @@ void LiftBalance::OnPlayerLand(World& world) {
 
         world.m_Tiles[World::GetIndex(col, row)].reset();
     }
+}
+
+#pragma region NPC
+
+NPC::NPC(sf::Vector2f position, bool type) : Enemy(EnemyType::NPC, position) {
+    SubPalleteIndex = 2u;
+    m_Animate = type;
 }

@@ -167,7 +167,7 @@ public:
     bool AddSprite(std::unique_ptr<Sprite>& sprite);
     void ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex);
 
-    void SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity, uint8_t slotIndex);
+    void SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity, uint8_t slotIndex);
 
     void SpawnFloateyNum(const FloateyNum& num);
     void SpawnFloateyNum(const FloateyNum& num, uint8_t index);

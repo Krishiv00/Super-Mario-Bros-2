@@ -134,7 +134,6 @@ void Renderer::LoadResources() noexcept {
     s_PowerupsTexture = LoadTextureFromFile("Powerups");
     s_UiTexture = LoadTextureFromFile("Ui");
     s_JumpSpringTexture = LoadTextureFromFile("Jump Spring");
-    s_EndOfLevelSpritesTexture = LoadTextureFromFile("End");
     s_FloateyNumsTexture = LoadTextureFromFile("Floatey Nums");
     s_MiscSpritesTexture = LoadTextureFromFile("Misc Sprites");
     s_BannerTexture = LoadTextureFromFile("Banner");
@@ -522,6 +521,15 @@ void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexAr
 #endif // RENDER_HITBOXES
 }
 
+#pragma region NPC
+
+void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
+    sf::Vector2f texturePos = sf::Vector2f(npc.m_Animate, EnemyType::NPC * 2u) * TileSize;
+
+    createVertices(npc.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f));
+    renderVertices(s_SpritesTexture, npc.SubPalleteIndex, target);
+}
+
 #pragma region Shell
 
 void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept {
@@ -597,8 +605,8 @@ void Renderer::render(sf::RenderTarget& target, const JumpSpring& spring) noexce
 #pragma region Flag
 
 void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
-    createVertices(flag.Position, sf::Vector2f());
-    renderVertices(s_EndOfLevelSpritesTexture, flag.SubPalleteIndex, target);
+    createVertices(flag.Position, sf::Vector2f(0.f, (EnemyType::Flag * 2u + 1u) * TileSize));
+    renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
 
     if (flag.m_FloateyNumType >= 0) {
         sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
@@ -612,10 +620,10 @@ void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
 #pragma region Star Flag
 
 void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(1.f * TileSize, 0.f);
+    sf::Vector2f texturePos = sf::Vector2f(1.f, EnemyType::Flag * 2u + 1u) * TileSize;
 
     createVertices(flag.Position, texturePos);
-    renderVertices(s_EndOfLevelSpritesTexture, flag.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
 }
 
 #pragma region Axe
@@ -780,6 +788,8 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
                         render(target, *lift, GetIf(enemy, LiftBalance));
                     } else if (Axe* axe = GetIf(enemy, Axe)) {
                         render(target, *axe);
+                    } else if (NPC* npc = GetIf(enemy, NPC)) {
+                        render(target, *npc);
                     } else {
                         render(target, *enemy, hitboxes);
                     }
@@ -812,19 +822,19 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
                 }
             }
         }
-    
+
         for (const auto& sprite : world.m_MiscSprites) {
             if (sprite) {
                 render(target, *sprite);
             }
         }
-    
+
         for (const auto& floateyNum : world.m_FloateyNums) {
             if (floateyNum) {
                 render(target, floateyNum, 2u, world.CameraPosition);
             }
         }
-    
+
         for (const auto& animation : world.m_DeathAnimations) {
             if (animation) {
                 render(target, *animation);

@@ -125,13 +125,13 @@ void StarFlag::Update(World&) {
 
 #pragma region Death Animation
 
-DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity) : Sprite(position, subPalleteIndex), m_Type(type) {
-    m_Velocity = initialVelocity;
-}
+DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity) : Sprite(position, subPalleteIndex), m_Type(type), m_Direction(direction), m_Velocity(initialVelocity) {}
 
 void DeathAnimation::Update(World& world) {
     Position.y += m_Velocity;
     m_Velocity = std::min(m_Velocity + 0.195f, 3.f);
+
+    Position.x += 0.5f * m_Direction;
 
     ToRemove = Position.y >= gbl::Height;
 }

@@ -86,16 +86,19 @@ class DeathAnimation : public Sprite {
 
 private:
     uint8_t m_Type;
+    int8_t m_Direction;
 
     float m_Velocity;
 
 public:
-    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity);
+    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity);
 
     virtual void Update(World& world) override;
 };
 
 class Fireball : public Sprite {
+    friend class World;
+    
 private:
     int8_t m_Direction;
     float m_Velocity;

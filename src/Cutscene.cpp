@@ -466,17 +466,34 @@ void FlagpoleScene::OnFramerule() {
 }
 
 AxeScene::AxeScene(World& world) : LevelClearScene(world) {
+    m_LevelEndTimer = 0u;
+
     musicPlayer.Stop();
 
-    freezeGame();
+    // freezeGame();
+
+    musicPlayer.Play(MusicPlayer::Clear_2);
 }
 
 AxeScene::~AxeScene() {
-    unFreezeGame();
+    // unFreezeGame();
 }
 
 void AxeScene::Update() {
-    startLevel(player.Data.World + 1u, 1u, true);
+    if (!m_LevelEndTimer) {
+        handlePlayerAutowalk();
+
+        if (player.getVelocity().x == 0.f) {
+            m_LevelEndTimer = 12u;
+            stopPlayerAutowalk();
+        }
+    }
+}
+
+void AxeScene::OnFramerule() {
+    if (m_LevelEndTimer && --m_LevelEndTimer == 0u) {
+        startLevel(player.Data.World + 1u, 1u, true);
+    }
 }
 
 #pragma region Warp

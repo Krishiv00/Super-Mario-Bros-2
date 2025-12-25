@@ -68,7 +68,7 @@ void World::ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex) {
     m_Sprites[slotIndex] = std::move(sprite);
 }
 
-void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, float initialVelocity, uint8_t slotIndex) {
+void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity, uint8_t slotIndex) {
     auto& slot = m_DeathAnimations[slotIndex];
 
     if (slot) {
@@ -80,7 +80,7 @@ void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, 
         }
     }
 
-    slot = std::make_unique<DeathAnimation>(position, subPalleteIndex, type, initialVelocity);
+    slot = std::make_unique<DeathAnimation>(position, subPalleteIndex, type, direction, initialVelocity);
 }
 
 void World::handleSpriteLoading() {
@@ -200,13 +200,14 @@ void World::updateSprites() {
                 for (auto& sprite : m_Sprites) {
                     if (
                         Enemy* enemy = GetIf(sprite.get(), Enemy);
-                        enemy && enemy->m_Type != EnemyType::DeadGoomba &&
+                        enemy && enemy->m_Type != EnemyType::DeadGoomba && !GetIf(sprite.get(), Lift) &&
                         enemy->getHitbox().findIntersection(ballHitbox)
                     ) {
                         SpawnFirework(ball->Position, true);
+                        
+                        enemy->onFireballDeath(*this, ball->m_Direction);
+                        
                         ball.reset();
-
-                        enemy->onFireballDeath(*this);
 
                         break;
                     }
