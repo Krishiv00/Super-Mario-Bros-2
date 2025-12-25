@@ -909,8 +909,6 @@ void Renderer::RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, b
 
     textFlush(target, vertices);
 
-    vertices.clear();
-
     textAddString("c1985 NINTENDO", sf::Vector2f(104.f, 120.f), vertices);
 
     textFlush(target, vertices, 1u);
@@ -972,7 +970,7 @@ void Renderer::textAddString(const std::string& string, sf::Vector2f position, s
     }
 }
 
-void Renderer::textFlush(sf::RenderTarget& target, const sf::VertexArray& vertices, uint8_t subPalleteIndex) noexcept {
+void Renderer::textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPalleteIndex) noexcept {
     s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
 
     s_PaletteShader.setUniform("subPallete", 0.25f * static_cast<float>(subPalleteIndex));
@@ -981,4 +979,6 @@ void Renderer::textFlush(sf::RenderTarget& target, const sf::VertexArray& vertic
     state.shader = &s_PaletteShader;
 
     target.draw(vertices, state);
+
+    vertices.clear();
 }

@@ -977,8 +977,6 @@ Axe::Axe(sf::Vector2f position) : Enemy(EnemyType::Axe, position) {
     SubPalleteIndex = 3u;
 
     m_Animate = false;
-
-    Renderer::SetSpriteTheme(1u, 4u);
 }
 
 void Axe::OnCollisionWithPlayer(World& world) {

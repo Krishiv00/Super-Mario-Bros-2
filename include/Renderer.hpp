@@ -45,7 +45,7 @@ private:
 
     static void textAddChar(char character, const sf::Vector2f& position, sf::VertexArray& vertices) noexcept;
     static void textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept;
-    static void textFlush(sf::RenderTarget& target, const sf::VertexArray& vertices, uint8_t subPalleteIndex = 2u) noexcept;
+    static void textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPalleteIndex = 2u) noexcept;
 
     static inline sf::Texture s_PlayerTexture;
     static inline sf::Texture s_SpritesTexture;

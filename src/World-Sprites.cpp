@@ -1,4 +1,5 @@
 #include "World.hpp"
+#include "Renderer.hpp"
 
 #pragma region Sprite Spawning
 
@@ -89,6 +90,10 @@ void World::handleSpriteLoading() {
         std::vector<std::unique_ptr<Sprite>>& spriteGroup = m_SpritePool[0u];
 
         if (spriteGroup.front()->Position.x <= threshold) {
+            if (GetIf(spriteGroup.front().get(), Axe)) {
+                Renderer::SetSpriteTheme(1u, 4u);
+            }
+
             for (std::unique_ptr<Sprite>& sprite : spriteGroup) {
                 if (!AddSprite(sprite)) {
                     break;
