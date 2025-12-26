@@ -38,7 +38,7 @@ public:
         }
     }
 
-    static const uint8_t& RandomInt(uint8_t offset) {
+    [[nodiscard]] static inline const uint8_t& RandomInt(uint8_t offset) {
         return m_State[offset];
     }
 };

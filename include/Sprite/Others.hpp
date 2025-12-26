@@ -9,9 +9,6 @@
 #include "Sprite/Powerup.hpp"
 
 class JumpSpring : public Sprite {
-    friend class Renderer;
-    friend class MapLoader;
-
 private:
     uint8_t m_Timer = 0u;
     uint8_t m_Stage = 0u;
@@ -27,12 +24,13 @@ public:
     virtual void Update(World& world) override;
 
     void Activate(World& world);
+
+    [[nodiscard]] inline const uint8_t& getCurrentStage() const {
+        return m_Stage;
+    }
 };
 
 class BouncingBlock : public Sprite {
-    friend class Renderer;
-    friend class MapLoader;
-
 private:
     std::unique_ptr<Blocks::Block> m_Block;
 
@@ -47,10 +45,13 @@ public:
     sf::Vector2f getPosition() const;
 
     uint8_t ItemId;
+
+    [[nodiscard]] inline const Blocks::Block* getBlock() const {
+        return m_Block.get();
+    }
 };
 
 class Flag : public Sprite {
-    friend class MapLoader;
     friend class World;
     friend class Renderer;
 
@@ -67,14 +68,12 @@ public:
 
     void SetMoving(bool moving);
 
-    inline bool ReachedBottom() const {
+    [[nodiscard]] inline bool ReachedBottom() const {
         return Position.y >= 171.f;
     }
 };
 
 class StarFlag : public Sprite {
-    friend class MapLoader;
-
 public:
     StarFlag(sf::Vector2f position);
 
@@ -82,8 +81,6 @@ public:
 };
 
 class DeathAnimation : public Sprite {
-    friend class Renderer;
-
 private:
     uint8_t m_Type;
     int8_t m_Direction;
@@ -94,11 +91,13 @@ public:
     DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity);
 
     virtual void Update(World& world) override;
+
+    [[nodiscard]] inline const uint8_t& getType() const {
+        return m_Type;
+    }
 };
 
 class Fireball : public Sprite {
-    friend class World;
-    
 private:
     int8_t m_Direction;
     float m_Velocity;
@@ -111,11 +110,13 @@ public:
     [[nodiscard]] inline sf::FloatRect getHitbox() const {
         return sf::FloatRect(sf::Vector2f(xPosition() + 6.f, yPosition() + 5.f), sf::Vector2f(5.f, 5.f));
     }
+
+    [[nodiscard]] inline const int8_t& getDirection() const {
+        return m_Direction;
+    }
 };
 
 class DecorSprite {
-    friend class MapLoader;
-
 protected:
     uint8_t m_Timer;
 
@@ -126,7 +127,7 @@ public:
         --m_Timer;
     }
 
-    inline bool Active() const {
+    [[nodiscard]] inline bool Active() const {
         return m_Timer;
     }
 
@@ -156,9 +157,6 @@ public:
 };
 
 class FloateyNum {
-    friend class Renderer;
-    friend class Cutscene;
-
 private:
     uint8_t m_Timer;
     uint8_t m_Type;
@@ -181,10 +179,14 @@ public:
         return m_Timer;
     }
 
-    inline sf::Vector2f getPosition(float cameraPosition) const {
+    [[nodiscard]] inline sf::Vector2f getPosition(float cameraPosition) const {
         return sf::Vector2f(
             static_cast<float>(m_Position.x) + cameraPosition, static_cast<float>(m_Position.y)
         );
+    }
+
+    [[nodiscard]] inline const uint8_t& getType() const {
+        return m_Type;
     }
 };
 

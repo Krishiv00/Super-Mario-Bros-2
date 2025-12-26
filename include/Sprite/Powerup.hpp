@@ -11,7 +11,6 @@
 class Powerup : public Sprite {
     friend class Renderer;
     friend class World;
-    friend class MapLoader;
 
     static constexpr inline const float GetOutSpeed = 0.25f;
 

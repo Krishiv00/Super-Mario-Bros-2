@@ -87,11 +87,11 @@ void Enemy::givePlayerLife(World& world) noexcept {
     world.SpawnFloateyNum(FloateyNum(sf::Vector2f(xPosition(), yPosition()), world.CameraPosition, FloateyNum::GetType(0u)), SlotIndex);
 }
 
-void Enemy::setDirectionRelativeToPlayer() noexcept {
+void Enemy::SetDirectionRelativeToPlayer() noexcept {
     m_Direction = -gbl::sign(xPosition() - player.xPosition());
 }
 
-void Enemy::onShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept {
+void Enemy::OnShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::Kick);
 
@@ -119,7 +119,7 @@ bool Enemy::shouldDespawn(float cameraPosition, float maxThreshold = World::MaxS
 
 void Enemy::onCollide(World& world) {
     if (player.Damage(world) && m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar && !Is(this, EnemyComponents::Shell)) {
-        setDirectionRelativeToPlayer();
+        SetDirectionRelativeToPlayer();
     }
 }
 
@@ -367,7 +367,7 @@ namespace EnemyComponents {
                         !Is(other, DeadGoomba) && !Is(other, Lift) &&
                         other->getHitbox().findIntersection(getHitbox())
                     ) {
-                        other->onShellDeath(world, m_KillChain++, m_Direction);
+                        other->OnShellDeath(world, m_KillChain++, m_Direction);
                     }
                 }
             }
@@ -581,7 +581,7 @@ void KoopaParatroopa::onStomp(World& world) {
 
     std::unique_ptr<KoopaTroopa> koopa = std::make_unique<KoopaTroopa>(Position);
 
-    koopa->setDirectionRelativeToPlayer();
+    koopa->SetDirectionRelativeToPlayer();
 
     world.ReplaceSprite(std::move(koopa), SlotIndex);
 }
@@ -631,7 +631,7 @@ void RedKoopaParatroopa::onStomp(World& world) {
 
     // spawn normal koopa just with red pallete
     koopa->SubPalleteIndex = SubPalleteIndex;
-    koopa->setDirectionRelativeToPlayer();
+    koopa->SetDirectionRelativeToPlayer();
 
     world.ReplaceSprite(std::move(koopa), SlotIndex);
 }
@@ -722,7 +722,7 @@ void SpinyEgg::Update(World& world) {
 
     if (m_YVelocity == 0.f) {
         std::unique_ptr<Spiny> spiny = std::make_unique<Spiny>(Position);
-        spiny->setDirectionRelativeToPlayer();
+        spiny->SetDirectionRelativeToPlayer();
 
         world.ReplaceSprite(std::move(spiny), SlotIndex);
     }

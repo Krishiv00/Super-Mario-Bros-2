@@ -22,11 +22,11 @@ public:
 };
 
 struct PlayerData {
-    static constexpr inline uint8_t GetLevelPointer(const uint8_t& world, const uint8_t& level) noexcept {
+    [[nodiscard]] static constexpr inline uint8_t GetLevelPointer(const uint8_t& world, const uint8_t& level) noexcept {
         return ((world - 1) << 2u) | (level - 1);
     }
 
-    constexpr inline uint8_t GetLevelPointer() const noexcept {
+    [[nodiscard]] constexpr inline uint8_t GetLevelPointer() const noexcept {
         return GetLevelPointer(World, Level);
     }
 
@@ -48,12 +48,8 @@ class Player : public Sprite {
     friend class MapLoader;
     friend class World;
     friend class Cutscene;
-    friend class Enemy;
     friend class JumpSpring;
     friend class Game;
-    friend class LiftFall;
-    friend class LiftOscilating;
-    friend class LiftBalance;
     friend class ScriptPlayer;
     friend class ScriptRecorder;
 
@@ -73,16 +69,6 @@ public:
         Changing = 7u,
         Shooting = 8u,
         Dead = 9u,
-    };
-
-    static constexpr inline const uint8_t InteractionX[] = {
-        8u, 3u, 12u, 2u, 13u
-        // head, left foot, right foot, left side, right side
-    };
-
-    static constexpr inline const uint8_t InteractionY[] = {
-        4u, 2u, 18u, 32u, 8u, 24u
-        // head big, head big in water, head small, feet, side high, side low
     };
 
 private:
@@ -218,81 +204,81 @@ public:
 
     void ResetData();
 
-    inline const uint8_t& getState() const {
+    [[nodiscard]] inline const uint8_t& getState() const {
         return m_State;
     }
 
-    inline bool isSprinting() const {
+    [[nodiscard]] inline bool isSprinting() const {
         return m_SprintKeyHeld && (!m_RightKeyHeld || !m_LeftKeyHeld);
     }
 
-    inline bool isCrouching() const {
+    [[nodiscard]] inline bool isCrouching() const {
         return m_State == Crouching;
     }
 
-    inline bool isFiery() const {
+    [[nodiscard]] inline bool isFiery() const {
         return m_Size == Fiery;
     }
 
-    inline bool isBig() const {
+    [[nodiscard]] inline bool isBig() const {
         return m_Size == Big || isFiery();
     }
 
-    inline bool isVisualyBig() const {
+    [[nodiscard]] inline bool isVisualyBig() const {
         return isBig() && !isCrouching();
     }
 
-    inline bool HasStarman() const {
+    [[nodiscard]] inline bool HasStarman() const {
         return m_StarmanTimer;
     }
 
-    inline const bool& IsOnGround() const {
+    [[nodiscard]] inline const bool& IsOnGround() const {
         return m_OnGround;
     }
 
-    inline const bool& IsHidden() const {
+    [[nodiscard]] inline const bool& IsHidden() const {
         return m_Hidden;
     }
 
-    inline const bool& isVisible() const {
+    [[nodiscard]] inline const bool& isVisible() const {
         return m_Visible;
     }
 
-    inline const bool& IsFrozen() const {
+    [[nodiscard]] inline const bool& IsFrozen() const {
         return m_Frozen;
     }
 
-    inline const bool& IsSwimming() const {
+    [[nodiscard]] inline const bool& IsSwimming() const {
         return m_SwimmingPhysics;
     }
 
-    inline float currentAbsoluteSpeed() const {
+    [[nodiscard]] inline float currentAbsoluteSpeed() const {
         return std::fabs(static_cast<float>(static_cast<int>(m_Velocity.x * 16.f)) / 16.f);
     }
 
-    inline bool stillOrWalkingSlowly() const {
+    [[nodiscard]] inline bool stillOrWalkingSlowly() const {
         return currentAbsoluteSpeed() < 1.f;
     }
 
-    inline bool walkingAtFullSpeed() const {
+    [[nodiscard]] inline bool walkingAtFullSpeed() const {
         float vel = currentAbsoluteSpeed();
 
         return vel >= 1.f && vel <= MaxWalkingSpeed;
     }
 
-    inline bool runningAtFullSpeed() const {
+    [[nodiscard]] inline bool runningAtFullSpeed() const {
         return currentAbsoluteSpeed() > MaxWalkingSpeed;
     }
 
-    inline bool sideButtonsNotPressed() const {
+    [[nodiscard]] inline bool sideButtonsNotPressed() const {
         return !m_LeftKeyHeld && !m_RightKeyHeld;
     }
 
-    inline const bool& getFacingDirection() const {
+    [[nodiscard]] inline const bool& getFacingDirection() const {
         return m_Direction;
     }
 
-    inline bool facingOppositeDirectionOfMovement() const {
+    [[nodiscard]] inline bool facingOppositeDirectionOfMovement() const {
         return m_Velocity.x && (m_Velocity.x < 0.f ? m_Direction == gbl::Direction::Right : m_Direction == gbl::Direction::Left);
     }
 
@@ -304,7 +290,7 @@ public:
         }
     }
 
-    inline const sf::Vector2f& getVelocity() const {
+    [[nodiscard]] inline const sf::Vector2f& getVelocity() const {
         return m_Velocity;
     }
 
@@ -316,7 +302,7 @@ public:
         m_Velocity.y = vel;
     }
 
-    inline std::string Name() const {
+    [[nodiscard]] inline std::string Name() const {
         return Data.Type ? "LUIGI" : "MARIO";
     }
 

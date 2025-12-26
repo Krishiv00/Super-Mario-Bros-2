@@ -30,7 +30,7 @@ public:
     void Update();
     void Render();
 
-    inline bool IsRunning() const noexcept {
+    [[nodiscard]] inline bool IsRunning() const noexcept {
         return m_Window.isOpen();
     }
 };

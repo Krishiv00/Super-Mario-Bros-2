@@ -1,34 +1,34 @@
 #include "MapLoader.hpp"
 
-constexpr inline uint8_t ObjectXPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]] constexpr inline uint8_t ObjectXPos(const uint8_t& b1, const uint8_t&) {
     return (b1 >> 0x04u) & 0x0Fu;
 }
 
-constexpr inline uint8_t ObjectYPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]] constexpr inline uint8_t ObjectYPos(const uint8_t& b1, const uint8_t&) {
     return b1 & 0x0Fu;
 }
 
-constexpr inline uint8_t EnemyYPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]] constexpr inline uint8_t EnemyYPos(const uint8_t& b1, const uint8_t&) {
     return b1 & 0x0Fu;
 }
 
-constexpr inline uint8_t ObjectCategory(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]] constexpr inline uint8_t ObjectCategory(const uint8_t&, const uint8_t& b2) {
     return (b2 >> 0x04u) & 0x07u;
 }
 
-constexpr inline uint8_t EnemyCategory(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]] constexpr inline uint8_t EnemyCategory(const uint8_t&, const uint8_t& b2) {
     return b2 & 0x3F;
 }
 
-constexpr inline bool ObjectPageFlag(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]] constexpr inline bool ObjectPageFlag(const uint8_t&, const uint8_t& b2) {
     return b2 & 0x80u;
 }
 
-constexpr inline uint8_t ObjectMetadata(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]] constexpr inline uint8_t ObjectMetadata(const uint8_t&, const uint8_t& b2) {
     return b2 & 0x0Fu;
 }
 
-constexpr inline uint8_t ObjectLength(const uint8_t& b1, const uint8_t& b2) {
+[[nodiscard]] constexpr inline uint8_t ObjectLength(const uint8_t& b1, const uint8_t& b2) {
     const uint8_t category = ObjectCategory(b1, b2);
     const uint8_t metadata = ObjectMetadata(b1, b2);
 
@@ -55,7 +55,7 @@ constexpr inline uint8_t ObjectLength(const uint8_t& b1, const uint8_t& b2) {
     return 0x01u;
 }
 
-constexpr inline uint8_t ObjectIsPageSkip(const uint8_t& b1, const uint8_t& b2) {
+[[nodiscard]] constexpr inline uint8_t ObjectIsPageSkip(const uint8_t& b1, const uint8_t& b2) {
     if (ObjectYPos(b1, b2) == 0x0Du && ObjectCategory(b1, b2) != 0x04u) {
         return b2;
     } else {
@@ -63,11 +63,11 @@ constexpr inline uint8_t ObjectIsPageSkip(const uint8_t& b1, const uint8_t& b2) 
     }
 }
 
-inline bool getLiftSize(const bool& globalDifficulty) {
+[[nodiscard]] inline bool getLiftSize(const bool& globalDifficulty) {
     return !globalDifficulty && player.Data.Level < 4u;
 }
 
-constexpr inline uint8_t getbackgroundTile(const uint8_t& x, const uint8_t& y, const uint8_t& page, const uint8_t& scenery) {
+[[nodiscard]] constexpr inline uint8_t getbackgroundTile(const uint8_t& x, const uint8_t& y, const uint8_t& page, const uint8_t& scenery) {
     constexpr uint8_t BackgroundSets[][3u][16u * 11u] = {
         {
             {
@@ -204,7 +204,7 @@ constexpr inline uint8_t getbackgroundTile(const uint8_t& x, const uint8_t& y, c
     return BackgroundSets[scenery - 1][page % 3u][y * 16u + x];
 }
 
-constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
+[[nodiscard]] constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
     constexpr uint8_t GrassThreshold = 10u;
 
     if (
@@ -309,106 +309,7 @@ constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_
     return 0u;
 }
 
-constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, const uint8_t& mapAttribute, const uint8_t& terrainType) {
-    if (mapAttribute == 0x00u) {
-        terrainBlock_1 = gbl::TextureId::Block::Floor_2;
-        terrainBlock_2 = gbl::TextureId::Block::Floor_2;
-    }
-
-    else if (mapAttribute == 0x01u) {
-        terrainBlock_1 = gbl::TextureId::Block::Floor_1;
-        terrainBlock_2 = gbl::TextureId::Block::Floor_1;
-    }
-
-    else if (mapAttribute == 0x02u) {
-        terrainBlock_1 = gbl::TextureId::Block::Brick_2;
-        terrainBlock_2 = gbl::TextureId::Block::Floor_1;
-    }
-
-    else {
-        terrainBlock_1 = gbl::TextureId::Block::Brick_3;
-        terrainBlock_2 = gbl::TextureId::Block::Brick_3;
-    }
-
-    if (terrainType == 0x01u) {
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x02u) {
-        cellingLength = 0x01u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x03u) {
-        cellingLength = 0x03u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x04u) {
-        cellingLength = 0x04u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x05u) {
-        cellingLength = 0x08u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x06u) {
-        cellingLength = 0x01u;
-        surfaceLength = 0x05u;
-    }
-
-    else if (terrainType == 0x07u) {
-        cellingLength = 0x03u;
-        surfaceLength = 0x05u;
-    }
-
-    else if (terrainType == 0x08u) {
-        cellingLength = 0x04u;
-        surfaceLength = 0x05u;
-    }
-
-    else if (terrainType == 0x09u) {
-        cellingLength = 0x01u;
-        surfaceLength = 0x06u;
-    }
-
-    else if (terrainType == 0x0Au) {
-        cellingLength = 0x01u;
-        surfaceLength = 0x00u;
-    }
-
-    else if (terrainType == 0x0Bu) {
-        cellingLength = 0x04u;
-        surfaceLength = 0x06u;
-    }
-
-    else if (terrainType == 0x0Cu) {
-        cellingLength = 0x01u;
-        surfaceLength = 0x09u;
-    }
-
-    else if (terrainType == 0x0Du) {
-        cellingLength = 0x01u;
-        middleLength = 0x05u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x0Eu) {
-        cellingLength = 0x01u;
-        middleLength = 0x04u;
-        surfaceLength = 0x02u;
-    }
-
-    else if (terrainType == 0x0Fu) {
-        // Brick:All
-        cellingLength = 0x0Bu;
-        surfaceLength = 0x02u;
-    }
-}
-
-uint8_t MapLoader::GetIfDuplicate(const uint8_t& level, const uint8_t& stage) {
+[[nodiscard]] uint8_t MapLoader::GetIfDuplicate(const uint8_t& level, const uint8_t& stage) {
     if (level == 0x05u && stage == 0x03u) {
         return 0x01u;
     }
@@ -428,7 +329,7 @@ uint8_t MapLoader::GetIfDuplicate(const uint8_t& level, const uint8_t& stage) {
     return level;
 }
 
-constexpr inline uint8_t getBasicBrick(const uint8_t& mapAttribute) {
+[[nodiscard]] constexpr inline uint8_t getBasicBrick(const uint8_t& mapAttribute) {
     if (mapAttribute == 0x00u) {
         return gbl::TextureId::Block::SeaWeed;
     }
@@ -440,7 +341,7 @@ constexpr inline uint8_t getBasicBrick(const uint8_t& mapAttribute) {
     return gbl::TextureId::Block::Brick_2;
 }
 
-constexpr inline uint8_t getBasicBlock(const uint8_t& mapAttribute) {
+[[nodiscard]] constexpr inline uint8_t getBasicBlock(const uint8_t& mapAttribute) {
     if (mapAttribute == 0x00u) {
         return gbl::TextureId::Block::Floor_2;
     }
@@ -452,7 +353,7 @@ constexpr inline uint8_t getBasicBlock(const uint8_t& mapAttribute) {
     return gbl::TextureId::Block::Flag_base;
 }
 
-std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundodifiers() {
+[[nodiscard]] std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundodifiers() {
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiers;
 
     uint8_t page = CurrentPage;
@@ -497,7 +398,7 @@ std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgro
     return backgroundModifiers;
 }
 
-const uint8_t* GetTileData(const uint8_t& areaPointer) {
+[[nodiscard]] const uint8_t* GetTileData(const uint8_t& areaPointer) {
     static std::vector<uint8_t> Data[] = {
         // 1-1
         std::vector<uint8_t> {
@@ -1037,7 +938,7 @@ const uint8_t* GetTileData(const uint8_t& areaPointer) {
     return Data[areaPointer].data();
 }
 
-const uint8_t* GetBadGuysData(const uint8_t& areaPointer) {
+[[nodiscard]] const uint8_t* GetBadGuysData(const uint8_t& areaPointer) {
     static std::vector<uint8_t> Data[] = {
         // 1-1
         std::vector<uint8_t> {
@@ -1294,6 +1195,105 @@ const uint8_t* GetBadGuysData(const uint8_t& areaPointer) {
     };
 
     return Data[areaPointer].data();
+}
+
+constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, const uint8_t& mapAttribute, const uint8_t& terrainType) {
+    if (mapAttribute == 0x00u) {
+        terrainBlock_1 = gbl::TextureId::Block::Floor_2;
+        terrainBlock_2 = gbl::TextureId::Block::Floor_2;
+    }
+
+    else if (mapAttribute == 0x01u) {
+        terrainBlock_1 = gbl::TextureId::Block::Floor_1;
+        terrainBlock_2 = gbl::TextureId::Block::Floor_1;
+    }
+
+    else if (mapAttribute == 0x02u) {
+        terrainBlock_1 = gbl::TextureId::Block::Brick_2;
+        terrainBlock_2 = gbl::TextureId::Block::Floor_1;
+    }
+
+    else {
+        terrainBlock_1 = gbl::TextureId::Block::Brick_3;
+        terrainBlock_2 = gbl::TextureId::Block::Brick_3;
+    }
+
+    if (terrainType == 0x01u) {
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x02u) {
+        cellingLength = 0x01u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x03u) {
+        cellingLength = 0x03u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x04u) {
+        cellingLength = 0x04u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x05u) {
+        cellingLength = 0x08u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x06u) {
+        cellingLength = 0x01u;
+        surfaceLength = 0x05u;
+    }
+
+    else if (terrainType == 0x07u) {
+        cellingLength = 0x03u;
+        surfaceLength = 0x05u;
+    }
+
+    else if (terrainType == 0x08u) {
+        cellingLength = 0x04u;
+        surfaceLength = 0x05u;
+    }
+
+    else if (terrainType == 0x09u) {
+        cellingLength = 0x01u;
+        surfaceLength = 0x06u;
+    }
+
+    else if (terrainType == 0x0Au) {
+        cellingLength = 0x01u;
+        surfaceLength = 0x00u;
+    }
+
+    else if (terrainType == 0x0Bu) {
+        cellingLength = 0x04u;
+        surfaceLength = 0x06u;
+    }
+
+    else if (terrainType == 0x0Cu) {
+        cellingLength = 0x01u;
+        surfaceLength = 0x09u;
+    }
+
+    else if (terrainType == 0x0Du) {
+        cellingLength = 0x01u;
+        middleLength = 0x05u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x0Eu) {
+        cellingLength = 0x01u;
+        middleLength = 0x04u;
+        surfaceLength = 0x02u;
+    }
+
+    else if (terrainType == 0x0Fu) {
+        // Brick:All
+        cellingLength = 0x0Bu;
+        surfaceLength = 0x02u;
+    }
 }
 
 void MapLoader::extendMap(World& world) {

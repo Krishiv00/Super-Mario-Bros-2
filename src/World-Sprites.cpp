@@ -205,7 +205,7 @@ void World::updateSprites() {
                     ) {
                         SpawnFirework(ball->Position, true);
                         
-                        enemy->onFireballDeath(*this, ball->m_Direction);
+                        enemy->onFireballDeath(*this, ball->getDirection());
                         
                         ball.reset();
 

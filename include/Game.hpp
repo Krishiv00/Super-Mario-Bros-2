@@ -83,7 +83,7 @@ public:
 
     sf::Image GetScreenshot() const noexcept;
 
-    inline const bool& SoundDisabled() const noexcept {
+    [[nodiscard]] inline const bool& SoundDisabled() const noexcept {
         return m_OnTitleScreen;
     }
 };

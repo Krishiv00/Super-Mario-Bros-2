@@ -99,7 +99,7 @@ public:
 
     static void RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, bool secondPlayerMode) noexcept;
 
-    static inline const bool& getEnemyAnimation() noexcept {
+    [[nodiscard]] static inline const bool& getEnemyAnimation() noexcept {
         return s_EnemyAnimation;
     }
 };

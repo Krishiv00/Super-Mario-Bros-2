@@ -45,10 +45,7 @@ namespace EnemyComponents {
 
 class Enemy : public Sprite {
     friend class Renderer;
-    friend class MapLoader;
     friend class World;
-    friend class LiftBalance;
-    friend class EnemyComponents::Shell;
 
 protected:
     void spawnDeathAnimation(World& world, int8_t direction, float initialVelocity) noexcept;
@@ -56,14 +53,11 @@ protected:
     void givePlayerScore(uint16_t score, World& world) noexcept;
     void givePlayerLife(World& world) noexcept;
 
-    void setDirectionRelativeToPlayer() noexcept;
-
     [[nodiscard]] bool shouldDespawn(float cameraPosition, float maxThreshold) const noexcept;
 
     virtual void onCollide(World& world);
     virtual void onBlockDefeat(World& world, float blockPosition);
     virtual void onFireballDeath(World& world, int8_t fireballDirection);
-    void onShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept;
 
     int8_t m_Direction = -1;
 
@@ -81,10 +75,14 @@ protected:
 public:
     virtual void OnFramerule(World&) {}
 
+    void OnShellDeath(World& world, uint8_t killChain, int8_t shellDirection) noexcept;
+
     virtual void OnCollisionWithPlayer(World& world);
     void OnNoCollision() noexcept;
 
     virtual void HandleMovement(World&) {}
+
+    void SetDirectionRelativeToPlayer() noexcept;
 
     [[nodiscard]] virtual sf::FloatRect getHitbox() const {
         return sf::FloatRect(sf::Vector2f(), sf::Vector2f());
@@ -204,9 +202,6 @@ public:
 };
 
 class KoopaTroopa : public EnemyComponents::ShellEnemy {
-    friend class KoopaParatroopa;
-    friend class RedKoopaParatroopa;
-
 protected:
     KoopaTroopa() = default;
 
@@ -311,8 +306,6 @@ public:
 };
 
 class Spiny final : public EnemyComponents::GroundEnemy {
-    friend class SpinyEgg;
-
 public:
     Spiny(sf::Vector2f position);
 
@@ -370,8 +363,6 @@ public:
 };
 
 class Firebar final : public Enemy {
-    friend class Renderer;
-
 private:
     void handleCollision(World& world);
 
@@ -388,6 +379,10 @@ public:
 
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
+
+    [[nodiscard]] inline const uint8_t& getSize() const {
+        return m_Size;
+    }
 
     [[nodiscard]] float getAngle() const {
         return toRad(static_cast<float>(m_Angle) * 11.25f);
@@ -419,8 +414,6 @@ public:
 };
 
 class Lift : public Enemy {
-    friend class Renderer;
-
 private:
     const uint8_t m_Size;
 
@@ -434,6 +427,10 @@ public:
     virtual void OnPlayerLand(World&) {}
 
     [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+
+    [[nodiscard]] inline const uint8_t& getSize() const {
+        return m_Size;
+    }
 };
 
 class LiftConstant final : public Lift {

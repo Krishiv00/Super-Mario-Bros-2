@@ -558,7 +558,7 @@ void Renderer::render(sf::RenderTarget& target, const Firebar& firebar) noexcept
     const float angleSin = std::sin(angleRad);
     const float angleCos = std::cos(angleRad);
 
-    for (uint8_t i = 0u; i < firebar.m_Size; ++i) {
+    for (uint8_t i = 0u; i < firebar.getSize(); ++i) {
         const float radius = i * TileSize * 0.5f;
 
         sf::Vector2f position = sf::Vector2f(
@@ -594,7 +594,7 @@ void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::Vert
 #pragma region Jump Spring
 
 void Renderer::render(sf::RenderTarget& target, const JumpSpring& spring) noexcept {
-    const sf::Vector2f texturePos = sf::Vector2f(spring.m_Stage * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f(spring.getCurrentStage() * TileSize, 0.f);
 
     createVertices(spring.Position, texturePos, sf::Vector2f(TileSize, TileSize * 1.5f));
     renderVertices(s_JumpSpringTexture, spring.SubPalleteIndex, target);
@@ -650,7 +650,7 @@ void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLi
 
     const sf::Vector2f texturePos = sf::Vector2f(lift.m_Animate, EnemyType::Lift * 2u + 1u) * TileSize;
 
-    for (uint8_t i = 0u; i < lift.m_Size; ++i) {
+    for (uint8_t i = 0u; i < lift.getSize(); ++i) {
         const sf::Vector2f position = sf::Vector2f(lift.Position.x + i * TileSize, lift.Position.y);
 
         createVertices(position, texturePos);
@@ -680,7 +680,7 @@ void Renderer::render(sf::RenderTarget& target, const DecorSprite& sprite) noexc
 
 void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept {
     const sf::Vector2f position = floateyNum.getPosition(cameraPos);
-    const sf::Vector2f texturePos = sf::Vector2f(floateyNum.m_Type * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f(floateyNum.getType() * TileSize, 0.f);
 
     createVertices(position, texturePos);
     renderVertices(s_FloateyNumsTexture, subPalleteIndex, target);
@@ -689,7 +689,7 @@ void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, ui
 #pragma region Death Animation
 
 void Renderer::render(sf::RenderTarget& target, const DeathAnimation& animation) noexcept {
-    const sf::Vector2f texturePos = sf::Vector2f(0.f, animation.m_Type * 2u * TileSize);
+    const sf::Vector2f texturePos = sf::Vector2f(0.f, animation.getType() * 2u * TileSize);
 
     createVertices(animation.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), false, true);
     renderVertices(s_SpritesTexture, animation.SubPalleteIndex, target);
@@ -748,7 +748,7 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
     }
 
     if (BouncingBlock* bouncingBlock = world.m_BouncingBlock.get()) {
-        render(target, GetComponent(bouncingBlock->m_Block.get(), const Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
+        render(target, GetComponent(bouncingBlock->getBlock(), const Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
     }
 
     // draw page borders

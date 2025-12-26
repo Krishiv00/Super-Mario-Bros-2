@@ -128,15 +128,15 @@ public:
         }
     }
 
-    inline const bool& Recording() const noexcept {
+    [[nodiscard]] inline const bool& Recording() const noexcept {
         return m_Recording;
     }
 
-    inline const std::vector<DemoInput>& getScript() const {
+    [[nodiscard]] inline const std::vector<DemoInput>& getScript() const {
         return m_Script;
     }
 
-    inline const uint8_t& GetInitialLevel() const noexcept {
+    [[nodiscard]] inline const uint8_t& GetInitialLevel() const noexcept {
         return m_InitialLevel;
     }
 };

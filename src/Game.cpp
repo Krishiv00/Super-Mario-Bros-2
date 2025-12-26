@@ -230,7 +230,7 @@ void Game::startBlackScreen(BlackScreenType type) {
 
         musicPlayer.Play(MusicPlayer::GameOver);
 
-        if (m_World.m_GameTime == 0u) {
+        if (m_World.getGameTime() == 0u) {
             m_BlackScreenType = BlackScreenType::TimeUp;
         }
     } else {

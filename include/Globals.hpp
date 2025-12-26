@@ -5,7 +5,7 @@
     #define M_PI 3.14159265358979323846
 #endif // M_PI
 
-[[nodiscard]] inline constexpr float toRad(float degrees) {
+[[nodiscard]] constexpr inline float toRad(float degrees) {
     return degrees * M_PI / 180.f;
 }
 
@@ -28,7 +28,7 @@ namespace gbl {
     constexpr uint8_t Rows = 15u;
 
     template <typename _T>
-    constexpr inline int8_t sign(_T x) {
+    [[nodiscard]] constexpr inline int8_t sign(_T x) {
         return x >= _T(0) ? 1 : -1;
     }
 
@@ -131,11 +131,11 @@ namespace gbl {
             None
         };
 
-        constexpr inline bool isCoinItem(uint8_t itemType) {
+        [[nodiscard]] constexpr inline bool isCoinItem(uint8_t itemType) {
             return itemType == Coin;
         }
         
-        constexpr inline bool isPowerupItem(uint8_t itemType) {
+        [[nodiscard]] constexpr inline bool isPowerupItem(uint8_t itemType) {
             return itemType != None && !isCoinItem(itemType);
         }
     }

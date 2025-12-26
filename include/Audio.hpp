@@ -51,7 +51,7 @@ public:
 
     void SetMuted(bool muted);
 
-    inline bool IsMuted() const noexcept {
+    [[nodiscard]] inline bool IsMuted() const noexcept {
         return m_Sounds[0u]->getVolume() == 0.f;
     }
 };
@@ -86,7 +86,7 @@ public:
 
     void SetMuted(bool muted);
 
-    inline bool IsMuted() const noexcept {
+    [[nodiscard]] inline bool IsMuted() const noexcept {
         return m_MusicBuffers[0u]->getVolume() == 0.f;
     }
 };

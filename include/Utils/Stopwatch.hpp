@@ -24,7 +24,7 @@ public:
         return static_cast<double>(elapsed.count()) / 1000.0;
     }
 
-    static bool Running() {
+    [[nodiscard]] static inline const bool& Running() {
         return s_Running;
     }
 };

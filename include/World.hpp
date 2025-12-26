@@ -12,18 +12,12 @@
 
 class World {
     friend class MapLoader;
-    friend class Game;
     friend class Renderer;
-    friend class Enemy;
     friend class JumpSpring;
     friend class Cutscene;
-    friend class Powerup;
-    friend class GroundEnemy;
     friend class EnemyComponents::Stompable;
-    friend class PiranhaPlant;
     friend class Player;
     friend class LiftBalance;
-    friend class Shell;
     friend class BouncingBlock;
 
 public:
@@ -179,35 +173,35 @@ public:
 
     void StartCutscene(std::unique_ptr<Cutscene> scene);
 
-    inline bool cutscenePlaying() const {
+    [[nodiscard]] inline bool cutscenePlaying() const {
         return m_Cutscene != nullptr;
     }
 
-    inline std::unique_ptr<Sprite>* getSprites() {
+    [[nodiscard]] inline std::unique_ptr<Sprite>* getSprites() {
         return m_Sprites;
     }
 
-    inline const bool& getAutoScroll() const {
+    [[nodiscard]] inline const bool& getAutoScroll() const {
         return m_AutoScroll;
     }
 
-    inline const uint8_t& getStompChain() const {
+    [[nodiscard]] inline const uint8_t& getStompChain() const {
         return m_StompChain;
     }
 
-    inline const uint16_t& getGameTime() const {
+    [[nodiscard]] inline const uint16_t& getGameTime() const {
         return m_GameTime;
     }
 
-    inline bool reloadRequired() const {
+    [[nodiscard]] inline bool reloadRequired() const {
         return m_NewLevel || m_NewArea;
     }
 
-    inline const bool& newLevel() const {
+    [[nodiscard]] inline const bool& newLevel() const {
         return m_NewLevel;
     }
 
-    inline const bool& scrollLocked() const {
+    [[nodiscard]] inline const bool& scrollLocked() const {
         return m_ScrollLocked;
     }
 

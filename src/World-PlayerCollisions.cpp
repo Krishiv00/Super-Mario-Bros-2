@@ -3,6 +3,16 @@
 #define ROUTINE_END_SIGNAL true
 #define ROUTINE_CONTINUE_SIGNAL false
 
+constexpr inline const uint8_t PlayerInteractionX[] = {
+    8u, 3u, 12u, 2u, 13u
+    // head, left foot, right foot, left side, right side
+};
+
+constexpr inline const uint8_t PlayerInteractionY[] = {
+    4u, 2u, 18u, 32u, 8u, 24u
+    // head big, head big in water, head small, feet, side high, side low
+};
+
 [[nodiscard]] constexpr inline uint16_t GetFlagScore() noexcept {
     const uint8_t playerRow = static_cast<uint8_t>((player.yPosition() + 32.f) / 16.f);
     const uint8_t flagRelativePlayerRow = playerRow - 2u;
@@ -228,8 +238,8 @@ void World::resolvePlayerTileCollisions() {
 
 bool World::resolvePlayerHeadCollisions(float playerTop) {
     if (playerTop >= (player.isVisualyBig() ? 32.f : 16.f)) {
-        const float pointX = static_cast<float>(Player::InteractionX[0u]) + player.xPosition();
-        const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
+        const float pointX = static_cast<float>(PlayerInteractionX[0u]) + player.xPosition();
+        const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -312,8 +322,8 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
 #pragma region Left Foot
 
     /* left foot */ {
-        const float pointX = static_cast<float>(Player::InteractionX[1u]) + player.xPosition();
-        const float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
+        const float pointX = static_cast<float>(PlayerInteractionX[1u]) + player.xPosition();
+        const float pointY = static_cast<float>(PlayerInteractionY[3u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -375,8 +385,8 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
 #pragma region Right Foot
 
     /* right foot */ {
-        const float pointX = static_cast<float>(Player::InteractionX[2u]) + player.xPosition();
-        const float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
+        const float pointX = static_cast<float>(PlayerInteractionX[2u]) + player.xPosition();
+        const float pointY = static_cast<float>(PlayerInteractionY[3u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -439,8 +449,8 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
     #pragma region Topleft Side
 
         /* topleft side */ {
-            const float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
-            const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointX = static_cast<float>(PlayerInteractionX[3u]) + player.xPosition();
+            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
 
             const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
             const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -458,8 +468,8 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 #pragma region Bottomleft Side
 
     /* bottomleft side */ {
-        const float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
-        const float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
+        const float pointX = static_cast<float>(PlayerInteractionX[3u]) + player.xPosition();
+        const float pointY = static_cast<float>(PlayerInteractionY[5u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -473,8 +483,8 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
     #pragma region Topright Side
 
         /* topright side */ {
-            const float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
-            const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointX = static_cast<float>(PlayerInteractionX[4u]) + player.xPosition();
+            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
 
             const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
             const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -497,8 +507,8 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 #pragma region Bottomright Side
 
     /* bottomright side */ {
-        const float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
-        const float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
+        const float pointX = static_cast<float>(PlayerInteractionX[4u]) + player.xPosition();
+        const float pointY = static_cast<float>(PlayerInteractionY[5u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
