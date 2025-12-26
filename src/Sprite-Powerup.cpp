@@ -17,10 +17,10 @@ void Powerup::animatePallete(uint8_t& animationTimer) {
 void Powerup::handle_movement(World& world) {
     Position.x += 1.f * m_Direction;
 
-    float xPos = xPosition();
+    const float xPos = xPosition();
 
-    float boundLeft = std::max(world.CameraPosition - World::MaxSpriteDistanceLeftNormal, 0.f);
-    float boundRight = world.CameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
+    const float boundLeft = std::max(world.CameraPosition - World::MaxSpriteDistanceLeftNormal, 0.f);
+    const float boundRight = world.CameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
 
     if (xPos < boundLeft || (m_Direction == gbl::Direction::Right && xPos > boundRight)) {
         ToRemove = true;
@@ -46,10 +46,10 @@ void Powerup::handle_movement(World& world) {
         return;
     }
 
-    float left = xPosition();
+    const float left = xPosition();
 
     if (m_Velocity > 0.f) {
-        sf::Vector2f feetPoint = sf::Vector2f(left + 8.f, top + 16.f);
+        const sf::Vector2f feetPoint = sf::Vector2f(left + 8.f, top + 16.f);
 
         if (world.PointInTile(feetPoint)) {
             Position.y = (static_cast<int>((top + 16.f) / 16.f) - 1) * 16.f;
@@ -63,7 +63,7 @@ void Powerup::handle_movement(World& world) {
         return;
     }
 
-    sf::Vector2f sidePoint = sf::Vector2f(left + 12.f + 4.f * m_Direction, top + 12.f);
+    const sf::Vector2f sidePoint = sf::Vector2f(left + 12.f + 4.f * m_Direction, top + 12.f);
 
     if (world.PointInTile(sidePoint)) {
         m_Direction *= -1;

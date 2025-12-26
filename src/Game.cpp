@@ -22,10 +22,7 @@ void Game::Create(int argc, char** argv) {
         if (dotPos != std::string::npos) {
             const std::string extension = filepath.substr(dotPos + 1u);
 
-            if (extension == "txt") {
-                makeScriptFromTas(filepath);
-                return;
-            } else if (extension == "tas") {
+            if (extension == "tas") {
                 startCustomScript(filepath);
                 return;
             }
@@ -217,13 +214,13 @@ void Game::restartDemo() {
 void Game::startBlackScreen(BlackScreenType type) {
     m_BlackScreenType = type;
 
-    if (type == BlackScreenType::LevelTransition) {
-        reload();
-    }
-
     musicPlayer.Stop();
 
     pauseGameFor(5u);
+
+    if (type == BlackScreenType::LevelTransition) {
+        Renderer::SetBackgroundTheme(0u, 2u, 2u);
+    }
 
     Renderer::ResetAnimations();
     Renderer::SetGameTimeRendering(false);
@@ -251,10 +248,8 @@ void Game::stopBlackScreen() {
         } else {
             enterTitleScreen();
         }
-    } else {
-        Renderer::SetGameTimeRendering(true);
-
-        m_World.StartThemeMusic();
+    } else if (m_BlackScreenType == BlackScreenType::LevelTransition) {
+        reload();
     }
 }
 
@@ -406,7 +401,7 @@ void Game::initWindowIcon() {
 
     renderTexture.clear(sf::Color::Transparent);
 
-    sf::Vector2f oldPos = player.Position;
+    const sf::Vector2f oldPos = player.Position;
 
     player.Position = sf::Vector2f(0.f, -16.f);
     Renderer::RenderPlayer(renderTexture);
@@ -415,8 +410,7 @@ void Game::initWindowIcon() {
 
     renderTexture.display();
 
-    sf::Image icon = renderTexture.getTexture().copyToImage();
-    m_Window.setIcon(icon);
+    m_Window.setIcon(renderTexture.getTexture().copyToImage());
 }
 
 sf::Image Game::GetScreenshot() const noexcept {
@@ -475,51 +469,6 @@ void Game::startDemoScript() {
     m_ScriptPlayer.Start(DemoScript);
 }
 
-void Game::makeScriptFromTas(const std::string& filename) {
-    std::ifstream inFile(filename);
-    std::string line;
-
-    while (std::getline(inFile, line)) {
-        if (line.size() >= 2 && line.substr(0, 2) == "//") {
-            continue;
-        }
-
-        if (line.substr(0, 5) == "World") {
-            player.Data.World = line[6] - '0';
-            player.Data.Level = line[8] - '0';
-
-            m_ScriptRecorder.StartRecording(player.Data.GetLevelPointer());
-            continue;
-        }
-
-        if (line.size() < 6) {
-            continue;
-        }
-
-        if (line[0] == '1') {
-            player.m_SprintKeyHeld = Player::SprintBufferLength;
-        }
-
-        player.m_JumpKeyHeld = line[1u] == '1';
-        player.m_LeftKeyHeld = line[2u] == '1';
-        player.m_RightKeyHeld = line[3u] == '1';
-        player.m_UpKeyHeld = line[4u] == '1';
-        player.m_DownKeyHeld = line[5u] == '1';
-
-        m_ScriptRecorder.Update();
-    }
-
-    inFile.close();
-
-    m_ScriptRecorder.StopRecording();
-
-    std::string script = saveCustomScript();
-
-    startCustomScript(script);
-
-    std::filesystem::remove(script);
-}
-
 void Game::startCustomScript(const std::string& filename) {
     std::ifstream inFile(filename, std::ios::binary);
 
@@ -562,10 +511,10 @@ std::string Game::saveCustomScript() {
 
     std::ofstream outFile(filepath, std::ios::binary);
 
-    uint8_t level = m_ScriptRecorder.GetInitialLevel();
+    const uint8_t level = m_ScriptRecorder.GetInitialLevel();
     outFile.write(reinterpret_cast<const char*>(&level), sizeof(level));
 
-    uint32_t count = static_cast<uint32_t>(m_ScriptRecorder.getScript().size());
+    const uint32_t count = static_cast<uint32_t>(m_ScriptRecorder.getScript().size());
     outFile.write(reinterpret_cast<const char*>(&count), sizeof(count));
 
     for (const auto& input : m_ScriptRecorder.getScript()) {

@@ -1565,7 +1565,7 @@ void MapLoader::handleWallBackground(const unsigned int& colIndex, World& world)
     {
         const unsigned int roofIndex = colIndex + 5u;
 
-        Components::Render* renderComponent = GetComponent(world.m_Tiles[roofIndex].get(), Components::Render);
+        const Components::Render* renderComponent = GetComponent(world.m_Tiles[roofIndex].get(), const Components::Render);
 
         if (
             !renderComponent || (
@@ -1581,7 +1581,7 @@ void MapLoader::handleWallBackground(const unsigned int& colIndex, World& world)
     for (uint8_t i = 0u; i < 5u; ++i) {
         unsigned int index = brickIndex + i;
 
-        Components::Render* renderComponent = GetComponent(world.m_Tiles[index].get(), Components::Render);
+        const Components::Render* renderComponent = GetComponent(world.m_Tiles[index].get(), const Components::Render);
 
         if (
             !renderComponent || (
@@ -1812,7 +1812,7 @@ void MapLoader::placeTree(const uint8_t& yPos, const uint8_t& length, const unsi
             const unsigned int index = indexAnchor_2 + i * 13u;
             auto& existingTile = world.m_Tiles[index];
 
-            Components::Render* renderComponent = GetComponent(existingTile.get(), Components::Render);
+            const Components::Render* renderComponent = GetComponent(existingTile.get(), const Components::Render);
 
             if (
                 !renderComponent || (
@@ -1842,7 +1842,7 @@ void MapLoader::placeMushroom(const uint8_t& yPos, const uint8_t& length, const 
         const unsigned int index = stemPos + i;
         auto& existingTile = world.m_Tiles[index];
 
-        Components::Render* renderComponent = GetComponent(existingTile.get(), Components::Render);
+        const Components::Render* renderComponent = GetComponent(existingTile.get(), const Components::Render);
 
         if (
             !renderComponent || (
@@ -2316,8 +2316,8 @@ void MapLoader::parseBadGuysObject(const uint8_t& b1, const uint8_t& b2, const b
                 index -= 13;
 
                 if (
-                    Components::Render* renderComp = GetComponent(world.m_Tiles[index].get(), Components::Render);
-                    renderComp && renderComp->TextureId == gbl::TextureId::Block::Anchor_1
+                    const Components::Render* renderComponent = GetComponent(world.m_Tiles[index].get(), const Components::Render);
+                    renderComponent && renderComponent->TextureId == gbl::TextureId::Block::Anchor_1
                 ) {
                     break;
                 }
@@ -2499,8 +2499,8 @@ void MapLoader::Update(World& world) {
             sprite->Position.x -= Factor;
 
             if (
-                LiftOscilating* lift = GetIf(sprite, LiftOscilating);
-                lift && !lift->m_Axis
+                LiftOscilating* lift = GetIf(sprite, LiftOscilating); lift &&
+                !lift->m_Axis
             ) {
                 lift->m_Start -= Factor;
             }

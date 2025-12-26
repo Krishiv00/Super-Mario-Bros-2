@@ -232,12 +232,12 @@ void Player::keyboardControl() {
 void Player::joystickControl(uint8_t index) {
     constexpr float AxisThreshold = 15.f;
 
-    float xAxis = sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::X);
+    const float xAxis = sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::X);
 
     m_LeftKeyHeld = xAxis < -AxisThreshold;
     m_RightKeyHeld = xAxis > AxisThreshold;
 
-    float yAxis = sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::Y);
+    const float yAxis = sf::Joystick::getAxisPosition(index, sf::Joystick::Axis::Y);
 
     m_UpKeyHeld = yAxis < -AxisThreshold;
     m_DownKeyHeld = yAxis > AxisThreshold;
@@ -472,7 +472,7 @@ void Player::clampVelocity() {
 
 void Player::startJump() {
     if (m_OnGround || m_SwimmingPhysics || sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::J)) {
-        bool running = runningAtFullSpeed();
+        const bool running = runningAtFullSpeed();
 
         m_WasRunningBeforeCurrentAction = running;
 
@@ -613,7 +613,7 @@ uint8_t Player::getAnimationTimer() const {
         return 4u;
     }
 
-    uint8_t speed = static_cast<uint8_t>(currentAbsoluteSpeed() * 16.f);
+    const uint8_t speed = static_cast<uint8_t>(currentAbsoluteSpeed() * 16.f);
 
     if (speed > 27u && !m_SwimmingPhysics) {
         return 2u;
@@ -679,11 +679,11 @@ void uint24_t::operator+=(uint32_t val) noexcept {
     uint8_t addend[3u]{};
 
     for (int digitIndex = 5; digitIndex >= 0; --digitIndex) {
-        uint8_t digit = val % 10u;
+        const uint8_t digit = val % 10u;
         val /= 10u;
 
-        uint8_t byteIndex = (5u - digitIndex) / 2u;
-        uint8_t nibblePos = (5u - digitIndex) % 2u;
+        const uint8_t byteIndex = (5u - digitIndex) / 2u;
+        const uint8_t nibblePos = (5u - digitIndex) % 2u;
 
         addend[2u - byteIndex] |= nibblePos == 0u ? digit : (digit << 4u);
     }

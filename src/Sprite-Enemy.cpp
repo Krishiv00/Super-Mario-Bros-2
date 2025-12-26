@@ -3,23 +3,29 @@
 
 #include "Renderer.hpp"
 
-#pragma region Enemy
-
-Enemy::Enemy(EnemyType::Type type, sf::Vector2f position) : m_Type(type) {
-    Position = position;
-}
-
-uint16_t Enemy::GetStompScore(const uint8_t& stompChain) noexcept {
-    constexpr uint8_t StompChainPoints[] = {1u, 2u, 4u, 5u, 8u, 10u, 20u, 40u, 50u, 80u};
-
-    if (stompChain < 10u) {
-        return StompChainPoints[stompChain] * 100u;
+[[nodiscard]] constexpr inline uint16_t GetStompScore(const uint8_t& stompChain, const uint8_t& enemyType) noexcept {
+    if (enemyType == EnemyType::KoopaParatroopa) {
+        return 400u;
+    } else if (enemyType == EnemyType::HammerBrother) {
+        return 1000u;
+    } else if (enemyType == EnemyType::CheepCheep) {
+        return 200u;
+    } else if (enemyType == EnemyType::Lakitu) {
+        return 800u;
+    } else if (enemyType == EnemyType::BulletBill) {
+        return 200u;
     } else {
-        return 0u; // to be interpreted as a one up
+        constexpr uint8_t StompChainPoints[] = {1u, 2u, 4u, 5u, 8u, 10u, 20u, 40u, 50u, 80u};
+    
+        if (stompChain < 10u) {
+            return StompChainPoints[stompChain] * 100u;
+        } else {
+            return 0u; // to be interpreted as a one up
+        }
     }
 }
 
-uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
+[[nodiscard]] constexpr inline uint16_t GetShellScore(const uint8_t& shellChain) noexcept {
     constexpr uint8_t ShellChainPoints[] = {5u, 8u, 10u, 20u, 40u, 50u, 80u};
 
     if (shellChain < 7u) {
@@ -29,18 +35,43 @@ uint16_t Enemy::GetShellScore(const uint8_t& shellChain) noexcept {
     }
 }
 
+[[nodiscard]] constexpr inline uint16_t GetFireDeathScore(const uint8_t& enemyType) noexcept {
+    if (enemyType == EnemyType::Goomba) {
+        return 100u;
+    } else if (enemyType == EnemyType::HammerBrother) {
+        return 1000u;
+    } else {
+        return 200u;
+    }
+}
+
+[[nodiscard]] constexpr inline uint8_t GetDeathAnimationSpriteType(const uint8_t& enemyType) noexcept {
+    if (
+        enemyType == EnemyType::KoopaTroopa ||
+        enemyType == EnemyType::KoopaParatroopa ||
+        enemyType == EnemyType::RedKoopaTroopa ||
+        enemyType == EnemyType::RedKoopaParatroopa
+    ) {
+        return EnemyType::KoopaTroopaShell;
+    } else if (
+        enemyType == EnemyType::BuzzyBeetle
+    ) {
+        return EnemyType::BuzzyBeetleShell;
+    } else {
+        return enemyType;
+    }
+}
+
+#pragma region Enemy
+
+Enemy::Enemy(EnemyType::Type type, sf::Vector2f position) : m_Type(type) {
+    Position = position;
+}
+
 void Enemy::spawnDeathAnimation(World& world, int8_t direction, float initialVelocity = -3.f) noexcept {
     if (m_Type != EnemyType::PiranhaPlant) {
-        float offset = (m_Type != EnemyType::HammerBrother) * TileSize;
-
-        uint8_t type = (
-            m_Type == EnemyType::KoopaTroopa ||
-            m_Type == EnemyType::KoopaParatroopa ||
-            m_Type == EnemyType::RedKoopaTroopa ||
-            m_Type == EnemyType::RedKoopaParatroopa
-        ) ? EnemyType::KoopaTroopaShell : (
-            m_Type == EnemyType::BuzzyBeetle
-        ) ? EnemyType::BuzzyBeetleShell : m_Type;
+        const uint8_t type = GetDeathAnimationSpriteType(m_Type);
+        const float offset = (type != EnemyType::HammerBrother) * TileSize;
 
         world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, direction, initialVelocity, SlotIndex);
     }
@@ -66,7 +97,7 @@ void Enemy::onShellDeath(World& world, uint8_t killChain, int8_t shellDirection)
 
     spawnDeathAnimation(world, shellDirection);
 
-    if (uint16_t score = GetShellScore(killChain)) {
+    if (const uint16_t score = GetShellScore(killChain)) {
         givePlayerScore(score, world);
     } else {
         givePlayerLife(world);
@@ -74,20 +105,20 @@ void Enemy::onShellDeath(World& world, uint8_t killChain, int8_t shellDirection)
 }
 
 bool Enemy::shouldDespawn(float cameraPosition, float maxThreshold = World::MaxSpriteDistanceLeftNormal) const noexcept {
-    float boundLeft = std::max(cameraPosition - maxThreshold, 0.f);
-    float boundRight = cameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
+    const float boundLeft = std::max(cameraPosition - maxThreshold, 0.f);
+    const float boundRight = cameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
 
     // height of the game (240 pixels)
     constexpr float boundBottom = gbl::Height;
 
-    float enemyX = xPosition();
-    float enemyY = yPosition();
+    const float enemyX = xPosition();
+    const float enemyY = yPosition();
 
     return enemyX < boundLeft || (m_Direction == gbl::Direction::Right && enemyX > boundRight) || enemyY > boundBottom;
 }
 
 void Enemy::onCollide(World& world) {
-    if (player.Damage(world) && m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar && !GetIf(this, EnemyComponents::Shell)) {
+    if (player.Damage(world) && m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar && !Is(this, EnemyComponents::Shell)) {
         setDirectionRelativeToPlayer();
     }
 }
@@ -95,7 +126,7 @@ void Enemy::onCollide(World& world) {
 void Enemy::onBlockDefeat(World& world, float blockPosition) {
     ToRemove = true;
 
-    if (!GetComponent(this, EnemyComponents::ShellEnemy)) {
+    if (!HasComponent(this, EnemyComponents::ShellEnemy)) {
         spawnDeathAnimation(world, xPosition() >= blockPosition ? 1 : -1);
     }
 }
@@ -104,17 +135,7 @@ void Enemy::onFireballDeath(World& world, int8_t fireballDirection) {
     ToRemove = true;
     audioPlayer.Play(AudioPlayer::FireballKill);
 
-    uint16_t score;
-
-    if (m_Type == EnemyType::Goomba) {
-        score = 100u;
-    } else if (m_Type == EnemyType::HammerBrother) {
-        score = 1000u;
-    } else {
-        score = 200u;
-    }
-
-    givePlayerScore(score, world);
+    givePlayerScore(GetFireDeathScore(m_Type), world);
 
     spawnDeathAnimation(world, fireballDirection);
 }
@@ -130,17 +151,7 @@ void Enemy::OnCollisionWithPlayer(World& world) {
         ToRemove = true;
         audioPlayer.Play(AudioPlayer::StarmanKill);
 
-        uint16_t score;
-
-        if (m_Type == EnemyType::Goomba) {
-            score = 100u;
-        } else if (m_Type == EnemyType::HammerBrother) {
-            score = 1000u;
-        } else {
-            score = 200u;
-        }
-
-        givePlayerScore(score, world);
+        givePlayerScore(GetFireDeathScore(m_Type), world);
 
         spawnDeathAnimation(world, player.getVelocity().x ? gbl::sign(player.getVelocity().x) : 0);
     } else {
@@ -168,14 +179,11 @@ namespace EnemyComponents {
     void SideToSideMovement::update(World& world, float speed = 0.5f, bool make_sound = false) {
         Position.x += speed * m_Direction;
 
-        float top = yPosition();
+        const float top = yPosition();
 
         if (top >= 32.f && top < 207.f) {
-            float bottom = top + TileSize * 2.f;
-
-            bool movingRight = m_Direction == 1u;
-
-            sf::Vector2f sidePoint = sf::Vector2f(xPosition() + TileSize * movingRight, bottom - 1.f);
+            const float bottom = top + TileSize * 2.f;
+            const sf::Vector2f sidePoint = sf::Vector2f(xPosition() + TileSize * (m_Direction == 1u), bottom - 1.f);
 
             if (world.PointInTile(sidePoint)) {
                 m_Direction *= -1;
@@ -192,12 +200,11 @@ namespace EnemyComponents {
 
         Position.y += m_YVelocity;
 
-        float top = yPosition();
+        const float top = yPosition();
 
         if (top >= 16.f && top < 207.f) {
-            float bottom = top + TileSize * 2.f;
-
-            sf::Vector2f feetPoint = sf::Vector2f(xPosition() + TileSize * 0.5f, bottom);
+            const float bottom = top + TileSize * 2.f;
+            const sf::Vector2f feetPoint = sf::Vector2f(xPosition() + TileSize * 0.5f, bottom);
 
             if (m_OnGround = world.PointInTile(feetPoint)) {
                 Position.y = (static_cast<int>(bottom / TileSize) - 2) * TileSize;
@@ -210,22 +217,19 @@ namespace EnemyComponents {
         auto sprites = world.getSprites();
 
         for (uint8_t i = SlotIndex + 1u; i < World::EnemySpriteSlots; ++i) {
-            auto& slot = sprites[i];
-            if (!slot) continue;
-
-            Enemy* enemy = GetComponent(slot.get(), Enemy);
-            if (!enemy) continue;
-
-            if (
-                CollideWithOtherEnemies* other = GetComponent(enemy, CollideWithOtherEnemies);
-                other &&
-                other->m_Direction != m_Direction &&
-                other->getHitbox().findIntersection(getHitbox())
-            ) {
-                m_Direction *= -1;
-
-                if (!GetIf(other, Shell)) {
-                    other->m_Direction *= -1;
+            if (auto& slot = sprites[i]) {
+                if (Enemy* enemy = GetIf(slot.get(), Enemy)) {
+                    if (
+                        CollideWithOtherEnemies* other = GetIf(enemy, CollideWithOtherEnemies); other &&
+                        other->m_Direction != m_Direction &&
+                        other->getHitbox().findIntersection(getHitbox())
+                    ) {
+                        m_Direction *= -1;
+        
+                        if (!Is(other, Shell)) {
+                            other->m_Direction *= -1;
+                        }
+                    }
                 }
             }
         }
@@ -240,27 +244,7 @@ namespace EnemyComponents {
     }
 
     void Stompable::onStomp(World& world) {
-        float playerLastVel = player.getVelocity().y;
-
-        player.setYVelocity(-4.f);
-
-        uint16_t score;
-
-        if (m_Type == EnemyType::KoopaParatroopa) {
-            score = 400u;
-        } else if (m_Type == EnemyType::HammerBrother) {
-            score = 1000u;
-        } else if (m_Type == EnemyType::CheepCheep) {
-            score = 200u;
-        } else if (m_Type == EnemyType::Lakitu) {
-            score = 800u;
-        } else if (m_Type == EnemyType::BulletBill) {
-            score = 200u;
-        } else {
-            score = GetStompScore(world.m_StompChain++ + (playerLastVel == -4.f));
-        }
-
-        if (score) {
+        if (const uint16_t score = GetStompScore(world.m_StompChain++ + (player.getVelocity().y == -4.f), m_Type)) {
             givePlayerScore(score, world);
         } else {
             givePlayerLife(world);
@@ -273,6 +257,8 @@ namespace EnemyComponents {
         ) {
             spawnDeathAnimation(world, 0, 0.f);
         }
+
+        player.setYVelocity(-4.f);
     }
 
     void GroundEnemy::HandleMovement(World& world) {
@@ -311,6 +297,7 @@ namespace EnemyComponents {
         Enemy::onBlockDefeat(world, blockPosition);
 
         std::unique_ptr<Shell> shell = getShellObj();
+
         shell->m_FlippedVertically = true;
         shell->m_YVelocity = -3.f;
         shell->m_Direction = xPosition() > blockPosition ? 1 : -1;
@@ -345,7 +332,7 @@ namespace EnemyComponents {
             SideToSideMovement::update(world, 1.f);
         }
 
-        bool oldGround = m_OnGround;
+        const bool oldGround = m_OnGround;
 
         GravityMovement::update(world);
 
@@ -373,28 +360,24 @@ namespace EnemyComponents {
         auto sprites = world.getSprites();
 
         for (uint8_t i = 0u; i < World::EnemySpriteSlots; ++i) {
-            if (i == SlotIndex) continue;
-
-            auto& slot = sprites[i];
-            if (!slot) continue;
-
-            if (
-                Enemy* other = GetComponent(slot.get(), Enemy);
-                other &&
-                !GetIf(other, DeadGoomba) &&
-                !GetIf(other, Lift) &&
-                other->getHitbox().findIntersection(getHitbox())
-            ) {
-                other->onShellDeath(world, m_KillChain++, m_Direction);
+            if (i != SlotIndex) {
+                if (auto& slot = sprites[i]) {
+                    if (
+                        Enemy* other = GetIf(slot.get(), Enemy); other &&
+                        !Is(other, DeadGoomba) && !Is(other, Lift) &&
+                        other->getHitbox().findIntersection(getHitbox())
+                    ) {
+                        other->onShellDeath(world, m_KillChain++, m_Direction);
+                    }
+                }
             }
         }
     }
 
     void Shell::setMovingState() {
         m_Direction = gbl::sign(xPosition() - player.xPosition());
-
+        
         m_Moving = true;
-
         m_Animate = false;
 
         audioPlayer.Play(AudioPlayer::Kick);
@@ -404,23 +387,22 @@ namespace EnemyComponents {
         m_Direction = 0;
 
         m_Moving = false;
+        m_Animate = false;
 
         m_RevivalTimer = World::Difficulty ? 11u : 16u;
-
-        m_Animate = false;
     }
 
     void Shell::giveKickPoints(World& world) {
-        uint16_t score;
+        uint16_t score = 400u;
 
         if (!m_OnGround) {
             score = 8000u;
         } else if (m_Animate) {
-            score = Renderer::getEnemyAnimation() ? 8000u : 400u;
-        } else if (world.getStompChain() > 0u) {
+            if (Renderer::getEnemyAnimation()) {
+                score = 8000u;
+            }
+        } else if (world.getStompChain()) {
             score = 500u;
-        } else {
-            score = 400u;
         }
 
         givePlayerScore(score, world);
@@ -564,9 +546,7 @@ sf::FloatRect KoopaTroopa::getHitbox() const {
 
 #pragma region Koopa Troopa Shell
 
-KoopaTroopaShell::KoopaTroopaShell(sf::Vector2f position) : Enemy(EnemyType::KoopaTroopaShell, position) {
-
-}
+KoopaTroopaShell::KoopaTroopaShell(sf::Vector2f position) : Enemy(EnemyType::KoopaTroopaShell, position) {}
 
 sf::FloatRect KoopaTroopaShell::getHitbox() const {
     return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 16.f), sf::Vector2f(12.f, 13.f));

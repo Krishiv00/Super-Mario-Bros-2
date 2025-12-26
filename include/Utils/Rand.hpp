@@ -24,13 +24,14 @@ public:
     }
 
     static void Update() {
-        uint8_t bit0 = (m_State[0u] >> 1u) & 1u;
-        uint8_t bit1 = (m_State[1u] >> 1u) & 1u;
+        const uint8_t bit0 = (m_State[0u] >> 1u) & 1u;
+        const uint8_t bit1 = (m_State[1u] >> 1u) & 1u;
+        
         uint8_t carry = bit0 ^ bit1;
 
         for (uint8_t i = 0u; i < 7u; i++) {
-            uint8_t old = m_State[i];
-            uint8_t newByte = (old >> 1u) | (carry << 7u);
+            const uint8_t old = m_State[i];
+            const uint8_t newByte = (old >> 1u) | (carry << 7u);
 
             carry = old & 1u;
             m_State[i] = newByte;

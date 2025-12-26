@@ -110,31 +110,16 @@ public:
             return;
         }
 
-        uint8_t input = 0u;
+        const bool sprintKeyHeld = player.m_SprintKeyHeld == Player::SprintBufferLength - 1;
 
-        if (player.m_SprintKeyHeld == Player::SprintBufferLength - 1) {
-            input |= ButtonInput::SPRINT;
-        }
-
-        if (player.m_JumpKeyHeld) {
-            input |= ButtonInput::JUMP;
-        }
-
-        if (player.m_LeftKeyHeld) {
-            input |= ButtonInput::LEFT;
-        }
-
-        if (player.m_RightKeyHeld) {
-            input |= ButtonInput::RIGHT;
-        }
-
-        if (player.m_UpKeyHeld) {
-            input |= ButtonInput::UP;
-        }
-
-        if (player.m_DownKeyHeld) {
-            input |= ButtonInput::DOWN;
-        }
+        const uint8_t input = (
+            (ButtonInput::SPRINT * sprintKeyHeld) |
+            (ButtonInput::JUMP * player.m_JumpKeyHeld) |
+            (ButtonInput::LEFT * player.m_LeftKeyHeld) |
+            (ButtonInput::RIGHT * player.m_RightKeyHeld) |
+            (ButtonInput::UP * player.m_UpKeyHeld) |
+            (ButtonInput::DOWN * player.m_DownKeyHeld)
+        );
 
         if (m_Script.empty() || m_Script.back().inputBits != input || m_Script.back().duration == 255U) {
             m_Script.emplace_back(input, 0x01u);

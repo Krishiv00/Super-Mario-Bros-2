@@ -124,6 +124,8 @@ namespace Blocks {
 }
 
 #define GetComponent(var, name) dynamic_cast<name*>(var)
+#define HasComponent(var, name) (GetComponent(var, const name) != nullptr)
 #define GetIf(var, name) dynamic_cast<name*>(var)
+#define Is(var, name) (GetIf(var, const name) != nullptr)
 
 #endif // !ENUMS_BLOCKS_HPP

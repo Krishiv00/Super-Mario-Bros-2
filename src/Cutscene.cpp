@@ -23,10 +23,6 @@ void Cutscene::unFreezePlayer() {
     player.m_Frozen = false;
 }
 
-void Cutscene::killPlayer() {
-    --player.Data.Lives;
-}
-
 void Cutscene::landPlayer() {
     player.m_OnGround = true;
 }
@@ -232,9 +228,7 @@ SizeChangingScene::~SizeChangingScene() {
     unFreezeGame();
 }
 
-GrowingScene::GrowingScene(World& world) : SizeChangingScene(world) {
-
-}
+GrowingScene::GrowingScene(World& world) : SizeChangingScene(world) {}
 
 void GrowingScene::Update() {
     TimedCutscene::Update();
@@ -302,7 +296,7 @@ DeathScene::~DeathScene() {
     enableCollision(0);
     enableCollision(1);
 
-    killPlayer();
+    --player.Data.Lives;
 
     restartLevel();
 }
@@ -504,7 +498,7 @@ LPipeScene::LPipeScene(World& world) : LevelClearScene(world) {
 
     setPlayerState(Player::Walking);
 
-    float endPos = std::truncf(player.getHitbox().position.x / 16.f + 1.f) * 16.f + 2.f;
+    const float endPos = std::truncf(player.getHitbox().position.x / 16.f + 1.f) * 16.f + 2.f;
     m_AutowalkTimer = (endPos - player.xPosition()) / PlayerMaxAutowalkSpeed;
 
     m_LevelEndTimer = 48u;

@@ -116,7 +116,7 @@ bool World::PointInTile(const sf::Vector2f& point) const {
 
     Blocks::Block* block = m_Tiles[World::GetIndex(col, row)].get();
 
-    return block && GetComponent(block, Components::Collision);
+    return block && HasComponent(block, Components::Collision);
 }
 
 #pragma region Events
@@ -126,7 +126,7 @@ void World::on_block_hit_from_bottom(unsigned int x, unsigned int y) {
 
     auto& block = m_Tiles[World::GetIndex(x, y)];
 
-    if (Components::Item* itemComponent = GetComponent(block.get(), Components::Item)) {
+    if (const Components::Item* itemComponent = GetComponent(block.get(), const Components::Item)) {
         bool use = true;
 
         if (gbl::ItemType::isPowerupItem(itemComponent->ItemId)) {
@@ -135,7 +135,7 @@ void World::on_block_hit_from_bottom(unsigned int x, unsigned int y) {
             audioPlayer.Play(AudioPlayer::PowerupSpawn);
         } else if (gbl::ItemType::isCoinItem(itemComponent->ItemId)) {
             if (
-                Components::Render* renderComponent = GetComponent(block.get(), Components::Render);
+                const Components::Render* renderComponent = GetComponent(block.get(), const Components::Render);
                 renderComponent &&
                 renderComponent->TextureId != gbl::TextureId::Block::Question
             ) {
@@ -162,7 +162,7 @@ void World::on_block_hit_from_bottom(unsigned int x, unsigned int y) {
         m_BouncingBlock = std::make_unique<BouncingBlock>(block, itemComponent->ItemId, m_BumpTimer, x, y, m_AttributeTable[World::GetIndex(x, y)]);
 
         handleBlockDefeat(m_BouncingBlock->Position);
-    } else if (GetComponent(block.get(), Components::Hitable)) {
+    } else if (HasComponent(block.get(), Components::Hitable)) {
         m_BouncingBlock = std::make_unique<BouncingBlock>(block, gbl::ItemType::None, m_BumpTimer, x, y, m_AttributeTable[World::GetIndex(x, y)]);
 
         handleBlockDefeat(m_BouncingBlock->Position);
@@ -235,9 +235,8 @@ void World::stopCutscene() {
 
 void World::collectCoinAboveBlock(unsigned int x, unsigned int y) {
     if (
-        auto& block = m_Tiles[World::GetIndex(x, y) - 1];
-        block &&
-        GetIf(block.get(), Blocks::Coin)
+        auto& block = m_Tiles[World::GetIndex(x, y) - 1]; block &&
+        Is(block.get(), Blocks::Coin)
     ) {
         give_coin();
         block.reset();

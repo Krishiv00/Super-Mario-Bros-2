@@ -48,7 +48,7 @@ private:
 
             auto& block = world.m_Tiles[tileIndex];
             
-            if (!block || !GetIf(block.get(), Blocks::Coin)) {
+            if (!block || !Is(block.get(), Blocks::Coin)) {
                 placeBlock(tileIndex, std::make_unique<BlockType>(std::forward<Args>(args)...), subPalleteIndex, world);
             }
         }

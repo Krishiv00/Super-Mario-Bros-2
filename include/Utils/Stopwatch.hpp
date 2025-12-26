@@ -16,8 +16,8 @@ public:
 
     // returns the elapsed time in milliseconds
     static double Stop() {
-        auto endTime = std::chrono::high_resolution_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - s_startTime);
+        const auto endTime = std::chrono::high_resolution_clock::now();
+        const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(endTime - s_startTime);
 
         s_Running = false;
 

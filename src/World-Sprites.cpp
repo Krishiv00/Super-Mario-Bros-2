@@ -6,14 +6,14 @@
 bool World::AddSprite(std::unique_ptr<Sprite>& sprite) {
     Sprite* sprite_ptr = sprite.get();
 
-    if (GetIf(sprite_ptr, Flag)) {
+    if (Is(sprite_ptr, Flag)) {
         // just load flag in special slot. Period
         m_Sprites[SpecialSpriteSlot] = std::move(sprite);
 
         return true;
     }
 
-    const bool useSpecial = GetIf(sprite_ptr, StarFlag) || GetIf(sprite_ptr, JumpSpring);
+    const bool useSpecial = Is(sprite_ptr, StarFlag) || Is(sprite_ptr, JumpSpring);
 
     const uint8_t totalSlots = EnemySpriteSlots + useSpecial;
 
@@ -29,8 +29,8 @@ bool World::AddSprite(std::unique_ptr<Sprite>& sprite) {
 
                     for (uint8_t j = 0u; j < EnemySpriteSlots; ++j) {
                         if (
-                            LiftBalance* otherLift = GetIf(m_Sprites[j].get(), LiftBalance);
-                            otherLift && otherLift->m_FriendSlot == 255u && otherLift->Position.x < lift->Position.x
+                            LiftBalance* otherLift = GetIf(m_Sprites[j].get(), LiftBalance); otherLift &&
+                            otherLift->m_FriendSlot == 255u && otherLift->Position.x < lift->Position.x
                         ) {
                             friendLift = otherLift;
                             break;
@@ -50,7 +50,7 @@ bool World::AddSprite(std::unique_ptr<Sprite>& sprite) {
         }
     }
 
-    if (GetIf(sprite_ptr, StarFlag)) {
+    if (Is(sprite_ptr, StarFlag)) {
         // if no slot found, forcefully load into special slot
         m_Sprites[SpecialSpriteSlot] = std::move(sprite);
 
@@ -90,7 +90,7 @@ void World::handleSpriteLoading() {
         std::vector<std::unique_ptr<Sprite>>& spriteGroup = m_SpritePool[0u];
 
         if (spriteGroup.front()->Position.x <= threshold) {
-            if (GetIf(spriteGroup.front().get(), Axe)) {
+            if (Is(spriteGroup.front().get(), Axe)) {
                 Renderer::SetSpriteTheme(1u, 4u);
             }
 
@@ -147,7 +147,7 @@ void World::activateJumpSpring() {
 }
 
 void World::spawnCoinAnimation(unsigned int x, unsigned int y) {
-    bool index = GetIf(m_MiscSprites[0u].get(), CoinAnimation);
+    const bool index = Is(m_MiscSprites[0u].get(), CoinAnimation);
     m_MiscSprites[index] = std::make_unique<CoinAnimation>(sf::Vector2f(x * TileSize, (y - 1) * TileSize - 4.f));
 }
 
@@ -245,7 +245,7 @@ void World::updateSprites() {
 }
 
 void World::updateGrowingPowerup() {
-    if (Powerup* powerup = GetComponent(m_Sprites[SpecialSpriteSlot].get(), Powerup)) {
+    if (Powerup* powerup = GetIf(m_Sprites[SpecialSpriteSlot].get(), Powerup)) {
         powerup->moving_out();
     }
 }
@@ -262,7 +262,7 @@ void World::updateFreezeIndependentSprites() {
             sprite->Update();
 
             if (!sprite->Active()) {
-                if (GetIf(sprite.get(), CoinAnimation)) {
+                if (Is(sprite.get(), CoinAnimation)) {
                     SpawnFloateyNum(FloateyNum(sprite->Position, CameraPosition, FloateyNum::GetType(200u)));
                 }
 
@@ -347,8 +347,7 @@ void World::spawn_powerup(uint8_t id, sf::Vector2f position) {
 void World::handlePowerupCollisions() {
     if (auto& specialSlot = m_Sprites[SpecialSpriteSlot]) {
         if (
-            Powerup* powerup = GetIf(specialSlot.get(), Powerup);
-            powerup &&
+            Powerup* powerup = GetIf(specialSlot.get(), Powerup); powerup &&
             powerup->getHitbox().findIntersection(player.getHitbox())
         ) {
             powerup->GrantPower(*this);

@@ -475,13 +475,11 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
         return;
     }
 
-    bool big = player.isBig() || player.m_FireballThrowAnimation;
+    const uint8_t row = (player.m_FireballThrowAnimation ? Player::Shooting : player.getState()) * 2u;
+    const uint8_t col = (player.isBig() || player.m_FireballThrowAnimation) * 5u + player.m_AnimationFrame * !player.m_FireballThrowAnimation;
 
-    uint8_t row = (player.m_FireballThrowAnimation ? Player::Shooting : player.getState()) * 2u;
-    uint8_t col = big * 5u + player.m_AnimationFrame * !player.m_FireballThrowAnimation;
-
-    sf::Vector2f position = sf::Vector2f(player.xPosition(), player.yPosition());
-    sf::Vector2f texturePos = sf::Vector2f(static_cast<float>(col) * TileSize, static_cast<float>(row) * TileSize);
+    const sf::Vector2f position = sf::Vector2f(player.xPosition(), player.yPosition());
+    const sf::Vector2f texturePos = sf::Vector2f(static_cast<float>(col) * TileSize, static_cast<float>(row) * TileSize);
 
     s_PaletteShader.setUniform("pallete", s_SpritePallete);
 
@@ -500,7 +498,7 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
 #pragma region Tile
 
 void Renderer::render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f((textureId - 1) * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f((textureId - 1) * TileSize, 0.f);
 
     createVertices(position, texturePos);
     renderVertices(s_TilesetTexture, subPalleteIndex, target);
@@ -509,7 +507,7 @@ void Renderer::render(sf::RenderTarget& target, const uint8_t& textureId, const 
 #pragma region Enemy
 
 void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(
+    const sf::Vector2f texturePos = sf::Vector2f(
         enemy.m_Animate && s_EnemyAnimation, (enemy.m_Type & 0x7F) * 2u
     ) * TileSize;
 
@@ -524,7 +522,7 @@ void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexAr
 #pragma region NPC
 
 void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(npc.m_Animate, EnemyType::NPC * 2u) * TileSize;
+    const sf::Vector2f texturePos = sf::Vector2f(npc.m_Animate, EnemyType::NPC * 2u) * TileSize;
 
     createVertices(npc.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f));
     renderVertices(s_SpritesTexture, npc.SubPalleteIndex, target);
@@ -535,7 +533,7 @@ void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
 void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept {
     sf::Vector2f position = shell.Position;
 
-    sf::Vector2f texturePos = sf::Vector2f(
+    const sf::Vector2f texturePos = sf::Vector2f(
         shell.m_Animate && s_EnemyAnimation, (shell.m_Type & 0x7F) * 2u
     ) * TileSize;
 
@@ -554,14 +552,14 @@ void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& sh
 #pragma region Firebar
 
 void Renderer::render(sf::RenderTarget& target, const Firebar& firebar) noexcept {
-    sf::Vector2f texturePos = fireballTexturePos();
+    const sf::Vector2f texturePos = fireballTexturePos();
 
     const float angleRad = firebar.getAngle();
     const float angleSin = std::sin(angleRad);
     const float angleCos = std::cos(angleRad);
 
     for (uint8_t i = 0u; i < firebar.m_Size; ++i) {
-        float radius = i * TileSize * 0.5f;
+        const float radius = i * TileSize * 0.5f;
 
         sf::Vector2f position = sf::Vector2f(
             firebar.Position.x + angleSin * radius,
@@ -577,13 +575,13 @@ void Renderer::render(sf::RenderTarget& target, const Firebar& firebar) noexcept
 
 void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::VertexArray& hitboxes) noexcept {
     if (powerup.m_Type == gbl::PowerupType::FireFlower) {
-        sf::Vector2f texturePos = sf::Vector2f((gbl::PowerupType::FireFlower + 1u) * TileSize, 0.f);
+        const sf::Vector2f texturePos = sf::Vector2f((gbl::PowerupType::FireFlower + 1u) * TileSize, 0.f);
 
         createVertices(powerup.Position, texturePos);
         renderVertices(s_PowerupsTexture, 1u, target);
     }
 
-    sf::Vector2f texturePos = sf::Vector2f(powerup.m_Type * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f(powerup.m_Type * TileSize, 0.f);
 
     createVertices(powerup.Position, texturePos);
     renderVertices(s_PowerupsTexture, powerup.SubPalleteIndex, target);
@@ -596,7 +594,7 @@ void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::Vert
 #pragma region Jump Spring
 
 void Renderer::render(sf::RenderTarget& target, const JumpSpring& spring) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(spring.m_Stage * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f(spring.m_Stage * TileSize, 0.f);
 
     createVertices(spring.Position, texturePos, sf::Vector2f(TileSize, TileSize * 1.5f));
     renderVertices(s_JumpSpringTexture, spring.SubPalleteIndex, target);
@@ -609,8 +607,8 @@ void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
     renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
 
     if (flag.m_FloateyNumType >= 0) {
-        sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
-        sf::Vector2f texturePos = sf::Vector2f(flag.m_FloateyNumType * TileSize, 0.f);
+        const sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
+        const sf::Vector2f texturePos = sf::Vector2f(flag.m_FloateyNumType * TileSize, 0.f);
 
         createVertices(position, texturePos);
         renderVertices(s_FloateyNumsTexture, flag.SubPalleteIndex, target);
@@ -620,7 +618,7 @@ void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
 #pragma region Star Flag
 
 void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(1.f, EnemyType::Flag * 2u + 1u) * TileSize;
+    const sf::Vector2f texturePos = sf::Vector2f(1.f, EnemyType::Flag * 2u + 1u) * TileSize;
 
     createVertices(flag.Position, texturePos);
     renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
@@ -629,7 +627,7 @@ void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
 #pragma region Axe
 
 void Renderer::render(sf::RenderTarget& target, const Axe& axe) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(0.f, EnemyType::Axe * 2u * TileSize);
+    const sf::Vector2f texturePos = sf::Vector2f(0.f, EnemyType::Axe * 2u * TileSize);
 
     s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
 
@@ -650,10 +648,10 @@ void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLi
         s_PaletteShader.setUniform("pallete", s_SpritePallete);
     }
 
-    sf::Vector2f texturePos = sf::Vector2f(lift.m_Animate, EnemyType::Lift * 2u + 1u) * TileSize;
+    const sf::Vector2f texturePos = sf::Vector2f(lift.m_Animate, EnemyType::Lift * 2u + 1u) * TileSize;
 
     for (uint8_t i = 0u; i < lift.m_Size; ++i) {
-        sf::Vector2f position = sf::Vector2f(lift.Position.x + i * TileSize, lift.Position.y);
+        const sf::Vector2f position = sf::Vector2f(lift.Position.x + i * TileSize, lift.Position.y);
 
         createVertices(position, texturePos);
         renderVertices(s_SpritesTexture, lift.SubPalleteIndex, target);
@@ -663,7 +661,7 @@ void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLi
 #pragma region Fireball
 
 void Renderer::render(sf::RenderTarget& target, const Fireball& ball) noexcept {
-    sf::Vector2f texturePos = fireballTexturePos();
+    const sf::Vector2f texturePos = fireballTexturePos();
 
     createVertices(ball.Position, texturePos);
     renderVertices(s_SpritesTexture, ball.SubPalleteIndex, target);
@@ -672,7 +670,7 @@ void Renderer::render(sf::RenderTarget& target, const Fireball& ball) noexcept {
 #pragma region Misc Sprite
 
 void Renderer::render(sf::RenderTarget& target, const DecorSprite& sprite) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(sprite.GetTextureIndex() * TileSize, 0.f);
+    const sf::Vector2f texturePos = sf::Vector2f(sprite.GetTextureIndex() * TileSize, 0.f);
 
     createVertices(sprite.Position, texturePos);
     renderVertices(s_MiscSpritesTexture, 2u, target);
@@ -681,8 +679,8 @@ void Renderer::render(sf::RenderTarget& target, const DecorSprite& sprite) noexc
 #pragma region Floatey Num
 
 void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept {
-    sf::Vector2f position = floateyNum.getPosition(cameraPos);
-    sf::Vector2f texturePos = sf::Vector2f(floateyNum.m_Type * TileSize, 0.f);
+    const sf::Vector2f position = floateyNum.getPosition(cameraPos);
+    const sf::Vector2f texturePos = sf::Vector2f(floateyNum.m_Type * TileSize, 0.f);
 
     createVertices(position, texturePos);
     renderVertices(s_FloateyNumsTexture, subPalleteIndex, target);
@@ -691,7 +689,7 @@ void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, ui
 #pragma region Death Animation
 
 void Renderer::render(sf::RenderTarget& target, const DeathAnimation& animation) noexcept {
-    sf::Vector2f texturePos = sf::Vector2f(0.f, animation.m_Type * 2u * TileSize);
+    const sf::Vector2f texturePos = sf::Vector2f(0.f, animation.m_Type * 2u * TileSize);
 
     createVertices(animation.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), false, true);
     renderVertices(s_SpritesTexture, animation.SubPalleteIndex, target);
@@ -699,11 +697,11 @@ void Renderer::render(sf::RenderTarget& target, const DeathAnimation& animation)
 
 #pragma region Utils
 
-bool Renderer::hiddenEnemySlot(Enemy* enemy) noexcept {
+bool Renderer::hiddenSlot(const Enemy* enemy) noexcept {
     return enemy->m_Type == EnemyType::PiranhaPlant;
 }
 
-bool Renderer::hiddenPowerupSlot(Powerup* powerup) noexcept {
+bool Renderer::hiddenSlot(const Powerup* powerup) noexcept {
     return powerup->m_GetOutTimer;
 }
 
@@ -722,8 +720,8 @@ sf::Vector2f Renderer::fireballTexturePos() {
 void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcept {
     s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
 
-    unsigned int startCol = static_cast<unsigned int>((world.CameraPosition) / TileSize);
-    unsigned int endCol = (world.CameraPosition + gbl::Width) / TileSize;
+    const unsigned int startCol = static_cast<unsigned int>((world.CameraPosition) / TileSize);
+    const unsigned int endCol = (world.CameraPosition + gbl::Width) / TileSize;
 
     for (unsigned int x = startCol; x <= endCol; ++x) {
         unsigned int colIndex = x * 13u;
@@ -732,9 +730,9 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
 
         for (uint8_t y = 0u; y < 13u; ++y) {
             if (const auto& block = world.m_Tiles[colIndex + y]) {
-                if (const Components::Render* renderComponent = GetComponent(block.get(), Components::Render)) {
+                if (const Components::Render* renderComponent = GetComponent(block.get(), const Components::Render)) {
                     float posY = static_cast<float>(y + 2u) * TileSize;
-                    sf::Vector2f position = sf::Vector2f(posX, posY);
+                    const sf::Vector2f position = sf::Vector2f(posX, posY);
 
                     if (
                         world.CurrentTheme == 0x00u &&
@@ -750,14 +748,14 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
     }
 
     if (BouncingBlock* bouncingBlock = world.m_BouncingBlock.get()) {
-        render(target, GetComponent(bouncingBlock->m_Block.get(), Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
+        render(target, GetComponent(bouncingBlock->m_Block.get(), const Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
     }
 
     // draw page borders
 #if 0
     constexpr sf::Color lineColor = sf::Color::Green;
 
-    sf::Vertex lines[] = {
+    const sf::Vertex lines[] = {
         sf::Vertex(sf::Vector2f(256.f, 0.f), lineColor),
         sf::Vertex(sf::Vector2f(256.f, gbl::Height), lineColor),
 
@@ -778,35 +776,35 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
 
     for (const auto& slot : world.m_Sprites) {
         if (slot) {
-            if (Enemy* enemy = GetIf(slot.get(), Enemy)) {
-                if (hiddenEnemySlot(enemy) == drawHidden) {
-                    if (EnemyComponents::Shell* shell = GetIf(enemy, EnemyComponents::Shell)) {
+            if (const Enemy* enemy = GetIf(slot.get(), const Enemy)) {
+                if (hiddenSlot(enemy) == drawHidden) {
+                    if (const EnemyComponents::Shell* shell = GetIf(enemy, const EnemyComponents::Shell)) {
                         render(target, *shell, hitboxes);
-                    } else if (Firebar* firebar = GetIf(enemy, Firebar)) {
+                    } else if (const Firebar* firebar = GetIf(enemy, const Firebar)) {
                         render(target, *firebar);
-                    } else if (Lift* lift = GetIf(enemy, Lift)) {
-                        render(target, *lift, GetIf(enemy, LiftBalance));
-                    } else if (Axe* axe = GetIf(enemy, Axe)) {
+                    } else if (const Lift* lift = GetIf(enemy, const Lift)) {
+                        render(target, *lift, GetIf(enemy, const LiftBalance));
+                    } else if (const Axe* axe = GetIf(enemy, const Axe)) {
                         render(target, *axe);
-                    } else if (NPC* npc = GetIf(enemy, NPC)) {
+                    } else if (const NPC* npc = GetIf(enemy, const NPC)) {
                         render(target, *npc);
                     } else {
                         render(target, *enemy, hitboxes);
                     }
                 }
-            } else if (JumpSpring* spring = GetIf(slot.get(), JumpSpring)) {
+            } else if (const JumpSpring* spring = GetIf(slot.get(), const JumpSpring)) {
                 render(target, *spring);
-            } else if (Powerup* powerup = GetIf(slot.get(), Powerup)) {
-                if (hiddenPowerupSlot(powerup) == drawHidden) {
+            } else if (const Powerup* powerup = GetIf(slot.get(), const Powerup)) {
+                if (hiddenSlot(powerup) == drawHidden) {
                     render(target, *powerup, hitboxes);
                 }
             } else {
                 if (drawHidden) {
-                    if (StarFlag* flag = GetIf(slot.get(), StarFlag)) {
+                    if (const StarFlag* flag = GetIf(slot.get(), const StarFlag)) {
                         render(target, *flag);
                     }
                 } else {
-                    if (Flag* flag = GetIf(slot.get(), Flag)) {
+                    if (const Flag* flag = GetIf(slot.get(), const Flag)) {
                         render(target, *flag);
                     }
                 }
@@ -877,7 +875,7 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool
     textAddString(intToStringFixedSize(player.Data.Score, 6u), sf::Vector2f(24.f, 20.f), vertices);
 
     // coins
-    std::string coinsText = "x" + intToStringFixedSize(player.Data.Coins, 2u);
+    const std::string coinsText = "x" + intToStringFixedSize(player.Data.Coins, 2u);
     textAddString(coinsText, sf::Vector2f(96.f, 20.f), vertices);
 
     /* coin graphic */ {
@@ -895,7 +893,7 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool
     // world
     textAddString("WORLD", sf::Vector2f(144.f, 10.f), vertices);
 
-    std::string worldText = std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
+    const std::string worldText = std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
     textAddString(worldText, sf::Vector2f(152.f, 20.f), vertices);
 
     // time
@@ -953,23 +951,23 @@ void Renderer::textAddChar(char character, const sf::Vector2f& position, sf::Ver
         return;
     }
 
-    float tx_left = character * 8.f;
-    float tx_right = tx_left + 8.f;
-    float tx_top = 0.f;
-    float tx_bottom = 8.f;
+    const float tx_left = character * 8.f;
+    const float tx_right = tx_left + 8.f;
+    const float tx_top = 0.f;
+    const float tx_bottom = 8.f;
 
-    sf::Vertex topleft = sf::Vertex(position, sf::Color::White, sf::Vector2f(tx_left, tx_top));
-    sf::Vertex topright = sf::Vertex(sf::Vector2f(position.x + 8.f, position.y), sf::Color::White, sf::Vector2f(tx_right, tx_top));
-    sf::Vertex bottomright = sf::Vertex(sf::Vector2f(position.x + 8.f, position.y + 8.f), sf::Color::White, sf::Vector2f(tx_right, tx_bottom));
-    sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(position.x, position.y + 8.f), sf::Color::White, sf::Vector2f(tx_left, tx_bottom));
-
-    vertices.append(topleft);
-    vertices.append(topright);
-    vertices.append(bottomright);
+    const sf::Vertex topleft = sf::Vertex(position, sf::Color::White, sf::Vector2f(tx_left, tx_top));
+    const sf::Vertex topright = sf::Vertex(sf::Vector2f(position.x + 8.f, position.y), sf::Color::White, sf::Vector2f(tx_right, tx_top));
+    const sf::Vertex bottomright = sf::Vertex(sf::Vector2f(position.x + 8.f, position.y + 8.f), sf::Color::White, sf::Vector2f(tx_right, tx_bottom));
+    const sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(position.x, position.y + 8.f), sf::Color::White, sf::Vector2f(tx_left, tx_bottom));
 
     vertices.append(topleft);
+    vertices.append(std::move(topright));
     vertices.append(bottomright);
-    vertices.append(bottomleft);
+
+    vertices.append(std::move(topleft));
+    vertices.append(std::move(bottomright));
+    vertices.append(std::move(bottomleft));
 }
 
 void Renderer::textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept {

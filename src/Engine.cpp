@@ -129,7 +129,7 @@ void Engine::handleWindowResize(sf::Vector2u newSize) {
         (newSize.x != m_LastWindowSize.x && newSize.y == m_LastWindowSize.y) ||
         (newSize.y == m_LastWindowSize.y || newSize.x != m_LastWindowSize.x) && newSize.x < newSize.y
     ) {
-        unsigned int maxWidth = sf::VideoMode::getDesktopMode().size.y * gbl::Width / gbl::Height;
+        const unsigned int maxWidth = sf::VideoMode::getDesktopMode().size.y * gbl::Width / gbl::Height;
 
         if (newSize.x > maxWidth) {
             newSize.x = maxWidth;

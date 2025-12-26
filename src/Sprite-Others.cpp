@@ -7,7 +7,7 @@
 
 JumpSpring::JumpSpring(float position) {
     SubPalleteIndex = 2u;
-    Position = sf::Vector2f(position, (gbl::Rows - 4) * 16.f);
+    Position = sf::Vector2f(position, (gbl::Rows - 4) * TileSize);
 }
 
 void JumpSpring::Update(World& world) {
@@ -21,9 +21,7 @@ void JumpSpring::Update(World& world) {
 
     --m_Timer;
 
-    bool movingDown = m_Timer > 5u;
-
-    m_PivotedPlayerPosition.y += movingDown ? 2.f : -2.f;
+    m_PivotedPlayerPosition.y += m_Timer > 5u ? 2.f : -2.f;
 
     // big jump
     if (!player.m_JumpKeyHeld) {
@@ -78,7 +76,7 @@ BouncingBlock::BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item
 
 void BouncingBlock::Update(World& world) {
     if (m_BumpTimerRef == 0u) {
-        sf::Vector2u gridPosition = sf::Vector2u(Position) / 16u;
+        const sf::Vector2u gridPosition = sf::Vector2u(Position) / 16u;
         world.m_Tiles[World::GetIndex(gridPosition.x, gridPosition.y - 2)] = std::move(m_Block);
     }
 }
@@ -165,10 +163,10 @@ void Fireball::Update(World& world) {
         return;
     }
 
-    float left = xPosition();
+    const float left = xPosition();
 
     if (m_Velocity > 0.f) {
-        sf::Vector2f feetPoint = sf::Vector2f(left + 8.f, top + 8.f);
+        const sf::Vector2f feetPoint = sf::Vector2f(left + 8.f, top + 8.f);
 
         if (world.PointInTile(feetPoint)) {
             Position.y = static_cast<int>((top + 16.f) / 16.f) * 16.f - 8.f;
@@ -181,7 +179,7 @@ void Fireball::Update(World& world) {
         return;
     }
 
-    sf::Vector2f sidePoint = sf::Vector2f(left + 12.f + 4.f * m_Direction, top + 4.f);
+    const sf::Vector2f sidePoint = sf::Vector2f(left + 12.f + 4.f * m_Direction, top + 4.f);
 
     if (world.PointInTile(sidePoint)) {
         ToRemove = true;
@@ -224,7 +222,7 @@ uint8_t Firework::GetTextureIndex() const {
 #pragma region Floatey Num
 
 FloateyNum::FloateyNum(sf::Vector2f position, float cameraPosition, uint8_t type) : m_Type(type) {
-    int16_t xPos = position.x - cameraPosition;
+    const int16_t xPos = position.x - cameraPosition;
 
     m_Position = sf::Vector2<uint8_t>(
         static_cast<uint8_t>(std::clamp<int16_t>(xPos, 0, 255 - 16)), static_cast<uint8_t>(position.y)
@@ -234,18 +232,19 @@ FloateyNum::FloateyNum(sf::Vector2f position, float cameraPosition, uint8_t type
 }
 
 uint8_t FloateyNum::GetType(uint16_t points) {
-    constexpr uint8_t Table[] = {1u, 2u, 4u, 5u, 8u, 10u, 20u, 40u, 50u, 80u};
-
-    uint8_t counter = 0u;
-
-    for (; counter < sizeof(Table); ++counter) {
-        if (Table[counter] * 100u == points) {
-            return counter;
-        }
+    switch (points) {
+        case 100u: return 0u;
+        case 200u: return 1u;
+        case 400u: return 2u;
+        case 500u: return 3u;
+        case 800u: return 4u;
+        case 1000u: return 5u;
+        case 2000u: return 6u;
+        case 4000u: return 7u;
+        case 5000u: return 8u;
+        case 8000u: return 9u;
+        default: return 10u;
     }
-
-    // one up
-    return counter;
 }
 
 void FloateyNum::Update() {

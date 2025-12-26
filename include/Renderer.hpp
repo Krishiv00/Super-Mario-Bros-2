@@ -38,8 +38,8 @@ private:
     static void renderTiles(sf::RenderTarget& target, const World& world) noexcept;
     static void renderSprites(sf::RenderTarget& target, const World& world, bool drawHidden) noexcept;
 
-    static bool hiddenEnemySlot(Enemy* enemy) noexcept;
-    static bool hiddenPowerupSlot(Powerup* powerup) noexcept;
+    static bool hiddenSlot(const Enemy* enemy) noexcept;
+    static bool hiddenSlot(const Powerup* powerup) noexcept;
 
     static std::string intToStringFixedSize(unsigned int _int, uint8_t length) noexcept;
     static sf::Vector2f fireballTexturePos();

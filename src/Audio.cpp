@@ -41,12 +41,12 @@ void AudioPlayer::PauseAll() {
 }
 
 void AudioPlayer::ResumeAll(uint8_t step_ahead) {
-    sf::Time step = sf::milliseconds((1000 * step_ahead) / 60);
+    const sf::Time step = sf::milliseconds((1000 * step_ahead) / 60);
 
     for (sf::Sound*& sound : m_Sounds) {
         if (sound->getStatus() == sf::Sound::Status::Paused) {
             if (step_ahead) {
-                sf::Time newPos = sound->getPlayingOffset() + step;
+                const sf::Time newPos = sound->getPlayingOffset() + step;
 
                 if (newPos < sound->getBuffer().getDuration()) {
                     sound->setPlayingOffset(newPos);
@@ -107,8 +107,7 @@ void MusicPlayer::Play(uint8_t name, bool loop) {
     sf::Music*& music = m_MusicBuffers[name];
 
     if (loop) {
-        sf::Time offset = sf::milliseconds(2000 / 60);
-
+        const sf::Time offset = sf::milliseconds(2000 / 60);
         music->setLoopPoints(sf::Music::TimeSpan(offset, music->getDuration() - offset));
     }
 

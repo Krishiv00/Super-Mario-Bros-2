@@ -51,9 +51,6 @@ class Enemy : public Sprite {
     friend class EnemyComponents::Shell;
 
 protected:
-    [[nodiscard]] static uint16_t GetStompScore(const uint8_t& stompChain) noexcept;
-    [[nodiscard]] static uint16_t GetShellScore(const uint8_t& shellChain) noexcept;
-
     void spawnDeathAnimation(World& world, int8_t direction, float initialVelocity) noexcept;
 
     void givePlayerScore(uint16_t score, World& world) noexcept;

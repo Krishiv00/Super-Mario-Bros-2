@@ -34,10 +34,8 @@ private:
 
     void handleKeyPress(const sf::Keyboard::Scancode& key);
 
-    void reload();
-
     void startDemoScript();
-    void makeScriptFromTas(const std::string& filename);
+
     void startCustomScript(const std::string& filename);
     std::string saveCustomScript();
 
@@ -49,6 +47,7 @@ private:
     void loadMusic();
 
     void loadMap(uint8_t world, uint8_t level);
+    void reload();
 
     sf::View generateCameraView() const;
 

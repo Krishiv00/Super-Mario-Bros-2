@@ -1,18 +1,34 @@
 #include "World.hpp"
 
-void World::collisions_PushOutOfBlockRightwards() {
-    const float& velocity = player.m_Velocity.x;
+#define ROUTINE_END_SIGNAL true
+#define ROUTINE_CONTINUE_SIGNAL false
 
-    if (velocity <= 0.f && (velocity < 0.f || !player.m_RightKeyHeld)) {
+[[nodiscard]] constexpr inline uint16_t GetFlagScore() noexcept {
+    const uint8_t playerRow = static_cast<uint8_t>((player.yPosition() + 32.f) / 16.f);
+    const uint8_t flagRelativePlayerRow = playerRow - 2u;
+
+    if (flagRelativePlayerRow >= 9u) {
+        return 100u;
+    } else if (flagRelativePlayerRow >= 6u) {
+        return 400u;
+    } else if (flagRelativePlayerRow == 5u) {
+        return 800u;
+    } else if (flagRelativePlayerRow >= 2u) {
+        return 2000u;
+    } else {
+        return 5000u;
+    }
+}
+
+void World::collisions_PushOutOfBlockRightwards() {
+    if (player.m_Velocity.x <= 0.f && (player.m_Velocity.x < 0.f || !player.m_RightKeyHeld)) {
         ++player.Position.x;
         player.on_side_collision();
     }
 }
 
 void World::collisions_PushOutOfBlockLeftwards() {
-    const float& velocity = player.m_Velocity.x;
-
-    if (velocity >= 0.f && (velocity > 0.f || !player.m_LeftKeyHeld)) {
+    if (player.m_Velocity.x >= 0.f && (player.m_Velocity.x > 0.f || !player.m_LeftKeyHeld)) {
         --player.Position.x;
         player.on_side_collision();
     }
@@ -35,12 +51,12 @@ bool World::collisions_CollisionResolveSide(const float& pointX, const float& po
         return true;
     }
 
-    Blocks::Block* block = block_ptr.get();
+    const Blocks::Block* block = block_ptr.get();
 
     // colliding with a tile
-    if (GetComponent(block, Components::Collision)) {
+    if (HasComponent(block, Components::Collision)) {
         // tile is visible
-        if (!GetComponent(block, Components::Hidden)) {
+        if (!HasComponent(block, Components::Hidden)) {
             if (direction == gbl::Direction::Left) {
                 collisions_PushOutOfBlockRightwards();
             } else {
@@ -64,7 +80,7 @@ void World::collisions_LandOnTile(Blocks::Block*& block) {
 
     m_StompChain = 0u;
 
-    if (GetComponent(block, Blocks::JumpSpringTrigger)) {
+    if (HasComponent(block, Blocks::JumpSpringTrigger)) {
         activateJumpSpring();
     } else {
         player.on_feet_collision();
@@ -84,7 +100,7 @@ void World::collisions_LandOnLift(const float& liftTop) {
 }
 
 void World::collisions_BonkHead() {
-    float fract = player.m_Velocity.y - std::truncf(player.m_Velocity.y);
+    const float fract = player.m_Velocity.y - std::truncf(player.m_Velocity.y);
 
     player.m_Velocity.y = 2.f + fract;
 
@@ -95,12 +111,10 @@ void World::collisions_BonkHead() {
 
 Lift* World::collisions_PointInLift(const sf::Vector2f& point) {
     for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
-        auto& sprite = m_Sprites[i];
-
-        if (sprite) {
+        if (auto& sprite = m_Sprites[i]) {
             if (
-                Lift* lift = GetIf(sprite.get(), Lift);
-                lift && lift->getHitbox().contains(point)
+                Lift* lift = GetIf(sprite.get(), Lift); lift &&
+                lift->getHitbox().contains(point)
             ) {
                 return lift;
             }
@@ -111,7 +125,7 @@ Lift* World::collisions_PointInLift(const sf::Vector2f& point) {
 }
 
 bool World::collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const unsigned int& col, const unsigned int& row) {
-    if (GetIf(block.get(), Blocks::Coin)) {
+    if (Is(block.get(), Blocks::Coin)) {
         give_coin();
 
         if (CurrentTheme == 0u) {
@@ -128,31 +142,16 @@ bool World::collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const un
 }
 
 bool World::collisions_FlagCheck(Blocks::Block* block, const unsigned int& index) {
-    if (!m_Cutscene && GetIf(block, Blocks::Flag)) {
-        float x = static_cast<float>(static_cast<unsigned int>(index / gbl::Rows)) * 16.f;
+    if (!m_Cutscene && Is(block, Blocks::Flag)) {
+        const float x = static_cast<float>(static_cast<unsigned int>(index / gbl::Rows)) * 16.f;
 
         if ((player.xPosition() + 16.f) - x >= 4.f) {
             StartCutscene(std::make_unique<FlagpoleScene>(*this));
 
-            uint8_t playerRow = static_cast<uint8_t>((player.yPosition() + 32.f) / 16.f);
-            uint8_t flagRelativePlayerRow = playerRow - 2u;
-
-            uint16_t score;
-
-            if (flagRelativePlayerRow >= 9u) {
-                score = 100u;
-            } else if (flagRelativePlayerRow >= 6u) {
-                score = 400u;
-            } else if (flagRelativePlayerRow == 5u) {
-                score = 800u;
-            } else if (flagRelativePlayerRow >= 2u) {
-                score = 2000u;
-            } else {
-                score = 5000u;
-            }
+            const uint16_t score = GetFlagScore();
 
             player.Data.Score += score;
-            
+
             if (Flag* flag = GetIf(m_Sprites[SpecialSpriteSlot].get(), Flag)) {
                 flag->m_FloateyNumType = FloateyNum::GetType(score);
             }
@@ -169,7 +168,7 @@ bool World::collisions_WarpPipeCheck(Blocks::Block* block) {
         return false;
     }
 
-    if (Components::Render* renderComponent = GetComponent(block, Components::Render)) {
+    if (const Components::Render* renderComponent = GetComponent(block, const Components::Render)) {
         if (
             renderComponent->TextureId == gbl::TextureId::Block::Pipe_8 ||
             renderComponent->TextureId == gbl::TextureId::Block::Pipe_5
@@ -190,7 +189,7 @@ bool World::collisions_WarpPipeCheck(Blocks::Block* block) {
 #pragma region Master
 
 void World::resolvePlayerTileCollisions() {
-    float playerTop = std::truncf(player.yPosition());
+    const float playerTop = std::truncf(player.yPosition());
 
     if (playerTop >= gbl::Height) {
         if (!m_Cutscene) {
@@ -228,17 +227,14 @@ void World::resolvePlayerTileCollisions() {
 #pragma region Head
 
 bool World::resolvePlayerHeadCollisions(float playerTop) {
-#define ROUTINE_END_SIGNAL true
-#define ROUTINE_CONTINUE_SIGNAL false
-
     if (playerTop >= (player.isVisualyBig() ? 32.f : 16.f)) {
-        float pointX = static_cast<float>(Player::InteractionX[0u]) + player.xPosition();
-        float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
+        const float pointX = static_cast<float>(Player::InteractionX[0u]) + player.xPosition();
+        const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
 
-        unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-        unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+        const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+        const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-        unsigned int index = World::GetIndex(col, row);
+        const unsigned int index = World::GetIndex(col, row);
 
         auto& block_ptr = m_Tiles[index];
 
@@ -257,16 +253,16 @@ bool World::resolvePlayerHeadCollisions(float playerTop) {
         Blocks::Block* block = block_ptr.get();
 
         // colliding with a tile
-        if (GetComponent(block, Components::Collision)) {
+        if (HasComponent(block, Components::Collision)) {
             // moving upwards
             if (player.m_Velocity.y < 0.f) {
                 // penetration is under threshold
                 if (pointY >= row * TileSize + TilePenetrationThreshhold) {
-                    if (m_BumpTimer || player.m_SwimmingPhysics || !GetComponent(block, Components::Hitable)) {
+                    if (m_BumpTimer || player.m_SwimmingPhysics || !HasComponent(block, Components::Hitable)) {
                         collisions_BonkHead();
                     } else {
                         // specific block interaction
-                        if (player.isBig() && GetComponent(block, Components::Breakable)) {
+                        if (player.isBig() && HasComponent(block, Components::Breakable)) {
                             // break the tile
 
                             player.m_Velocity.y = -2.f;
@@ -307,9 +303,6 @@ bool World::resolvePlayerHeadCollisions(float playerTop) {
 }
 
 bool World::resolvePlayerFootCollisions(float playerTop) {
-#define ROUTINE_END_SIGNAL true
-#define ROUTINE_CONTINUE_SIGNAL false
-
     if (playerTop >= 207.f) {
         return ROUTINE_CONTINUE_SIGNAL;
     }
@@ -319,13 +312,13 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
 #pragma region Left Foot
 
     /* left foot */ {
-        float pointX = static_cast<float>(Player::InteractionX[1u]) + player.xPosition();
-        float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
+        const float pointX = static_cast<float>(Player::InteractionX[1u]) + player.xPosition();
+        const float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
 
-        unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-        unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+        const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+        const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-        unsigned int index = World::GetIndex(col, row);
+        const unsigned int index = World::GetIndex(col, row);
 
         auto& block_ptr = m_Tiles[index];
 
@@ -353,18 +346,18 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
         Blocks::Block* block = block_ptr.get();
 
         // colliding with a tile
-        if (GetComponent(block, Components::Collision)) {
+        if (HasComponent(block, Components::Collision)) {
             // moving downwards
             if (player.m_Velocity.y > 0.f) {
                 // tile is invisible
-                if (GetComponent(block, Components::Hidden)) {
+                if (HasComponent(block, Components::Hidden)) {
                     return ROUTINE_CONTINUE_SIGNAL;
                 } else {
                     // penetration is under threshold
                     if (pointY - 32.f <= (static_cast<float>(row) * TileSize + TilePenetrationThreshhold)) {
                         collisions_LandOnTile(block);
 
-                        if (player.m_DownKeyHeld && (player.xPosition() >= col * TileSize + 4.f) && GetComponent(block, Components::Warp)) {
+                        if (player.m_DownKeyHeld && (player.xPosition() >= col * TileSize + 4.f) && HasComponent(block, Components::Warp)) {
                             StartCutscene(std::make_unique<DPipeScene>(*this));
                         }
                     } else {
@@ -382,13 +375,13 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
 #pragma region Right Foot
 
     /* right foot */ {
-        float pointX = static_cast<float>(Player::InteractionX[2u]) + player.xPosition();
-        float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
+        const float pointX = static_cast<float>(Player::InteractionX[2u]) + player.xPosition();
+        const float pointY = static_cast<float>(Player::InteractionY[3u]) + playerTop;
 
-        unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-        unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+        const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+        const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-        unsigned int index = World::GetIndex(col, row);
+        const unsigned int index = World::GetIndex(col, row);
 
         auto& block_ptr = m_Tiles[index];
 
@@ -416,11 +409,11 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
         Blocks::Block* block = block_ptr.get();
 
         // colliding with a tile
-        if (GetComponent(block, Components::Collision)) {
+        if (HasComponent(block, Components::Collision)) {
             // moving downwards
             if (player.m_Velocity.y > 0.f) {
                 // tile is invisible
-                if (GetComponent(block, Components::Hidden)) {
+                if (HasComponent(block, Components::Hidden)) {
                     return ROUTINE_CONTINUE_SIGNAL;
                 } else {
                     // penetration is under threshold
@@ -442,20 +435,17 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
 }
 
 bool World::resolvePlayerSideCollisions(float playerTop) {
-#define ROUTINE_END_SIGNAL true
-#define ROUTINE_CONTINUE_SIGNAL false
-
     if (playerTop >= 32.f) {
     #pragma region Topleft Side
 
         /* topleft side */ {
-            float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
-            float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
+            const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
 
-            unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-            unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+            const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+            const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-            unsigned int index = World::GetIndex(col, row);
+            const unsigned int index = World::GetIndex(col, row);
 
             auto& block_ptr = m_Tiles[index];
 
@@ -468,11 +458,11 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 #pragma region Bottomleft Side
 
     /* bottomleft side */ {
-        float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
-        float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
+        const float pointX = static_cast<float>(Player::InteractionX[3u]) + player.xPosition();
+        const float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
 
-        unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-        unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+        const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+        const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
         if (collisions_CollisionResolveSide(pointX, pointY, row, col, m_Tiles[World::GetIndex(col, row)], gbl::Direction::Left)) {
             return ROUTINE_END_SIGNAL;
@@ -483,13 +473,13 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
     #pragma region Topright Side
 
         /* topright side */ {
-            float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
-            float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
+            const float pointY = static_cast<float>(Player::InteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
 
-            unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-            unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+            const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+            const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-            unsigned int index = World::GetIndex(col, row);
+            const unsigned int index = World::GetIndex(col, row);
 
             auto& block_ptr = m_Tiles[index];
 
@@ -507,13 +497,13 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 #pragma region Bottomright Side
 
     /* bottomright side */ {
-        float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
-        float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
+        const float pointX = static_cast<float>(Player::InteractionX[4u]) + player.xPosition();
+        const float pointY = static_cast<float>(Player::InteractionY[5u]) + playerTop;
 
-        unsigned int col = static_cast<unsigned int>(pointX / TileSize);
-        unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
+        const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
+        const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
 
-        unsigned int index = World::GetIndex(col, row);
+        const unsigned int index = World::GetIndex(col, row);
 
         auto& block_ptr = m_Tiles[index];
 
