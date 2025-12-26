@@ -131,7 +131,8 @@ bool World::SpawnFireball(sf::Vector2f position, bool direction) {
 }
 
 void World::SpawnFirework(sf::Vector2f position, bool type) {
-    m_MiscSprites[1u] = std::make_unique<Firework>(position, type);
+    const bool index = Is(m_Fireworks[0u].get(), Firework);
+    m_Fireworks[index] = std::make_unique<Firework>(position, type);
 }
 
 void World::activateJumpSpring() {
@@ -147,17 +148,21 @@ void World::activateJumpSpring() {
 }
 
 void World::spawnCoinAnimation(unsigned int x, unsigned int y) {
-    const bool index = Is(m_MiscSprites[0u].get(), CoinAnimation);
-    m_MiscSprites[index] = std::make_unique<CoinAnimation>(sf::Vector2f(x * TileSize, (y - 1) * TileSize - 4.f));
+    const bool index = Is(m_BouncingCoins[0u].get(), CoinAnimation);
+    m_BouncingCoins[index] = std::make_unique<CoinAnimation>(sf::Vector2f(x * TileSize, (y - 1) * TileSize - 4.f));
 }
 
 #pragma region Sprite Update
 
 void World::updateSprites() {
     // sprite update and collision
-    sf::FloatRect player_hitbox = player.getHitbox();
+    sf::FloatRect player_hitbox;
+    
+    const bool checkCollisions = m_CheckEnemyCollisions && !player.IsFrozen();
 
-    bool checkCollisions = m_CheckEnemyCollisions && !player.IsFrozen();
+    if (checkCollisions) {
+        player_hitbox = player.getHitbox();
+    }
 
     // move enemies
     for (auto& sprite : m_Sprites) {
@@ -257,15 +262,23 @@ void World::updateFreezeIndependentSprites() {
         }
     }
 
-    for (auto& sprite : m_MiscSprites) {
+    for (auto& sprite : m_BouncingCoins) {
         if (sprite) {
             sprite->Update();
 
             if (!sprite->Active()) {
-                if (Is(sprite.get(), CoinAnimation)) {
-                    SpawnFloateyNum(FloateyNum(sprite->Position, CameraPosition, FloateyNum::GetType(200u)));
-                }
+                SpawnFloateyNum(FloateyNum(sprite->Position, CameraPosition, FloateyNum::GetType(200u)));
 
+                sprite.reset();
+            }
+        }
+    }
+
+    for (auto& sprite : m_Fireworks) {
+        if (sprite) {
+            sprite->Update();
+
+            if (!sprite->Active()) {
                 sprite.reset();
             }
         }
@@ -277,7 +290,7 @@ void World::updateFreezeIndependentSprites() {
 void World::handleBlockDefeat(sf::Vector2f blockPosition) {
     if (auto& sprite = m_Sprites[SpecialSpriteSlot]) {
         if (Powerup* powerup = GetIf(sprite.get(), Powerup)) {
-            sf::Vector2f powerupPosition = sf::Vector2f(powerup->xPosition(), powerup->yPosition());
+            const sf::Vector2f powerupPosition = sf::Vector2f(powerup->xPosition(), powerup->yPosition());
 
             if (
                 powerupPosition.y >= blockPosition.y - 16.f && powerupPosition.y <= blockPosition.y - 13.f &&
@@ -293,7 +306,7 @@ void World::handleBlockDefeat(sf::Vector2f blockPosition) {
     for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
         if (auto& sprite = m_Sprites[i]) {
             if (Enemy* enemy = GetIf(sprite.get(), Enemy)) {
-                sf::Vector2f enemyPosition = sf::Vector2f(enemy->xPosition(), enemy->yPosition());
+                const sf::Vector2f enemyPosition = sf::Vector2f(enemy->xPosition(), enemy->yPosition());
 
                 if (
                     enemyPosition.y >= blockPosition.y - 32.f && enemyPosition.y <= blockPosition.y - 29.f &&
@@ -352,7 +365,7 @@ void World::handlePowerupCollisions() {
         ) {
             powerup->GrantPower(*this);
 
-            uint16_t score = powerup->m_Type == gbl::PowerupType::OneUp ? 0u : 1000u;
+            const uint16_t score = (powerup->m_Type != gbl::PowerupType::OneUp) * 1000u;
 
             if (score) {
                 player.Data.Score += score;

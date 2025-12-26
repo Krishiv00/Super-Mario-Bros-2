@@ -821,7 +821,13 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
             }
         }
 
-        for (const auto& sprite : world.m_MiscSprites) {
+        for (const auto& sprite : world.m_BouncingCoins) {
+            if (sprite) {
+                render(target, *sprite);
+            }
+        }
+
+        for (const auto& sprite : world.m_Fireworks) {
             if (sprite) {
                 render(target, *sprite);
             }

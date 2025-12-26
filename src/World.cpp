@@ -26,7 +26,11 @@ void World::Reset() {
         floateyNum.Reset();
     }
 
-    for (auto& sprite : m_MiscSprites) {
+    for (auto& sprite : m_BouncingCoins) {
+        sprite.reset();
+    }
+
+    for (auto& sprite : m_Fireworks) {
         sprite.reset();
     }
 
@@ -114,7 +118,7 @@ bool World::PointInTile(const sf::Vector2f& point) const {
     const unsigned int col = static_cast<unsigned int>(point.x / TileSize);
     const unsigned int row = static_cast<unsigned int>(point.y / TileSize) - 2;
 
-    Blocks::Block* block = m_Tiles[World::GetIndex(col, row)].get();
+    const Blocks::Block* block = m_Tiles[World::GetIndex(col, row)].get();
 
     return block && HasComponent(block, Components::Collision);
 }
@@ -274,7 +278,7 @@ void World::moveCamera() {
 }
 
 void World::clampPlayerLeft() {
-    float offset = CameraPosition - player.xPosition();
+    const float offset = CameraPosition - player.xPosition();
 
     if (offset > 0.f) {
         player.Position.x += offset;

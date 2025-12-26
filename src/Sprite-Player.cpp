@@ -222,7 +222,7 @@ void Player::keyboardControl() {
     );
 
     if (
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ^
         GetKeyState(VK_CAPITAL) & 0x0001
     ) {
         m_SprintKeyHeld = SprintBufferLength;

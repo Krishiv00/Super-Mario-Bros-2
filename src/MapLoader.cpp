@@ -2530,7 +2530,13 @@ void MapLoader::Update(World& world) {
             world.m_BouncingBlock->Position.x -= Factor;
         }
 
-        for (auto& sprite : world.m_MiscSprites) {
+        for (auto& sprite : world.m_BouncingCoins) {
+            if (sprite) {
+                sprite->Position.x -= Factor;
+            }
+        }
+
+        for (auto& sprite : world.m_Fireworks) {
             if (sprite) {
                 sprite->Position.x -= Factor;
             }

@@ -78,7 +78,10 @@ private:
     std::unique_ptr<Fireball> m_Fireballs[2u];
 
     FloateyNum m_FloateyNums[EnemySpriteSlots];
-    std::unique_ptr<DecorSprite> m_MiscSprites[2u];
+
+    std::unique_ptr<DecorSprite> m_BouncingCoins[2u];
+    std::unique_ptr<DecorSprite> m_Fireworks[2u];
+
     std::unique_ptr<DeathAnimation> m_DeathAnimations[EnemySpriteSlots];
 
     // bouncing block
