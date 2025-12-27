@@ -184,10 +184,6 @@ public:
         return m_Sprites;
     }
 
-    [[nodiscard]] inline const bool& getAutoScroll() const {
-        return m_AutoScroll;
-    }
-
     [[nodiscard]] inline const uint8_t& getStompChain() const {
         return m_StompChain;
     }

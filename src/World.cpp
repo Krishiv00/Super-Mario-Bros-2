@@ -268,12 +268,16 @@ void World::updateGameTime() {
 #pragma region Camera
 
 void World::moveCamera() {
-    if (player.m_Velocity.x > 0.f && CameraPosition < player.xPosition() - gbl::Width * 0.4f - 8.f) {
+    constexpr uint8_t NormalThreshold = 7u;
+    constexpr uint8_t AutoScrollThreshold = 5u;
+
+    const float playerPos = player.xPosition();
+
+    if (
+        player.m_Velocity.x > 0.f && CameraPosition < playerPos - TileSize * NormalThreshold ||
+        m_AutoScroll && CameraPosition < playerPos - TileSize * AutoScrollThreshold
+    ) {
         CameraPosition += player.m_Velocity.x;
-    } else if (getAutoScroll()) {
-        if (CameraPosition - player.xPosition() < TileSize * 3.f + gbl::Width * 0.5f) {
-            ++CameraPosition;
-        }
     }
 }
 
