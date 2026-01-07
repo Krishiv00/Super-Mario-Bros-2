@@ -204,85 +204,85 @@ public:
 
     void ResetData();
 
-    [[nodiscard]] inline const uint8_t& getState() const {
+    [[nodiscard]] inline const uint8_t& getState() const noexcept {
         return m_State;
     }
 
-    [[nodiscard]] inline bool isSprinting() const {
+    [[nodiscard]] inline bool isSprinting() const noexcept {
         return m_SprintKeyHeld && (!m_RightKeyHeld || !m_LeftKeyHeld);
     }
 
-    [[nodiscard]] inline bool isCrouching() const {
+    [[nodiscard]] inline bool isCrouching() const noexcept {
         return m_State == Crouching;
     }
 
-    [[nodiscard]] inline bool isFiery() const {
+    [[nodiscard]] inline bool isFiery() const noexcept {
         return m_Size == Fiery;
     }
 
-    [[nodiscard]] inline bool isBig() const {
+    [[nodiscard]] inline bool isBig() const noexcept {
         return m_Size == Big || isFiery();
     }
 
-    [[nodiscard]] inline bool isVisualyBig() const {
+    [[nodiscard]] inline bool isVisualyBig() const noexcept {
         return isBig() && !isCrouching();
     }
 
-    [[nodiscard]] inline bool HasStarman() const {
+    [[nodiscard]] inline bool HasStarman() const noexcept {
         return m_StarmanTimer;
     }
 
-    [[nodiscard]] inline const bool& IsOnGround() const {
+    [[nodiscard]] inline const bool& IsOnGround() const noexcept {
         return m_OnGround;
     }
 
-    [[nodiscard]] inline const bool& IsHidden() const {
+    [[nodiscard]] inline const bool& IsHidden() const noexcept {
         return m_Hidden;
     }
 
-    [[nodiscard]] inline const bool& isVisible() const {
+    [[nodiscard]] inline const bool& isVisible() const noexcept {
         return m_Visible;
     }
 
-    [[nodiscard]] inline const bool& IsFrozen() const {
+    [[nodiscard]] inline const bool& IsFrozen() const noexcept {
         return m_Frozen;
     }
 
-    [[nodiscard]] inline const bool& IsSwimming() const {
+    [[nodiscard]] inline const bool& IsSwimming() const noexcept {
         return m_SwimmingPhysics;
     }
 
-    [[nodiscard]] inline float currentAbsoluteSpeed() const {
+    [[nodiscard]] inline float currentAbsoluteSpeed() const noexcept {
         return std::fabs(static_cast<float>(static_cast<int>(m_Velocity.x * 16.f)) / 16.f);
     }
 
-    [[nodiscard]] inline bool stillOrWalkingSlowly() const {
+    [[nodiscard]] inline bool stillOrWalkingSlowly() const noexcept {
         return currentAbsoluteSpeed() < 1.f;
     }
 
-    [[nodiscard]] inline bool walkingAtFullSpeed() const {
+    [[nodiscard]] inline bool walkingAtFullSpeed() const noexcept {
         float vel = currentAbsoluteSpeed();
 
         return vel >= 1.f && vel <= MaxWalkingSpeed;
     }
 
-    [[nodiscard]] inline bool runningAtFullSpeed() const {
+    [[nodiscard]] inline bool runningAtFullSpeed() const noexcept {
         return currentAbsoluteSpeed() > MaxWalkingSpeed;
     }
 
-    [[nodiscard]] inline bool sideButtonsNotPressed() const {
+    [[nodiscard]] inline bool sideButtonsNotPressed() const noexcept {
         return !m_LeftKeyHeld && !m_RightKeyHeld;
     }
 
-    [[nodiscard]] inline const bool& getFacingDirection() const {
+    [[nodiscard]] inline const bool& getFacingDirection() const noexcept {
         return m_Direction;
     }
 
-    [[nodiscard]] inline bool facingOppositeDirectionOfMovement() const {
+    [[nodiscard]] inline bool facingOppositeDirectionOfMovement() const noexcept {
         return m_Velocity.x && (m_Velocity.x < 0.f ? m_Direction == gbl::Direction::Right : m_Direction == gbl::Direction::Left);
     }
 
-    [[nodiscard]] inline sf::FloatRect getHitbox() const {
+    [[nodiscard]] inline sf::FloatRect getHitbox() const noexcept {
         if (isVisualyBig()) {
             return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 7.f), sf::Vector2f(13.f, 25.f));
         } else {
@@ -290,19 +290,19 @@ public:
         }
     }
 
-    [[nodiscard]] inline const sf::Vector2f& getVelocity() const {
+    [[nodiscard]] inline const sf::Vector2f& getVelocity() const noexcept {
         return m_Velocity;
     }
 
-    inline void setXVelocity(float vel) {
+    inline void setXVelocity(float vel) noexcept {
         m_Velocity.x = vel;
     }
 
-    inline void setYVelocity(float vel) {
+    inline void setYVelocity(float vel) noexcept {
         m_Velocity.y = vel;
     }
 
-    [[nodiscard]] inline std::string Name() const {
+    [[nodiscard]] inline std::string Name() const noexcept {
         return Data.Type ? "LUIGI" : "MARIO";
     }
 

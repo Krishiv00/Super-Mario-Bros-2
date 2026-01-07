@@ -64,7 +64,7 @@ private:
 
     static inline sf::Shader s_PaletteShader;
 
-    static inline sf::Vertex s_Vertices[6u];
+    static inline sf::Vertex s_Vertices[4u];
 
     static constexpr inline const uint8_t AnimationTimerDuration = 8u;
     static inline uint8_t s_BlinkAnimationTimer = AnimationTimerDuration;

@@ -83,7 +83,7 @@ void Renderer::LoadResources() noexcept {
         }
 
         return texture;
-    };
+        };
 
     /*
     constexpr uint8_t FontTextureData[] = {
@@ -375,26 +375,18 @@ void Renderer::SetGameTimeRendering(bool state) noexcept {
 }
 
 void Renderer::createVertices(const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size = sf::Vector2f(TileSize, TileSize), bool flipHorizontally = false, bool flipVertically = false) noexcept {
-    sf::Vertex topleft = sf::Vertex(position, sf::Color::White, texturePosition);
-    sf::Vertex topright = sf::Vertex({position.x + size.x, position.y}, sf::Color::White, {texturePosition.x + size.x, texturePosition.y});
-    sf::Vertex bottomright = sf::Vertex(position + size, sf::Color::White, texturePosition + size);
-    sf::Vertex bottomleft = sf::Vertex({position.x, position.y + size.y}, sf::Color::White, {texturePosition.x, texturePosition.y + size.y});
+    s_Vertices[0u] = sf::Vertex(position, sf::Color::White, texturePosition);
+    s_Vertices[1u] = sf::Vertex({position.x + size.x, position.y}, sf::Color::White, {texturePosition.x + size.x, texturePosition.y});
+    s_Vertices[2u] = sf::Vertex({position.x, position.y + size.y}, sf::Color::White, {texturePosition.x, texturePosition.y + size.y});
+    s_Vertices[3u] = sf::Vertex(position + size, sf::Color::White, texturePosition + size);
 
     if (flipVertically) {
-        std::swap(topleft.position, bottomleft.position);
-        std::swap(topright.position, bottomright.position);
+        std::swap(s_Vertices[0u].position, s_Vertices[3u].position);
+        std::swap(s_Vertices[1u].position, s_Vertices[2u].position);
     } else if (flipHorizontally) {
-        std::swap(topleft.position, topright.position);
-        std::swap(bottomleft.position, bottomright.position);
+        std::swap(s_Vertices[0u].position, s_Vertices[1u].position);
+        std::swap(s_Vertices[3u].position, s_Vertices[2u].position);
     }
-
-    s_Vertices[0u] = topleft;
-    s_Vertices[1u] = std::move(topright);
-    s_Vertices[2u] = bottomright;
-
-    s_Vertices[3u] = std::move(topleft);
-    s_Vertices[4u] = std::move(bottomright);
-    s_Vertices[5u] = std::move(bottomleft);
 }
 
 void Renderer::renderVertices(const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept {
@@ -403,7 +395,7 @@ void Renderer::renderVertices(const sf::Texture& texture, const uint8_t& subPall
     sf::RenderStates state(&texture);
     state.shader = &s_PaletteShader;
 
-    target.draw(s_Vertices, 6u, sf::PrimitiveType::Triangles, state);
+    target.draw(s_Vertices, 4u, sf::PrimitiveType::TriangleStrip, state);
 }
 
 #pragma region Black Screen
@@ -885,15 +877,10 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool
     textAddString(coinsText, sf::Vector2f(96.f, 20.f), vertices);
 
     /* coin graphic */ {
-        createVertices(sf::Vector2f(88.f, 20.f), sf::Vector2f(0.f, 0.f), sf::Vector2f(8.f, 8.f));
-
         s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
-        s_PaletteShader.setUniform("subPallete", 0.75f);
-
-        sf::RenderStates state(&s_UiTexture);
-        state.shader = &s_PaletteShader;
-
-        target.draw(s_Vertices, 6u, sf::PrimitiveType::Triangles, state);
+        
+        createVertices(sf::Vector2f(88.f, 20.f), sf::Vector2f(0.f, 0.f), sf::Vector2f(8.f, 8.f));
+        renderVertices(s_UiTexture, 3u, target);
     }
 
     // world
