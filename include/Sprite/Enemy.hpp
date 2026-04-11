@@ -98,7 +98,7 @@ namespace EnemyComponents {
 
     class GravityMovement : virtual public Enemy {
     protected:
-        bool m_OnGround = false;
+        bool m_OnGround = true;
         float m_YVelocity = 0.f;
 
         void update(World& world, float gravityForce);

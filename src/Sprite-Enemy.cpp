@@ -122,7 +122,12 @@ bool Enemy::shouldDespawn(float cameraPosition, float maxThreshold = World::MaxS
 }
 
 void Enemy::onCollide(World& world) {
-    if (player.Damage(world) && m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar && !Is(this, EnemyComponents::Shell)) {
+    if (
+        player.Damage(world) &&
+        !player.IsSwimming() &&
+        m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar &&
+        !Is(this, EnemyComponents::Shell)
+    ) {
         SetDirectionRelativeToPlayer();
     }
 }
@@ -210,14 +215,22 @@ namespace EnemyComponents {
             const float bottom = top + TileSize * 2.f;
             const sf::Vector2f feetPoint = sf::Vector2f(xPosition() + TileSize * 0.5f, bottom);
 
+            const bool oldOnGround = m_OnGround;
+
             if (m_OnGround = world.PointInTile(feetPoint)) {
                 Position.y = (static_cast<int>(bottom / TileSize) - 2) * TileSize;
                 m_YVelocity = 0.f;
+
+                if (!oldOnGround && !Is(this, Goomba)) {
+                    SetDirectionRelativeToPlayer();
+                }
             }
         }
     }
 
     void CollideWithOtherEnemies::update(World& world) {
+        if (player.IsSwimming()) return;
+
         auto sprites = world.getSprites();
 
         for (uint8_t i = SlotIndex + 1u; i < World::EnemySpriteSlots; ++i) {
@@ -585,7 +598,7 @@ void KoopaParatroopa::onStomp(World& world) {
 
     std::unique_ptr<KoopaTroopa> koopa = std::make_unique<KoopaTroopa>(Position);
 
-    koopa->SetDirectionRelativeToPlayer();
+    if (!player.IsSwimming()) koopa->SetDirectionRelativeToPlayer();
 
     world.ReplaceSprite(std::move(koopa), SlotIndex);
 }
@@ -635,7 +648,7 @@ void RedKoopaParatroopa::onStomp(World& world) {
 
     // spawn normal koopa just with red pallete
     koopa->SubPalleteIndex = SubPalleteIndex;
-    koopa->SetDirectionRelativeToPlayer();
+    if (!player.IsSwimming()) koopa->SetDirectionRelativeToPlayer();
 
     world.ReplaceSprite(std::move(koopa), SlotIndex);
 }
