@@ -1,5 +1,4 @@
-#ifndef CONTROLLER_SCRIPT_PLAYER_HPP
-#define CONTROLLER_SCRIPT_PLAYER_HPP
+#pragma once
 
 #include <vector>
 
@@ -88,7 +87,7 @@ private:
     uint8_t m_InitialLevel;
 
 public:
-    void StartRecording(const uint8_t& currentLevel) {
+    void StartRecording(uint8_t currentLevel) {
         m_Script.clear();
 
         m_Recording = true;
@@ -128,17 +127,18 @@ public:
         }
     }
 
-    [[nodiscard]] inline const bool& Recording() const noexcept {
+    [[nodiscard]]
+    inline bool Recording() const noexcept {
         return m_Recording;
     }
 
-    [[nodiscard]] inline const std::vector<DemoInput>& getScript() const {
+    [[nodiscard]]
+    inline const std::vector<DemoInput>& getScript() const noexcept {
         return m_Script;
     }
 
-    [[nodiscard]] inline const uint8_t& GetInitialLevel() const noexcept {
+    [[nodiscard]]
+    inline uint8_t GetInitialLevel() const noexcept {
         return m_InitialLevel;
     }
 };
-
-#endif // !CONTROLLER_SCRIPT_PLAYER_HPP

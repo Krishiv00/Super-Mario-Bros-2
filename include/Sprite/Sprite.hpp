@@ -1,5 +1,4 @@
-#ifndef SPRITE_HPP
-#define SPRITE_HPP
+#pragma once
 
 #include "Globals.hpp"
 
@@ -13,11 +12,13 @@ public:
 
     virtual ~Sprite() = default;
 
-    [[nodiscard]] inline float xPosition() const noexcept {
+    [[nodiscard]]
+    inline float xPosition() const noexcept {
         return static_cast<float>(static_cast<int>(Position.x));
     }
 
-    [[nodiscard]] inline float yPosition() const noexcept {
+    [[nodiscard]]
+    inline float yPosition() const noexcept {
         return static_cast<float>(static_cast<int>(Position.y));
     }
 
@@ -29,5 +30,3 @@ public:
 
     sf::Vector2f Position;
 };
-
-#endif // !SPRITE_HPP

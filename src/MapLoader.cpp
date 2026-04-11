@@ -1,34 +1,42 @@
 #include "MapLoader.hpp"
 
-[[nodiscard]] constexpr inline uint8_t ObjectXPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectXPos(uint8_t b1, uint8_t) {
     return (b1 >> 0x04u) & 0x0Fu;
 }
 
-[[nodiscard]] constexpr inline uint8_t ObjectYPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectYPos(uint8_t b1, uint8_t) {
     return b1 & 0x0Fu;
 }
 
-[[nodiscard]] constexpr inline uint8_t EnemyYPos(const uint8_t& b1, const uint8_t&) {
+[[nodiscard]]
+static constexpr inline uint8_t EnemyYPos(uint8_t b1, uint8_t) {
     return b1 & 0x0Fu;
 }
 
-[[nodiscard]] constexpr inline uint8_t ObjectCategory(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectCategory(uint8_t, uint8_t b2) {
     return (b2 >> 0x04u) & 0x07u;
 }
 
-[[nodiscard]] constexpr inline uint8_t EnemyCategory(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline uint8_t EnemyCategory(uint8_t, uint8_t b2) {
     return b2 & 0x3F;
 }
 
-[[nodiscard]] constexpr inline bool ObjectPageFlag(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline bool ObjectPageFlag(uint8_t, uint8_t b2) {
     return b2 & 0x80u;
 }
 
-[[nodiscard]] constexpr inline uint8_t ObjectMetadata(const uint8_t&, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectMetadata(uint8_t, uint8_t b2) {
     return b2 & 0x0Fu;
 }
 
-[[nodiscard]] constexpr inline uint8_t ObjectLength(const uint8_t& b1, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectLength(uint8_t b1, uint8_t b2) {
     const uint8_t category = ObjectCategory(b1, b2);
     const uint8_t metadata = ObjectMetadata(b1, b2);
 
@@ -55,7 +63,8 @@
     return 0x01u;
 }
 
-[[nodiscard]] constexpr inline uint8_t ObjectIsPageSkip(const uint8_t& b1, const uint8_t& b2) {
+[[nodiscard]]
+static constexpr inline uint8_t ObjectIsPageSkip(uint8_t b1, uint8_t b2) {
     if (ObjectYPos(b1, b2) == 0x0Du && ObjectCategory(b1, b2) != 0x04u) {
         return b2;
     } else {
@@ -63,11 +72,13 @@
     }
 }
 
-[[nodiscard]] inline bool getLiftSize(const bool& globalDifficulty) {
+[[nodiscard]]
+static inline bool getLiftSize(bool globalDifficulty) {
     return !globalDifficulty && player.Data.Level < 4u;
 }
 
-[[nodiscard]] constexpr inline uint8_t getbackgroundTile(const uint8_t& x, const uint8_t& y, const uint8_t& page, const uint8_t& scenery) {
+[[nodiscard]]
+static constexpr inline uint8_t getbackgroundTile(uint8_t x, uint8_t y, uint8_t page, uint8_t scenery) {
     constexpr uint8_t BackgroundSets[][3u][16u * 11u] = {
         {
             {
@@ -204,7 +215,8 @@
     return BackgroundSets[scenery - 1][page % 3u][y * 16u + x];
 }
 
-[[nodiscard]] constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
+[[nodiscard]]
+static constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
     constexpr uint8_t GrassThreshold = 10u;
 
     if (
@@ -309,7 +321,8 @@
     return 0u;
 }
 
-[[nodiscard]] uint8_t MapLoader::GetIfDuplicate(const uint8_t& level, const uint8_t& stage) {
+[[nodiscard]]
+uint8_t MapLoader::GetIfDuplicate(uint8_t level, uint8_t stage) {
     if (level == 0x05u && stage == 0x03u) {
         return 0x01u;
     }
@@ -329,7 +342,8 @@
     return level;
 }
 
-[[nodiscard]] constexpr inline uint8_t getBasicBrick(const uint8_t& mapAttribute) {
+[[nodiscard]]
+static constexpr inline uint8_t getBasicBrick(uint8_t mapAttribute) {
     if (mapAttribute == 0x00u) {
         return gbl::TextureId::Block::SeaWeed;
     }
@@ -341,7 +355,8 @@
     return gbl::TextureId::Block::Brick_2;
 }
 
-[[nodiscard]] constexpr inline uint8_t getBasicBlock(const uint8_t& mapAttribute) {
+[[nodiscard]]
+static constexpr inline uint8_t getBasicBlock(uint8_t mapAttribute) {
     if (mapAttribute == 0x00u) {
         return gbl::TextureId::Block::Floor_2;
     }
@@ -353,20 +368,21 @@
     return gbl::TextureId::Block::Flag_base;
 }
 
-[[nodiscard]] std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundodifiers() {
+[[nodiscard]]
+std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundodifiers() {
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiers;
 
     uint8_t page = CurrentPage;
     uint8_t i = TileDataIterator;
 
     while (true) {
-        const uint8_t& b1 = TileData[i];
+        uint8_t b1 = TileData[i];
 
         if (b1 == 0xFDu) {
             break; // end of tile structure data
         }
 
-        const uint8_t& b2 = TileData[(++i)++];
+        uint8_t b2 = TileData[(++i)++];
 
         if (ObjectPageFlag(b1, b2)) {
             ++page;
@@ -398,7 +414,8 @@
     return backgroundModifiers;
 }
 
-[[nodiscard]] const uint8_t* GetTileData(const uint8_t& areaPointer) {
+[[nodiscard]]
+static const uint8_t* GetTileData(uint8_t areaPointer) {
     static std::vector<uint8_t> Data[] = {
         // 1-1
         std::vector<uint8_t> {
@@ -938,7 +955,8 @@
     return Data[areaPointer].data();
 }
 
-[[nodiscard]] const uint8_t* GetBadGuysData(const uint8_t& areaPointer) {
+[[nodiscard]]
+static const uint8_t* GetBadGuysData(uint8_t areaPointer) {
     static std::vector<uint8_t> Data[] = {
         // 1-1
         std::vector<uint8_t> {
@@ -1197,7 +1215,7 @@
     return Data[areaPointer].data();
 }
 
-constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, const uint8_t& mapAttribute, const uint8_t& terrainType) {
+static constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, uint8_t mapAttribute, uint8_t terrainType) {
     if (mapAttribute == 0x00u) {
         terrainBlock_1 = gbl::TextureId::Block::Floor_2;
         terrainBlock_2 = gbl::TextureId::Block::Floor_2;
@@ -1321,13 +1339,13 @@ void MapLoader::onMazeTrigger(uint8_t targetPage) {
 
     // setting tile iterator
     while (true) {
-        const uint8_t& b1 = TileData[TileDataIterator];
+        uint8_t b1 = TileData[TileDataIterator];
 
         if (b1 == 0xFDu) {
             break;
         }
 
-        const uint8_t& b2 = TileData[(++TileDataIterator)++];
+        uint8_t b2 = TileData[(++TileDataIterator)++];
 
         if (ObjectIsPageSkip(b1, b2) == targetPage) {
             break;
@@ -1336,13 +1354,13 @@ void MapLoader::onMazeTrigger(uint8_t targetPage) {
 
     // setting bad guys iterator
     while (true) {
-        const uint8_t& b1 = BadGuysData[BadGuysDataIterator];
+        uint8_t b1 = BadGuysData[BadGuysDataIterator];
 
         if (b1 == 0xFFu) {
             break;
         }
 
-        const uint8_t& b2 = BadGuysData[(++BadGuysDataIterator)++];
+        uint8_t b2 = BadGuysData[(++BadGuysDataIterator)++];
 
         const uint8_t yPos = ObjectYPos(b1, b2);
 
@@ -1375,7 +1393,7 @@ void MapLoader::handleMaze(World& world) {
     }
 }
 
-void MapLoader::placeBlock(const unsigned int& tileIndex, std::unique_ptr<Blocks::Block> block, const uint8_t& subPalleteIndex, World& world) {
+void MapLoader::placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
     world.m_Tiles[tileIndex] = std::move(block);
     world.m_AttributeTable[tileIndex] = std::move(subPalleteIndex);
 }
@@ -1383,7 +1401,7 @@ void MapLoader::placeBlock(const unsigned int& tileIndex, std::unique_ptr<Blocks
 void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
     auto it = std::lower_bound(
         world.m_SpritePool.begin(), world.m_SpritePool.end(), sprite->Position.x,
-        [](const std::vector<std::unique_ptr<Sprite>>& group, const float& xValue) {
+        [](const std::vector<std::unique_ptr<Sprite>>& group, float xValue) {
         return group.front()->Position.x < xValue;
     }
     );
@@ -1391,7 +1409,7 @@ void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
     world.m_SpritePool.insert(it, std::vector<std::unique_ptr<Sprite>>{})->push_back(std::move(sprite));
 }
 
-void MapLoader::placeBlockIfEmpty(const unsigned int& tileIndex, std::unique_ptr<Blocks::Block> block, const uint8_t& subPalleteIndex, World& world) {
+void MapLoader::placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
     if (!world.m_Tiles[tileIndex]) {
         world.m_Tiles[tileIndex] = std::move(block);
         world.m_AttributeTable[tileIndex] = std::move(subPalleteIndex);
@@ -1413,9 +1431,9 @@ void MapLoader::hiddenOneUpLogic(World& world) {
 }
 
 void MapLoader::loadMapProperties(World& world) {
-    const uint8_t& b1 = TileData[0x00u];
-    const uint8_t& b2 = TileData[0x01u];
-    const uint8_t& b3 = TileData[0x02u];
+    uint8_t b1 = TileData[0x00u];
+    uint8_t b2 = TileData[0x01u];
+    uint8_t b3 = TileData[0x02u];
 
     /* load time */ {
         if (const uint8_t time = b1 >> 0x06u) {
@@ -1467,7 +1485,7 @@ void MapLoader::loadMapProperties(World& world) {
     }
 }
 
-void MapLoader::setTheme(const uint8_t& mapAttribute) {
+void MapLoader::setTheme(uint8_t mapAttribute) {
     uint8_t colorBackground = TileData[0x00u] & 0x07u;
 
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiersForColor = getBackgroundodifiers();
@@ -1503,7 +1521,7 @@ void MapLoader::setTheme(const uint8_t& mapAttribute) {
     Renderer::SetSpriteTheme(colorAttribute);
 }
 
-void MapLoader::handleCellingTerrain(const uint8_t& length, const uint8_t& block, const unsigned int& colIndex, World& world) {
+void MapLoader::handleCellingTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world) {
     for (uint8_t i = 0u; i < length; ++i) {
         unsigned int index = colIndex + i;
 
@@ -1517,7 +1535,7 @@ void MapLoader::handleCellingTerrain(const uint8_t& length, const uint8_t& block
     }
 }
 
-void MapLoader::handleMiddleTerrain(const uint8_t& length, const uint8_t& block, const unsigned int& colIndex, World& world) {
+void MapLoader::handleMiddleTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world) {
     for (uint8_t i = 0u; i < length; ++i) {
         unsigned int index = colIndex + 8u - length + i;
 
@@ -1531,7 +1549,7 @@ void MapLoader::handleMiddleTerrain(const uint8_t& length, const uint8_t& block,
     }
 }
 
-void MapLoader::handleSurfaceTerrain(const uint8_t& length, const uint8_t& block_1, const uint8_t& block_2, const unsigned int& colIndex, World& world) {
+void MapLoader::handleSurfaceTerrain(uint8_t length, uint8_t block_1, uint8_t block_2, unsigned int colIndex, World& world) {
     if (length >= 0x02u) {
         for (uint8_t i = 0u; i < 2u; ++i) {
             unsigned int index = colIndex + 11u + i;
@@ -1553,7 +1571,7 @@ void MapLoader::handleSurfaceTerrain(const uint8_t& length, const uint8_t& block
     }
 }
 
-void MapLoader::handleInWaterBackground(const unsigned int& colIndex, World& world) {
+void MapLoader::handleInWaterBackground(unsigned int colIndex, World& world) {
     placeBlockIfEmpty(colIndex, std::make_unique<Blocks::Renderable>(gbl::TextureId::Block::Liquid_1), 2u, world);
 
     for (uint8_t i = 0u; i < 10u; ++i) {
@@ -1561,7 +1579,7 @@ void MapLoader::handleInWaterBackground(const unsigned int& colIndex, World& wor
     }
 }
 
-void MapLoader::handleWallBackground(const unsigned int& colIndex, World& world) {
+void MapLoader::handleWallBackground(unsigned int colIndex, World& world) {
     {
         const unsigned int roofIndex = colIndex + 5u;
 
@@ -1594,24 +1612,24 @@ void MapLoader::handleWallBackground(const unsigned int& colIndex, World& world)
     }
 }
 
-void MapLoader::handleOverWaterBackground(const unsigned int& colIndex, World& world) {
+void MapLoader::handleOverWaterBackground(unsigned int colIndex, World& world) {
     placeBlockIfEmpty(colIndex + 11u, std::make_unique<Blocks::Renderable>(gbl::TextureId::Block::Liquid_1), 2u, world);
     placeBlockIfEmpty(colIndex + 12u, std::make_unique<Blocks::Renderable>(gbl::TextureId::Block::Liquid_2), 2u, world);
 }
 
-void MapLoader::placeHorizontalAir(const unsigned int& tileIndex, const uint8_t& length, World& world) {
+void MapLoader::placeHorizontalAir(unsigned int tileIndex, uint8_t length, World& world) {
     for (uint8_t i = 0u; i < length; ++i) {
         world.m_Tiles[tileIndex + i * 13u].reset();
     }
 }
 
-void MapLoader::placeVerticalAir(const unsigned int& tileIndex, const uint8_t& length, World& world) {
+void MapLoader::placeVerticalAir(unsigned int tileIndex, uint8_t length, World& world) {
     for (uint8_t i = 0u; i < length; ++i) {
         world.m_Tiles[tileIndex + i].reset();
     }
 }
 
-void MapLoader::placeAirHole(const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeAirHole(uint8_t length, unsigned int tileIndex, World& world) {
     const unsigned int holeTopleft = tileIndex - 4;
 
     for (uint8_t i = 0u; i < length; ++i) {
@@ -1619,7 +1637,7 @@ void MapLoader::placeAirHole(const uint8_t& length, const unsigned int& tileInde
     }
 }
 
-void MapLoader::placeWaterHole(const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeWaterHole(uint8_t length, unsigned int tileIndex, World& world) {
     const unsigned int holeTopleft = tileIndex - 4;
 
     for (uint8_t i = 0u; i < length; ++i) {
@@ -1627,7 +1645,7 @@ void MapLoader::placeWaterHole(const uint8_t& length, const unsigned int& tileIn
     }
 }
 
-void MapLoader::placeHole(const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeHole(uint8_t length, unsigned int tileIndex, World& world) {
     uint8_t placeLength = length;
 
     const unsigned int localColIndex = (tileIndex / 0x0Du) % 0x10u;
@@ -1646,17 +1664,17 @@ void MapLoader::placeHole(const uint8_t& length, const unsigned int& tileIndex, 
     }
 }
 
-void MapLoader::placeHoleFilledWithWater(const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeHoleFilledWithWater(uint8_t length, unsigned int tileIndex, World& world) {
     placeHorizontalRow<Blocks::Renderable>(tileIndex - 2, length, 2u, world, gbl::TextureId::Block::Liquid_1);
     placeHorizontalRow<Blocks::Renderable>(tileIndex - 1, length, 2u, world, gbl::TextureId::Block::Liquid_2);
     placeHorizontalRow<Blocks::Renderable>(tileIndex, length, 2u, world, gbl::TextureId::Block::Liquid_2);
 }
 
-void MapLoader::placeLiftsVerticalRope(const unsigned int& colIndex, World& world) {
+void MapLoader::placeLiftsVerticalRope(unsigned int colIndex, World& world) {
     placeVerticalRow<Blocks::Renderable>(colIndex, 13u, 1u, world, gbl::TextureId::Block::String_2);
 }
 
-void MapLoader::placeCastle(const uint8_t& length, const unsigned int& colIndex, const uint8_t& xPos, const unsigned int& pageColumnOffset, World& world) {
+void MapLoader::placeCastle(uint8_t length, unsigned int colIndex, uint8_t xPos, unsigned int pageColumnOffset, World& world) {
     const unsigned int tileIndex = colIndex + length;
 
     if (length <= 0x0Au) {
@@ -1744,12 +1762,12 @@ void MapLoader::placeCastle(const uint8_t& length, const unsigned int& colIndex,
     }
 }
 
-void MapLoader::placeBridge(uint8_t v, const uint8_t& length, const unsigned int& colIndex, World& world) {
+void MapLoader::placeBridge(uint8_t v, uint8_t length, unsigned int colIndex, World& world) {
     placeHorizontalRow<Blocks::Renderable>(colIndex + v - 1, length, 0u, world, gbl::TextureId::Block::Bridge_top);
     placeHorizontalRow<Blocks::RenderableCollideable>(colIndex + v, length, 1u, world, gbl::TextureId::Block::Bridge_base);
 }
 
-void MapLoader::placeStaircase(const uint8_t& length, const uint8_t& metadata, const unsigned int& colIndex, World& world) {
+void MapLoader::placeStaircase(uint8_t length, uint8_t metadata, unsigned int colIndex, World& world) {
     const unsigned int anchor = colIndex + 10u;
 
     // length:8, height:9
@@ -1769,11 +1787,11 @@ void MapLoader::placeStaircase(const uint8_t& length, const uint8_t& metadata, c
     }
 }
 
-void MapLoader::placeHorizontalQuestionBlocksCoin(uint8_t v, const uint8_t& length, const unsigned int& colIndex, World& world) {
+void MapLoader::placeHorizontalQuestionBlocksCoin(uint8_t v, uint8_t length, unsigned int colIndex, World& world) {
     placeHorizontalRow<Blocks::RenderableCollideableItem>(colIndex + v, length, 3u, world, gbl::TextureId::Block::Question, gbl::ItemType::Coin);
 }
 
-void MapLoader::placeFlagpole(const unsigned int& colIndex, const uint8_t& xPos, const unsigned int& pageColumnOffset, World& world) {
+void MapLoader::placeFlagpole(unsigned int colIndex, uint8_t xPos, unsigned int pageColumnOffset, World& world) {
     placeBlock(colIndex, std::make_unique<Blocks::Flag>(gbl::TextureId::Block::Flag_top), 0u, world);
     placeVerticalRow<Blocks::Flag>(colIndex + 1u, 9u, 0u, world, gbl::TextureId::Block::Flag_pole);
     placeBlock(colIndex + 10u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Flag_base), 1u, world);
@@ -1783,12 +1801,12 @@ void MapLoader::placeFlagpole(const unsigned int& colIndex, const uint8_t& xPos,
     ), world);
 }
 
-void MapLoader::placeSidewaysPipe(const unsigned int& tileIndex, World& world) {
+void MapLoader::placeSidewaysPipe(unsigned int tileIndex, World& world) {
     placeBlock(tileIndex, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Pipe_5), 1u, world);
     placeBlock(tileIndex + 1u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Pipe_8), 1u, world);
 }
 
-void MapLoader::placeJumpSpring(const unsigned int& tileIndex, const uint8_t& xPos, const unsigned int& pageColumnOffset, World& world) {
+void MapLoader::placeJumpSpring(unsigned int tileIndex, uint8_t xPos, unsigned int pageColumnOffset, World& world) {
     world.m_Tiles[tileIndex] = std::make_unique<Blocks::JumpSpringTrigger>();
 
     const unsigned int lower = tileIndex + 1u;
@@ -1798,7 +1816,7 @@ void MapLoader::placeJumpSpring(const unsigned int& tileIndex, const uint8_t& xP
     spawnSprite(std::make_unique<JumpSpring>((pageColumnOffset + xPos) * TileSize), world);
 }
 
-void MapLoader::placeTree(const uint8_t& yPos, const uint8_t& length, const unsigned int& tileIndex, const unsigned int& colIndex, World& world) {
+void MapLoader::placeTree(uint8_t yPos, uint8_t length, unsigned int tileIndex, unsigned int colIndex, World& world) {
     placeBlock(tileIndex, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::GrassPlatform_1), 0u, world);
     placeHorizontalRow<Blocks::RenderableCollideable>(tileIndex + 13u, length - 2, 0u, world, gbl::TextureId::Block::GrassPlatform_2);
     placeBlock(tileIndex + (length - 1) * 13u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::GrassPlatform_3), 0u, world);
@@ -1828,7 +1846,7 @@ void MapLoader::placeTree(const uint8_t& yPos, const uint8_t& length, const unsi
     }
 }
 
-void MapLoader::placeMushroom(const uint8_t& yPos, const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeMushroom(uint8_t yPos, uint8_t length, unsigned int tileIndex, World& world) {
     placeBlock(tileIndex, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::MushroomPlatform_1), 0u, world);
     placeHorizontalRow<Blocks::RenderableCollideable>(tileIndex + 13u, length - 2, 0u, world, gbl::TextureId::Block::MushroomPlatform_2);
     placeBlock(tileIndex + (length - 1) * 13u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::MushroomPlatform_3), 0u, world);
@@ -1857,7 +1875,7 @@ void MapLoader::placeMushroom(const uint8_t& yPos, const uint8_t& length, const 
     }
 }
 
-void MapLoader::placeGun(const uint8_t& yPos, const uint8_t& length, const unsigned int& tileIndex, World& world) {
+void MapLoader::placeGun(uint8_t yPos, uint8_t length, unsigned int tileIndex, World& world) {
     placeBlock(tileIndex, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::BulletBill_1), 1u, world);
 
     if (length > 1u) {
@@ -1873,7 +1891,7 @@ void MapLoader::placeGun(const uint8_t& yPos, const uint8_t& length, const unsig
     }
 }
 
-void MapLoader::placeIsland(const uint8_t& yPos, const uint8_t& length, const unsigned int& tileIndex, const unsigned int& colIndex, const uint8_t& mapType, World& world) {
+void MapLoader::placeIsland(uint8_t yPos, uint8_t length, unsigned int tileIndex, unsigned int colIndex, uint8_t mapType, World& world) {
     if (mapType == 0x00u || mapType == 0x03u) {
         return placeTree(yPos, length, tileIndex, colIndex, world);
     }
@@ -1887,7 +1905,7 @@ void MapLoader::placeIsland(const uint8_t& yPos, const uint8_t& length, const un
     }
 }
 
-void MapLoader::placeLongReverseLPipe(const unsigned int& colIndex, World& world) {
+void MapLoader::placeLongReverseLPipe(unsigned int colIndex, World& world) {
     placeBlock(colIndex + 6u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Pipe_5), 0u, world);
     placeBlock(colIndex + 19u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Pipe_6), 0u, world);
     placeBlock(colIndex + 32u, std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Pipe_7), 0u, world);
@@ -1899,7 +1917,7 @@ void MapLoader::placeLongReverseLPipe(const unsigned int& colIndex, World& world
     placeVerticalRow<Blocks::RenderableCollideable>(colIndex + 39u, 8u, 0u, world, gbl::TextureId::Block::Pipe_4);
 }
 
-void MapLoader::placePipe(const uint8_t& length, bool enterable, const unsigned int& tileIndex, const uint8_t& xPos, const uint8_t& yPos, const unsigned int& pageColumnOffset, World& world) {
+void MapLoader::placePipe(uint8_t length, bool enterable, unsigned int tileIndex, uint8_t xPos, uint8_t yPos, unsigned int pageColumnOffset, World& world) {
     if (enterable) {
         placeBlock(tileIndex, std::make_unique<Blocks::RenderableCollideableEnterable>(gbl::TextureId::Block::Pipe_1), 0u, world);
     } else {
@@ -1917,7 +1935,7 @@ void MapLoader::placePipe(const uint8_t& length, bool enterable, const unsigned 
     }
 }
 
-void MapLoader::NewLevel(World& world, const uint8_t& areaPointer) {
+void MapLoader::NewLevel(World& world, uint8_t areaPointer) {
     world.Reset();
     player.Reset();
 
@@ -1955,7 +1973,7 @@ void MapLoader::NewLevel(World& world, const uint8_t& areaPointer) {
     }
 }
 
-void MapLoader::parseTileObject(const uint8_t& b1, const uint8_t& b2, World& world, const unsigned int& pageColumnOffset) {
+void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned int pageColumnOffset) {
     const uint8_t xPos = ObjectXPos(b1, b2);
     const uint8_t yPos = ObjectYPos(b1, b2);
     const uint8_t category = ObjectCategory(b1, b2);
@@ -2175,7 +2193,7 @@ void MapLoader::parseTileObject(const uint8_t& b1, const uint8_t& b2, World& wor
     }
 }
 
-void MapLoader::parseBadGuysObject(const uint8_t& b1, const uint8_t& b2, const bool& globalDifficulty, World& world, const unsigned int& pageColumnOffset) {
+void MapLoader::parseBadGuysObject(uint8_t b1, uint8_t b2, bool globalDifficulty, World& world, unsigned int pageColumnOffset) {
     const uint8_t xPos = ObjectXPos(b1, b2);
     const uint8_t yPos = ObjectYPos(b1, b2);
     const uint8_t category = EnemyCategory(b1, b2);
@@ -2415,13 +2433,13 @@ void MapLoader::loadPage(World& world) {
     if (CurrentPage >= TileSkipToPage) {
         // load map objects
         while (true) {
-            const uint8_t& b1 = TileData[TileDataIterator];
+            uint8_t b1 = TileData[TileDataIterator];
 
             if (b1 == 0xFDu) {
                 break; // end of tile structure data
             }
 
-            const uint8_t& b2 = TileData[(++TileDataIterator)++];
+            uint8_t b2 = TileData[(++TileDataIterator)++];
 
             if (ObjectPageFlag(b1, b2)) {
                 LastTileObjectPageFlag ^= 0x01u;
@@ -2445,13 +2463,13 @@ void MapLoader::loadPage(World& world) {
 
         // load bad guys
         while (true) {
-            const uint8_t& b1 = BadGuysData[BadGuysDataIterator];
+            uint8_t b1 = BadGuysData[BadGuysDataIterator];
 
             if (b1 == 0xFFu) {
                 break; // end of bad guys data
             }
 
-            const uint8_t& b2 = BadGuysData[(++BadGuysDataIterator)++];
+            uint8_t b2 = BadGuysData[(++BadGuysDataIterator)++];
 
             if (!LastBadGuysObjectWasPageSkip && ObjectPageFlag(b1, b2)) {
                 LastBadGuysObjectPageFlag ^= 0x01u;
@@ -2475,7 +2493,7 @@ void MapLoader::loadPage(World& world) {
 
             if (yPos == 0x0Eu) {
                 // room change
-                /*const uint8_t& b3 =*/ BadGuysData[BadGuysDataIterator++];
+                /*uint8_t b3 =*/ BadGuysData[BadGuysDataIterator++];
 
                 // const uint8_t newWorld = ((b3 >> 0x04u) / 2u) + 1u;
                 // const uint8_t newPage = b3 & 0x0Fu;

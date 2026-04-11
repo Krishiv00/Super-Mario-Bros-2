@@ -1,5 +1,4 @@
-#ifndef POWERUP_HPP
-#define POWERUP_HPP
+#pragma once
 
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
@@ -41,7 +40,8 @@ public:
 
     virtual void GrantPower(World& world) = 0;
 
-    [[nodiscard]] inline sf::FloatRect getHitbox() const {
+    [[nodiscard]]
+    inline sf::FloatRect getHitbox() const {
         return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition()), sf::Vector2f(13.f, 13.f));
     }
 };
@@ -90,5 +90,3 @@ public:
 
     virtual void GrantPower(World& world) override;
 };
-
-#endif // !POWERUP_HPP

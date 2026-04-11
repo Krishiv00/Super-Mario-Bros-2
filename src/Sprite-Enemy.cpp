@@ -3,7 +3,8 @@
 
 #include "Renderer.hpp"
 
-[[nodiscard]] constexpr inline uint16_t GetStompScore(const uint8_t& stompChain, const uint8_t& enemyType) noexcept {
+[[nodiscard]]
+constexpr inline uint16_t GetStompScore(uint8_t stompChain, uint8_t enemyType) noexcept {
     if (enemyType == EnemyType::KoopaParatroopa) {
         return 400u;
     } else if (enemyType == EnemyType::HammerBrother) {
@@ -25,7 +26,8 @@
     }
 }
 
-[[nodiscard]] constexpr inline uint16_t GetShellScore(const uint8_t& shellChain) noexcept {
+[[nodiscard]]
+constexpr inline uint16_t GetShellScore(uint8_t shellChain) noexcept {
     constexpr uint8_t ShellChainPoints[] = {5u, 8u, 10u, 20u, 40u, 50u, 80u};
 
     if (shellChain < 7u) {
@@ -35,7 +37,8 @@
     }
 }
 
-[[nodiscard]] constexpr inline uint16_t GetFireDeathScore(const uint8_t& enemyType) noexcept {
+[[nodiscard]]
+constexpr inline uint16_t GetFireDeathScore(uint8_t enemyType) noexcept {
     if (enemyType == EnemyType::Goomba) {
         return 100u;
     } else if (enemyType == EnemyType::HammerBrother) {
@@ -45,7 +48,8 @@
     }
 }
 
-[[nodiscard]] constexpr inline uint8_t GetDeathAnimationSpriteType(const uint8_t& enemyType) noexcept {
+[[nodiscard]]
+constexpr inline uint8_t GetDeathAnimationSpriteType(uint8_t enemyType) noexcept {
     if (
         enemyType == EnemyType::KoopaTroopa ||
         enemyType == EnemyType::KoopaParatroopa ||

@@ -1,5 +1,4 @@
-#ifndef RENDERER_HPP
-#define RENDERER_HPP
+#pragma once
 
 #include "World.hpp"
 #include "Blocks.hpp"
@@ -13,13 +12,13 @@ private:
 #define RENDER_HITBOXES 0
 
 #if RENDER_HITBOXES
-    static void appendHitbox(sf::VertexArray& vertices, const sf::FloatRect& hitbox) noexcept;
+    static void appendHitbox(sf::VertexArray& vertices, sf::FloatRect hitbox) noexcept;
 #endif // RENDER_HITBOXES
 
-    static void createVertices(const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size, bool flipHorizontally, bool flipVertically) noexcept;
-    static void renderVertices(const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept;
+    static void createVertices(sf::Vector2f position, sf::Vector2f texturePosition, sf::Vector2f size, bool flipHorizontally, bool flipVertically) noexcept;
+    static void renderVertices(const sf::Texture& texture, uint8_t subPalleteIndex, sf::RenderTarget& target) noexcept;
 
-    static void render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept;
+    static void render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPalleteIndex, sf::Vector2f position) noexcept;
     static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const NPC& npc) noexcept;
     static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
@@ -44,7 +43,7 @@ private:
     static std::string intToStringFixedSize(unsigned int _int, uint8_t length) noexcept;
     static sf::Vector2f fireballTexturePos();
 
-    static void textAddChar(char character, const sf::Vector2f& position, sf::VertexArray& vertices) noexcept;
+    static void textAddChar(char character, sf::Vector2f position, sf::VertexArray& vertices) noexcept;
     static void textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept;
     static void textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPalleteIndex = 2u) noexcept;
 
@@ -80,16 +79,16 @@ private:
 public:
     static void LoadResources() noexcept;
 
-    static void SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept;
-    static void SetSpriteTheme(const uint8_t& theme, uint8_t endIndex = 12u) noexcept;
-    static void SetPlayerTheme(const uint8_t& theme) noexcept;
+    static void SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, uint8_t bodyColsIndex) noexcept;
+    static void SetSpriteTheme(uint8_t theme, uint8_t endIndex = 12u) noexcept;
+    static void SetPlayerTheme(uint8_t theme) noexcept;
     static void SetGameTimeRendering(bool state) noexcept;
 
     static void Animate() noexcept;
     static void ResetAnimations() noexcept;
     static void UpdatePalleteColors() noexcept;
 
-    static void RenderUi(sf::RenderTarget& target, const World& world, const bool& onTitleScreen) noexcept;
+    static void RenderUi(sf::RenderTarget& target, const World& world, bool onTitleScreen) noexcept;
     static void RenderGame(sf::RenderTarget& target, const World& world) noexcept;
     static void RenderPlayer(sf::RenderTarget& target) noexcept;
 
@@ -99,9 +98,8 @@ public:
 
     static void RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, bool secondPlayerMode) noexcept;
 
-    [[nodiscard]] static inline const bool& getEnemyAnimation() noexcept {
+    [[nodiscard]]
+    static inline bool getEnemyAnimation() noexcept {
         return s_EnemyAnimation;
     }
 };
-
-#endif // !RENDERER_HPP

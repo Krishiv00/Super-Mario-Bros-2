@@ -19,9 +19,7 @@ void AudioPlayer::LoadFromFile(uint8_t name, const std::string& path) {
     sf::Sound& sound = *m_Sounds[name];
 
     if (!buffer.loadFromFile(path)) {
-    #ifdef DEBUG
         LOG_ERROR("Error Loading Sound, File Not Found: " + path);
-    #endif // DEBUG
     }
 
     sound.stop();
@@ -70,7 +68,7 @@ void AudioPlayer::StopAll() {
 void AudioPlayer::SetMuted(bool muted) {
     if (muted != IsMuted()) {
         const float volume = 100.f * !muted;
-        
+
         for (sf::Sound*& sound : m_Sounds) {
             sound->setVolume(volume);
         }
@@ -138,7 +136,7 @@ void MusicPlayer::Stop() {
 void MusicPlayer::SetMuted(bool muted) {
     if (muted != IsMuted()) {
         const float volume = 100.f * !muted;
-    
+
         for (sf::Music*& music : m_MusicBuffers) {
             music->setVolume(volume);
         }

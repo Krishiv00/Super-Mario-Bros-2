@@ -1,5 +1,4 @@
-#ifndef ENEMY_HPP
-#define ENEMY_HPP
+#pragma once
 
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
@@ -53,7 +52,8 @@ protected:
     void givePlayerScore(uint16_t score, World& world) noexcept;
     void givePlayerLife(World& world) noexcept;
 
-    [[nodiscard]] bool shouldDespawn(float cameraPosition, float maxThreshold) const noexcept;
+    [[nodiscard]]
+    bool shouldDespawn(float cameraPosition, float maxThreshold) const noexcept;
 
     virtual void onCollide(World& world);
     virtual void onBlockDefeat(World& world, float blockPosition);
@@ -84,7 +84,8 @@ public:
 
     void SetDirectionRelativeToPlayer() noexcept;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const {
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const {
         return sf::FloatRect(sf::Vector2f(), sf::Vector2f());
     }
 };
@@ -158,7 +159,8 @@ namespace EnemyComponents {
         virtual void HandleMovement(World& world) override;
         virtual void Update(World& world) override;
 
-        [[nodiscard]] inline const bool& IsFlipped() const noexcept {
+        [[nodiscard]]
+        inline bool IsFlipped() const noexcept {
             return m_FlippedVertically;
         }
     };
@@ -169,7 +171,8 @@ namespace EnemyComponents {
         uint8_t m_Frame = 0u;
 
     protected:
-        [[nodiscard]] float getOffset(uint8_t phaseDuration, uint8_t halfwayDistance);
+        [[nodiscard]]
+        float getOffset(uint8_t phaseDuration, uint8_t halfwayDistance);
     };
 
     class BowserPart : public Enemy {
@@ -183,7 +186,8 @@ public:
 
     virtual void onStomp(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class DeadGoomba final : public EnemyComponents::GravityMovement, public EnemyComponents::CollideWithOtherEnemies {
@@ -198,7 +202,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class KoopaTroopa : public EnemyComponents::ShellEnemy {
@@ -208,7 +213,8 @@ protected:
 public:
     KoopaTroopa(sf::Vector2f position);
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class KoopaTroopaShell : public EnemyComponents::Shell {
@@ -218,7 +224,8 @@ protected:
 public:
     KoopaTroopaShell(sf::Vector2f position);
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class KoopaParatroopa final : public EnemyComponents::SideToSideMovement, public EnemyComponents::GravityMovement, public EnemyComponents::CollideWithOtherEnemies, public EnemyComponents::Stompable {
@@ -231,7 +238,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class RedKoopaTroopa final : public KoopaTroopa {
@@ -258,7 +266,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class PiranhaPlant final : public Enemy {
@@ -272,7 +281,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class BuzzyBeetle final : public EnemyComponents::ShellEnemy {
@@ -282,7 +292,8 @@ private:
 public:
     BuzzyBeetle(sf::Vector2f position);
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class BuzzyBeetleShell final : public EnemyComponents::Shell {
@@ -292,7 +303,8 @@ private:
 public:
     BuzzyBeetleShell(sf::Vector2f position);
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class SpinyEgg final : public EnemyComponents::GravityMovement {
@@ -302,14 +314,16 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Spiny final : public EnemyComponents::GroundEnemy {
 public:
     Spiny(sf::Vector2f position);
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Bloober final : public EnemyComponents::Stompable {
@@ -319,7 +333,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class CheepCheep final : public EnemyComponents::Stompable {
@@ -329,7 +344,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class HammerBrother final : public EnemyComponents::GravityMovement, public EnemyComponents::Stompable {
@@ -339,7 +355,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Lakitu final : public EnemyComponents::Stompable {
@@ -349,7 +366,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class BulletBill final : public EnemyComponents::Stompable {
@@ -359,7 +377,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Firebar final : public Enemy {
@@ -380,11 +399,13 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] inline const uint8_t& getSize() const {
+    [[nodiscard]]
+    inline uint8_t getSize() const {
         return m_Size;
     }
 
-    [[nodiscard]] float getAngle() const {
+    [[nodiscard]]
+    float getAngle() const {
         return toRad(static_cast<float>(m_Angle) * 11.25f);
     }
 };
@@ -398,7 +419,8 @@ public:
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Axe final : public Enemy {
@@ -410,7 +432,8 @@ public:
     virtual void Update(World&) override {}
     virtual void OnCollisionWithPlayer(World& world) override;
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 };
 
 class Lift : public Enemy {
@@ -426,9 +449,11 @@ public:
 
     virtual void OnPlayerLand(World&) {}
 
-    [[nodiscard]] virtual sf::FloatRect getHitbox() const override;
+    [[nodiscard]]
+    virtual sf::FloatRect getHitbox() const override;
 
-    [[nodiscard]] inline const uint8_t& getSize() const {
+    [[nodiscard]]
+    inline uint8_t getSize() const {
         return m_Size;
     }
 };
@@ -496,5 +521,3 @@ class BowserPart_1 final : public EnemyComponents::BowserPart {
 class BowserPart_2 final : public EnemyComponents::BowserPart {
     
 };
-
-#endif // !ENEMY_HPP

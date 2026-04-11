@@ -1,5 +1,4 @@
-#ifndef PLAYER_HPP
-#define PLAYER_HPP
+#pragma once
 
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
@@ -22,11 +21,13 @@ public:
 };
 
 struct PlayerData {
-    [[nodiscard]] static constexpr inline uint8_t GetLevelPointer(const uint8_t& world, const uint8_t& level) noexcept {
+    [[nodiscard]]
+    static constexpr inline uint8_t GetLevelPointer(uint8_t world, uint8_t level) noexcept {
         return ((world - 1) << 2u) | (level - 1);
     }
 
-    [[nodiscard]] constexpr inline uint8_t GetLevelPointer() const noexcept {
+    [[nodiscard]]
+    constexpr inline uint8_t GetLevelPointer() const noexcept {
         return GetLevelPointer(World, Level);
     }
 
@@ -204,85 +205,105 @@ public:
 
     void ResetData();
 
-    [[nodiscard]] inline const uint8_t& getState() const noexcept {
+    [[nodiscard]]
+    inline uint8_t getState() const noexcept {
         return m_State;
     }
 
-    [[nodiscard]] inline bool isSprinting() const noexcept {
+    [[nodiscard]]
+    inline bool isSprinting() const noexcept {
         return m_SprintKeyHeld && (!m_RightKeyHeld || !m_LeftKeyHeld);
     }
 
-    [[nodiscard]] inline bool isCrouching() const noexcept {
+    [[nodiscard]]
+    inline bool isCrouching() const noexcept {
         return m_State == Crouching;
     }
 
-    [[nodiscard]] inline bool isFiery() const noexcept {
+    [[nodiscard]]
+    inline bool isFiery() const noexcept {
         return m_Size == Fiery;
     }
 
-    [[nodiscard]] inline bool isBig() const noexcept {
+    [[nodiscard]]
+    inline bool isBig() const noexcept {
         return m_Size == Big || isFiery();
     }
 
-    [[nodiscard]] inline bool isVisualyBig() const noexcept {
+    [[nodiscard]]
+    inline bool isVisualyBig() const noexcept {
         return isBig() && !isCrouching();
     }
 
-    [[nodiscard]] inline bool HasStarman() const noexcept {
+    [[nodiscard]]
+    inline bool HasStarman() const noexcept {
         return m_StarmanTimer;
     }
 
-    [[nodiscard]] inline const bool& IsOnGround() const noexcept {
+    [[nodiscard]]
+    inline bool IsOnGround() const noexcept {
         return m_OnGround;
     }
 
-    [[nodiscard]] inline const bool& IsHidden() const noexcept {
+    [[nodiscard]]
+    inline bool IsHidden() const noexcept {
         return m_Hidden;
     }
 
-    [[nodiscard]] inline const bool& isVisible() const noexcept {
+    [[nodiscard]]
+    inline bool isVisible() const noexcept {
         return m_Visible;
     }
 
-    [[nodiscard]] inline const bool& IsFrozen() const noexcept {
+    [[nodiscard]]
+    inline bool IsFrozen() const noexcept {
         return m_Frozen;
     }
 
-    [[nodiscard]] inline const bool& IsSwimming() const noexcept {
+    [[nodiscard]]
+    inline bool IsSwimming() const noexcept {
         return m_SwimmingPhysics;
     }
 
-    [[nodiscard]] inline float currentAbsoluteSpeed() const noexcept {
+    [[nodiscard]]
+    inline float currentAbsoluteSpeed() const noexcept {
         return std::fabs(static_cast<float>(static_cast<int>(m_Velocity.x * 16.f)) / 16.f);
     }
 
-    [[nodiscard]] inline bool stillOrWalkingSlowly() const noexcept {
+    [[nodiscard]]
+    inline bool stillOrWalkingSlowly() const noexcept {
         return currentAbsoluteSpeed() < 1.f;
     }
 
-    [[nodiscard]] inline bool walkingAtFullSpeed() const noexcept {
+    [[nodiscard]]
+    inline bool walkingAtFullSpeed() const noexcept {
         float vel = currentAbsoluteSpeed();
 
         return vel >= 1.f && vel <= MaxWalkingSpeed;
     }
 
-    [[nodiscard]] inline bool runningAtFullSpeed() const noexcept {
+    [[nodiscard]]
+    inline bool runningAtFullSpeed() const noexcept {
         return currentAbsoluteSpeed() > MaxWalkingSpeed;
     }
 
-    [[nodiscard]] inline bool sideButtonsNotPressed() const noexcept {
+    [[nodiscard]]
+    inline bool sideButtonsNotPressed() const noexcept {
         return !m_LeftKeyHeld && !m_RightKeyHeld;
     }
 
-    [[nodiscard]] inline const bool& getFacingDirection() const noexcept {
+    [[nodiscard]]
+    inline bool getFacingDirection() const noexcept {
         return m_Direction;
     }
 
-    [[nodiscard]] inline bool facingOppositeDirectionOfMovement() const noexcept {
+    [[nodiscard]]
+    inline bool facingOppositeDirectionOfMovement() const noexcept {
         return m_Velocity.x && (m_Velocity.x < 0.f ? m_Direction == gbl::Direction::Right : m_Direction == gbl::Direction::Left);
     }
 
-    [[nodiscard]] inline sf::FloatRect getHitbox() const noexcept {
+    [[nodiscard]]
+    inline sf::FloatRect getHitbox() const noexcept {
         if (isVisualyBig()) {
             return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 7.f), sf::Vector2f(13.f, 25.f));
         } else {
@@ -290,7 +311,8 @@ public:
         }
     }
 
-    [[nodiscard]] inline const sf::Vector2f& getVelocity() const noexcept {
+    [[nodiscard]]
+    inline sf::Vector2f getVelocity() const noexcept {
         return m_Velocity;
     }
 
@@ -302,7 +324,8 @@ public:
         m_Velocity.y = vel;
     }
 
-    [[nodiscard]] inline std::string Name() const noexcept {
+    [[nodiscard]]
+    inline std::string Name() const noexcept {
         return Data.Type ? "LUIGI" : "MARIO";
     }
 
@@ -310,5 +333,3 @@ public:
 };
 
 extern Player player;
-
-#endif // !PLAYER_HPP

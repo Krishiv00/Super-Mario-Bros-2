@@ -1,5 +1,4 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#pragma once
 
 #include "SFML/Graphics.hpp"
 
@@ -30,9 +29,8 @@ public:
     void Update();
     void Render();
 
-    [[nodiscard]] inline bool IsRunning() const noexcept {
+    [[nodiscard]]
+    inline bool IsRunning() const noexcept {
         return m_Window.isOpen();
     }
 };
-
-#endif // !ENGINE_HPP

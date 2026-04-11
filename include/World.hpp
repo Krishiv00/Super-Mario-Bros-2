@@ -1,5 +1,4 @@
-#ifndef WORLD_HPP
-#define WORLD_HPP
+#pragma once
 
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
@@ -21,7 +20,8 @@ class World {
     friend class BouncingBlock;
 
 public:
-    [[nodiscard]] static constexpr inline unsigned int GetIndex(unsigned int x, unsigned int y) noexcept {
+    [[nodiscard]]
+    static constexpr inline unsigned int GetIndex(unsigned int x, unsigned int y) noexcept {
         return x * 13u + y;
     }
 
@@ -107,17 +107,17 @@ private:
     void collisions_PushOutOfBlockRightwards();
     void collisions_PushOutOfBlockLeftwards();
 
-    bool collisions_CollisionResolveSide(const float& pointX, const float& pointY, const unsigned int& row, const unsigned int& col, std::unique_ptr<Blocks::Block>& block_ptr, bool direction);
+    bool collisions_CollisionResolveSide(float pointX, float pointY, unsigned int row, unsigned int col, std::unique_ptr<Blocks::Block>& block_ptr, bool direction);
 
     void collisions_LandOnTile(Blocks::Block*& block);
-    void collisions_LandOnLift(const float& liftTop);
+    void collisions_LandOnLift(float liftTop);
 
     void collisions_BonkHead();
 
-    Lift* collisions_PointInLift(const sf::Vector2f& point);
+    Lift* collisions_PointInLift(sf::Vector2f point);
 
-    bool collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const unsigned int& col, const unsigned int& row);
-    bool collisions_FlagCheck(Blocks::Block* block, const unsigned int& index);
+    bool collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, unsigned int col, unsigned int row);
+    bool collisions_FlagCheck(Blocks::Block* block, unsigned int index);
     bool collisions_WarpPipeCheck(Blocks::Block* block);
 
     void resolvePlayerTileCollisions();
@@ -159,7 +159,7 @@ public:
 
     void TickDownTimer();
 
-    bool PointInTile(const sf::Vector2f& point) const;
+    bool PointInTile(sf::Vector2f point) const;
 
     bool AddSprite(std::unique_ptr<Sprite>& sprite);
     void ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex);
@@ -176,31 +176,38 @@ public:
 
     void StartCutscene(std::unique_ptr<Cutscene> scene);
 
-    [[nodiscard]] inline bool cutscenePlaying() const {
+    [[nodiscard]]
+    inline bool cutscenePlaying() const {
         return m_Cutscene != nullptr;
     }
 
-    [[nodiscard]] inline std::unique_ptr<Sprite>* getSprites() {
+    [[nodiscard]]
+    inline std::unique_ptr<Sprite>* getSprites() {
         return m_Sprites;
     }
 
-    [[nodiscard]] inline const uint8_t& getStompChain() const {
+    [[nodiscard]]
+    inline uint8_t getStompChain() const {
         return m_StompChain;
     }
 
-    [[nodiscard]] inline const uint16_t& getGameTime() const {
+    [[nodiscard]]
+    inline uint16_t getGameTime() const {
         return m_GameTime;
     }
 
-    [[nodiscard]] inline bool reloadRequired() const {
+    [[nodiscard]]
+    inline bool reloadRequired() const {
         return m_NewLevel || m_NewArea;
     }
 
-    [[nodiscard]] inline const bool& newLevel() const {
+    [[nodiscard]]
+    inline bool newLevel() const {
         return m_NewLevel;
     }
 
-    [[nodiscard]] inline const bool& scrollLocked() const {
+    [[nodiscard]]
+    inline bool scrollLocked() const {
         return m_ScrollLocked;
     }
 
@@ -211,5 +218,3 @@ public:
 
     bool TwoPlayerMode = false;
 };
-
-#endif // !WORLD_HPP

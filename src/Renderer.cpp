@@ -162,7 +162,7 @@ void Renderer::LoadResources() noexcept {
 
 #pragma region Palletes
 
-void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& folliageColsIndex, const uint8_t& bodyColsIndex) noexcept {
+void Renderer::SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, uint8_t bodyColsIndex) noexcept {
     constexpr std::array<uint8_t, 3u> BackgroundColorSets[] = {
         {0u, 0u, 0u},
         {93u, 150u, 255u}
@@ -235,7 +235,7 @@ void Renderer::SetBackgroundTheme(const bool& skyColIndex, const uint8_t& follia
     UpdatePalleteColors();
 }
 
-void Renderer::SetSpriteTheme(const uint8_t& theme, uint8_t endIndex) noexcept {
+void Renderer::SetSpriteTheme(uint8_t theme, uint8_t endIndex) noexcept {
     constexpr std::array<std::array<uint8_t, 4u>, 12u> SpriteColorSets[] = {
         {{
             {0u, 0u, 0u}, {190u, 190u, 190u}, {255u, 255u, 255u}, {255u, 154u, 56u},
@@ -271,7 +271,7 @@ void Renderer::SetSpriteTheme(const uint8_t& theme, uint8_t endIndex) noexcept {
     }
 }
 
-void Renderer::SetPlayerTheme(const uint8_t& theme) noexcept {
+void Renderer::SetPlayerTheme(uint8_t theme) noexcept {
     constexpr std::array<std::array<uint8_t, 4u>, 12u> PlayerColorSets[] = {
         {{
             {0u, 0u, 0u}, {219u, 40u, 0u}, {255u, 154u, 56u}, {138u, 113u, 0u}
@@ -352,7 +352,7 @@ void Renderer::ResetAnimations() noexcept {
 #pragma region Rendering
 
 #if RENDER_HITBOXES
-void Renderer::appendHitbox(sf::VertexArray& vertices, const sf::FloatRect& hitbox) noexcept {
+void Renderer::appendHitbox(sf::VertexArray& vertices, sf::FloatRect hitbox) noexcept {
     constexpr sf::Color color = sf::Color::Green;
 
     sf::Vertex topleft = sf::Vertex(hitbox.position, color);
@@ -374,7 +374,7 @@ void Renderer::SetGameTimeRendering(bool state) noexcept {
     s_RenderGameTime = state;
 }
 
-void Renderer::createVertices(const sf::Vector2f& position, const sf::Vector2f& texturePosition, const sf::Vector2f& size = sf::Vector2f(TileSize, TileSize), bool flipHorizontally = false, bool flipVertically = false) noexcept {
+void Renderer::createVertices(sf::Vector2f position, sf::Vector2f texturePosition, sf::Vector2f size = sf::Vector2f(TileSize, TileSize), bool flipHorizontally = false, bool flipVertically = false) noexcept {
     s_Vertices[0u] = sf::Vertex(position, sf::Color::White, texturePosition);
     s_Vertices[1u] = sf::Vertex({position.x + size.x, position.y}, sf::Color::White, {texturePosition.x + size.x, texturePosition.y});
     s_Vertices[2u] = sf::Vertex({position.x, position.y + size.y}, sf::Color::White, {texturePosition.x, texturePosition.y + size.y});
@@ -389,7 +389,7 @@ void Renderer::createVertices(const sf::Vector2f& position, const sf::Vector2f& 
     }
 }
 
-void Renderer::renderVertices(const sf::Texture& texture, const uint8_t& subPalleteIndex, sf::RenderTarget& target) noexcept {
+void Renderer::renderVertices(const sf::Texture& texture, uint8_t subPalleteIndex, sf::RenderTarget& target) noexcept {
     s_PaletteShader.setUniform("subPallete", 0.25f * static_cast<float>(subPalleteIndex));
 
     sf::RenderStates state(&texture);
@@ -489,7 +489,7 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
 
 #pragma region Tile
 
-void Renderer::render(sf::RenderTarget& target, const uint8_t& textureId, const uint8_t& subPalleteIndex, sf::Vector2f position) noexcept {
+void Renderer::render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPalleteIndex, sf::Vector2f position) noexcept {
     const sf::Vector2f texturePos = sf::Vector2f((textureId - 1) * TileSize, 0.f);
 
     createVertices(position, texturePos);
@@ -863,7 +863,7 @@ void Renderer::RenderGame(sf::RenderTarget& target, const World& world) noexcept
 
 #pragma region Ui
 
-void Renderer::RenderUi(sf::RenderTarget& target, const World& world, const bool& onTitleScreen) noexcept {
+void Renderer::RenderUi(sf::RenderTarget& target, const World& world, bool onTitleScreen) noexcept {
     sf::VertexArray vertices(sf::PrimitiveType::Triangles);
 
     // name
@@ -925,7 +925,7 @@ void Renderer::RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, b
 
 #pragma region Text
 
-void Renderer::textAddChar(char character, const sf::Vector2f& position, sf::VertexArray& vertices) noexcept {
+void Renderer::textAddChar(char character, sf::Vector2f position, sf::VertexArray& vertices) noexcept {
     if (character >= '0' && character <= '9') { // 0 -> 9
         character -= '0';
     } else if (character >= 'A' && character <= 'Z') { // A -> Z

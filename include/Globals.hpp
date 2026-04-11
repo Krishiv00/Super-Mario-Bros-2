@@ -1,19 +1,13 @@
-#ifndef GLOBALS
-#define GLOBALS
+#pragma once
 
 #ifndef M_PI
-    #define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif // M_PI
 
-[[nodiscard]] constexpr inline float toRad(float degrees) {
+[[nodiscard]]
+constexpr inline float toRad(float degrees) {
     return degrees * M_PI / 180.f;
 }
-
-#define DEBUG
-
-#ifdef DEBUG
-    #include <iostream>
-#endif // DEBUG
 
 #include <cmath>
 
@@ -28,7 +22,8 @@ namespace gbl {
     constexpr uint8_t Rows = 15u;
 
     template <typename _T>
-    [[nodiscard]] constexpr inline int8_t sign(_T x) {
+    [[nodiscard]]
+    constexpr inline int8_t sign(_T x) {
         return x >= _T(0) ? 1 : -1;
     }
 
@@ -123,34 +118,36 @@ namespace gbl {
     namespace ItemType {
         enum Type : uint8_t {
             SuperMushroom = PowerupType::SuperMushroom,
-            FireFlower    = PowerupType::FireFlower,
-            Starman       = PowerupType::Starman,
-            OneUp         = PowerupType::OneUp,
+            FireFlower = PowerupType::FireFlower,
+            Starman = PowerupType::Starman,
+            OneUp = PowerupType::OneUp,
             Coin,
             Vine,
             None
         };
 
-        [[nodiscard]] constexpr inline bool isCoinItem(uint8_t itemType) {
+        [[nodiscard]]
+        constexpr inline bool isCoinItem(uint8_t itemType) {
             return itemType == Coin;
         }
-        
-        [[nodiscard]] constexpr inline bool isPowerupItem(uint8_t itemType) {
+
+        [[nodiscard]]
+        constexpr inline bool isPowerupItem(uint8_t itemType) {
             return itemType != None && !isCoinItem(itemType);
         }
     }
 }
 
-#ifdef DEBUG
-    #include "Utils/Stopwatch.hpp"
-    
-    #define LOG_ERROR(x) std::cerr << __FILE__ << "-\"" << x << "\"" << std::endl
-    #define PRINT(x) std::cout << (x) << std::endl
+#ifndef NDEBUG
+#include <iostream>
+
+#include "Utils/Stopwatch.hpp"
+
+#define LOG_ERROR(x) std::cerr << __FILE__ << "-\"" << x << "\"" << std::endl
+#define PRINT(x) std::cout << (x) << std::endl
 #else
-    #define LOG_ERROR(x)
-    #define PRINT(x)
-#endif // DEBUG
+#define LOG_ERROR(x)
+#define PRINT(x)
+#endif // NDEBUG
 
 constexpr float TileSize = 16.f;
-
-#endif // !GLOBALS

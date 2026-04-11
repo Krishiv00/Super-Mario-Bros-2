@@ -59,7 +59,7 @@ void Game::ProcessEvents(const sf::Event& event) {
     }
 }
 
-void Game::handleKeyPress(const sf::Keyboard::Scancode& key) {
+void Game::handleKeyPress(sf::Keyboard::Scancode key) {
     if (key == sf::Keyboard::Scancode::Enter) {
         if (m_OnTitleScreen) {
             if (m_DemoStartTimer) {
@@ -518,8 +518,8 @@ std::string Game::saveCustomScript() {
     outFile.write(reinterpret_cast<const char*>(&count), sizeof(count));
 
     for (const auto& input : m_ScriptRecorder.getScript()) {
-        const uint8_t& inputBit = input.inputBits;
-        const uint8_t& inputDuration = input.duration;
+        uint8_t inputBit = input.inputBits;
+        uint8_t inputDuration = input.duration;
 
         outFile.write(reinterpret_cast<const char*>(&inputBit), sizeof(inputBit));
         outFile.write(reinterpret_cast<const char*>(&inputDuration), sizeof(inputDuration));

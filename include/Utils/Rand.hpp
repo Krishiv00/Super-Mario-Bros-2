@@ -1,46 +1,40 @@
-#ifndef RAND_HPP
-#define RAND_HPP
+#pragma once
 
 #include <cstdint>
 
-class Rand {
+class Rand final {
 public:
     enum : uint8_t {
-        OffsetSpawning = 1u,
-        OffsetMovement = 2u
+        OffsetSpawning = 1,
+        OffsetMovement = 2
     };
 
 private:
-    static inline uint8_t m_State[7u];
+    static inline uint8_t m_State[7];
 
 public:
     static void Reset() {
-        m_State[0u] = 82u;
-        m_State[1u] = 128u;
+        m_State[0] = 82;
+        m_State[1] = 128;
 
-        for (uint8_t i = 2u; i < 7u; ++i) {
-            m_State[i] = 0u;
+        for (uint8_t i = 2; i < 7; ++i) {
+            m_State[i] = 0;
         }
     }
 
     static void Update() {
-        const uint8_t bit0 = (m_State[0u] >> 1u) & 1u;
-        const uint8_t bit1 = (m_State[1u] >> 1u) & 1u;
-        
-        uint8_t carry = bit0 ^ bit1;
+        uint8_t feedback = ((m_State[0] >> 1) & 1) ^ ((m_State[1] >> 1) & 1);
 
-        for (uint8_t i = 0u; i < 7u; i++) {
-            const uint8_t old = m_State[i];
-            const uint8_t newByte = (old >> 1u) | (carry << 7u);
+        for (uint8_t& byte : m_State) {
+            const uint8_t previous = byte;
 
-            carry = old & 1u;
-            m_State[i] = newByte;
+            byte = (previous >> 1) | (feedback << 7);
+            feedback = previous & 1;
         }
     }
 
-    [[nodiscard]] static inline const uint8_t& RandomInt(uint8_t offset) {
+    [[nodiscard]]
+    static inline uint8_t RandomInt(uint8_t offset) {
         return m_State[offset];
     }
 };
-
-#endif // !RAND_HPP

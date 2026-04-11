@@ -1,5 +1,4 @@
-#ifndef CUTSCENE_HPP
-#define CUTSCENE_HPP
+#pragma once
 
 #include "Globals.hpp"
 
@@ -243,5 +242,3 @@ public:
     PlayerSpawnScene(World& world, uint8_t posIdx);
     ~PlayerSpawnScene();
 };
-
-#endif // !CUTSCENE_HPP

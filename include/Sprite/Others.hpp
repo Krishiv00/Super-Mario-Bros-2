@@ -1,5 +1,4 @@
-#ifndef OTHERS_HPP
-#define OTHERS_HPP
+#pragma once
 
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
@@ -25,7 +24,8 @@ public:
 
     void Activate(World& world);
 
-    [[nodiscard]] inline const uint8_t& getCurrentStage() const {
+    [[nodiscard]]
+    inline uint8_t getCurrentStage() const {
         return m_Stage;
     }
 };
@@ -46,7 +46,8 @@ public:
 
     uint8_t ItemId;
 
-    [[nodiscard]] inline const Blocks::Block* getBlock() const {
+    [[nodiscard]]
+    inline const Blocks::Block* getBlock() const {
         return m_Block.get();
     }
 };
@@ -68,7 +69,8 @@ public:
 
     void SetMoving(bool moving);
 
-    [[nodiscard]] inline bool ReachedBottom() const {
+    [[nodiscard]]
+    inline bool ReachedBottom() const {
         return Position.y >= 171.f;
     }
 };
@@ -92,7 +94,8 @@ public:
 
     virtual void Update(World& world) override;
 
-    [[nodiscard]] inline const uint8_t& getType() const {
+    [[nodiscard]]
+    inline uint8_t getType() const noexcept {
         return m_Type;
     }
 };
@@ -107,11 +110,13 @@ public:
 
     virtual void Update(World& world) override;
 
-    [[nodiscard]] inline sf::FloatRect getHitbox() const {
+    [[nodiscard]]
+    inline sf::FloatRect getHitbox() const {
         return sf::FloatRect(sf::Vector2f(xPosition() + 6.f, yPosition() + 5.f), sf::Vector2f(5.f, 5.f));
     }
 
-    [[nodiscard]] inline const int8_t& getDirection() const {
+    [[nodiscard]]
+    inline int8_t getDirection() const noexcept {
         return m_Direction;
     }
 };
@@ -127,7 +132,8 @@ public:
         --m_Timer;
     }
 
-    [[nodiscard]] inline bool Active() const {
+    [[nodiscard]]
+    inline bool Active() const noexcept {
         return m_Timer;
     }
 
@@ -179,15 +185,15 @@ public:
         return m_Timer;
     }
 
-    [[nodiscard]] inline sf::Vector2f getPosition(float cameraPosition) const {
+    [[nodiscard]]
+    inline sf::Vector2f getPosition(float cameraPosition) const {
         return sf::Vector2f(
             static_cast<float>(m_Position.x) + cameraPosition, static_cast<float>(m_Position.y)
         );
     }
 
-    [[nodiscard]] inline const uint8_t& getType() const {
+    [[nodiscard]]
+    inline uint8_t getType() const noexcept {
         return m_Type;
     }
 };
-
-#endif // !OTHERS_HPP

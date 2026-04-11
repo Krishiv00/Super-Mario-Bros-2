@@ -1,5 +1,4 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#pragma once
 
 #include "SFML/Graphics.hpp"
 
@@ -32,7 +31,7 @@ private:
     void renderUi();
     void renderGame();
 
-    void handleKeyPress(const sf::Keyboard::Scancode& key);
+    void handleKeyPress(sf::Keyboard::Scancode key);
 
     void startDemoScript();
 
@@ -83,9 +82,8 @@ public:
 
     sf::Image GetScreenshot() const noexcept;
 
-    [[nodiscard]] inline const bool& SoundDisabled() const noexcept {
+    [[nodiscard]]
+    inline bool SoundDisabled() const noexcept {
         return m_OnTitleScreen;
     }
 };
-
-#endif // !GAME_HPP

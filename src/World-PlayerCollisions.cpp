@@ -13,7 +13,8 @@ constexpr inline const uint8_t PlayerInteractionY[] = {
     // head big, head big in water, head small, feet, side high, side low
 };
 
-[[nodiscard]] constexpr inline uint16_t GetFlagScore() noexcept {
+[[nodiscard]]
+constexpr inline uint16_t GetFlagScore() noexcept {
     const uint8_t playerRow = static_cast<uint8_t>((player.yPosition() + 32.f) / 16.f);
     const uint8_t flagRelativePlayerRow = playerRow - 2u;
 
@@ -44,7 +45,7 @@ void World::collisions_PushOutOfBlockLeftwards() {
     }
 }
 
-bool World::collisions_CollisionResolveSide(const float& pointX, const float& pointY, const unsigned int& row, const unsigned int& col, std::unique_ptr<Blocks::Block>& block_ptr, bool direction) {
+bool World::collisions_CollisionResolveSide(float pointX, float pointY, unsigned int row, unsigned int col, std::unique_ptr<Blocks::Block>& block_ptr, bool direction) {
     // colliding with a coin
     if (collisions_CoinCheck(block_ptr, col, row)) {
         return true;
@@ -97,7 +98,7 @@ void World::collisions_LandOnTile(Blocks::Block*& block) {
     }
 }
 
-void World::collisions_LandOnLift(const float& liftTop) {
+void World::collisions_LandOnLift(float liftTop) {
     const float top = player.yPosition();
     const float flooredWhole = std::truncf(top);
     const float decimalPart = top - flooredWhole;
@@ -119,7 +120,7 @@ void World::collisions_BonkHead() {
     audioPlayer.Play(AudioPlayer::BlockHit);
 }
 
-Lift* World::collisions_PointInLift(const sf::Vector2f& point) {
+Lift* World::collisions_PointInLift(sf::Vector2f point) {
     for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
         if (auto& sprite = m_Sprites[i]) {
             if (
@@ -134,7 +135,7 @@ Lift* World::collisions_PointInLift(const sf::Vector2f& point) {
     return nullptr;
 }
 
-bool World::collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const unsigned int& col, const unsigned int& row) {
+bool World::collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, unsigned int col, unsigned int row) {
     if (Is(block.get(), Blocks::Coin)) {
         give_coin();
 
@@ -151,7 +152,7 @@ bool World::collisions_CoinCheck(std::unique_ptr<Blocks::Block>& block, const un
     return false;
 }
 
-bool World::collisions_FlagCheck(Blocks::Block* block, const unsigned int& index) {
+bool World::collisions_FlagCheck(Blocks::Block* block, unsigned int index) {
     if (!m_Cutscene && Is(block, Blocks::Flag)) {
         const float x = static_cast<float>(static_cast<unsigned int>(index / gbl::Rows)) * 16.f;
 

@@ -114,7 +114,7 @@ void World::TickDownTimer() {
     }
 }
 
-bool World::PointInTile(const sf::Vector2f& point) const {
+bool World::PointInTile(sf::Vector2f point) const {
     const unsigned int col = static_cast<unsigned int>(point.x / TileSize);
     const unsigned int row = static_cast<unsigned int>(point.y / TileSize) - 2;
 

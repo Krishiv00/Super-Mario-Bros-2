@@ -1,5 +1,4 @@
-#ifndef UTILS_STOPWATCH_HPP
-#define UTILS_STOPWATCH_HPP
+#pragma once
 
 #include <chrono>
 
@@ -24,9 +23,8 @@ public:
         return static_cast<double>(elapsed.count()) / 1000.0;
     }
 
-    [[nodiscard]] static inline const bool& Running() {
+    [[nodiscard]]
+    static inline bool Running() {
         return s_Running;
     }
 };
-
-#endif // !UTILS_STOPWATCH_HPP
