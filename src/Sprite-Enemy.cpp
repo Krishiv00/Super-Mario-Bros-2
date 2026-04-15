@@ -221,7 +221,12 @@ namespace EnemyComponents {
                 Position.y = (static_cast<int>(bottom / TileSize) - 2) * TileSize;
                 m_YVelocity = 0.f;
 
-                if (!oldOnGround && !Is(this, Goomba)) {
+                if (
+                    // just landed
+                    !oldOnGround &&
+                    // exceptions
+                    !Is(this, Goomba) && !Is(this, EnemyComponents::Shell) && !Is(this, RedKoopaTroopa)
+                ) {
                     SetDirectionRelativeToPlayer();
                 }
             }
