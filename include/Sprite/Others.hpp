@@ -7,10 +7,10 @@
 #include "Sprite/Sprite.hpp"
 #include "Sprite/Powerup.hpp"
 
-class JumpSpring : public Sprite {
+class JumpSpring final : public Sprite {
 private:
-    uint8_t m_Timer = 0u;
-    uint8_t m_Stage = 0u;
+    uint8_t m_Timer{0u};
+    uint8_t m_Stage{0u};
 
     bool m_BigJump;
     bool m_JumpPressedLastFrame;
@@ -30,7 +30,7 @@ public:
     }
 };
 
-class BouncingBlock : public Sprite {
+class BouncingBlock final : public Sprite {
 private:
     std::unique_ptr<Blocks::Block> m_Block;
 
@@ -52,15 +52,15 @@ public:
     }
 };
 
-class Flag : public Sprite {
+class Flag final : public Sprite {
     friend class World;
     friend class Renderer;
 
 private:
     bool m_Moving;
 
-    int8_t m_FloateyNumType = -1;
-    uint8_t m_FloateyNumYPos = (gbl::Rows - 4) * TileSize;
+    int8_t m_FloateyNumType{-1};
+    uint8_t m_FloateyNumYPos{(gbl::Rows - 4) * static_cast<uint8_t>(TileSize)};
 
 public:
     Flag(sf::Vector2f position);
@@ -75,14 +75,14 @@ public:
     }
 };
 
-class StarFlag : public Sprite {
+class StarFlag final : public Sprite {
 public:
     StarFlag(sf::Vector2f position);
 
     virtual void Update(World& world) override;
 };
 
-class DeathAnimation : public Sprite {
+class DeathAnimation final : public Sprite {
 private:
     uint8_t m_Type;
     int8_t m_Direction;
@@ -100,7 +100,7 @@ public:
     }
 };
 
-class Fireball : public Sprite {
+class Fireball final : public Sprite {
 private:
     int8_t m_Direction;
     float m_Velocity;
@@ -142,7 +142,7 @@ public:
     sf::Vector2f Position;
 };
 
-class CoinAnimation : public DecorSprite {
+class CoinAnimation final : public DecorSprite {
 public:
     CoinAnimation(sf::Vector2f position);
 
@@ -151,7 +151,7 @@ public:
     virtual uint8_t GetTextureIndex() const override;
 };
 
-class Firework : public DecorSprite {
+class Firework final : public DecorSprite {
 private:
     // true ? fireball : confetti
     bool m_Type;
@@ -162,7 +162,7 @@ public:
     virtual uint8_t GetTextureIndex() const override;
 };
 
-class FloateyNum {
+class FloateyNum final {
 private:
     uint8_t m_Timer;
     uint8_t m_Type;

@@ -5,8 +5,8 @@
 #include "Sprite/Player.hpp"
 
 struct DemoInput {
-    uint8_t inputBits = 0x00u;
-    uint8_t duration = 0x00u;
+    uint8_t inputBits{0x00u};
+    uint8_t duration{0x00u};
 };
 
 namespace ButtonInput {
@@ -20,7 +20,7 @@ namespace ButtonInput {
     };
 }
 
-class ScriptPlayer {
+class ScriptPlayer final {
 private:
     uint8_t m_CurrentIndex;
     uint8_t m_FrameTimer;
@@ -75,14 +75,14 @@ public:
         player.m_TasMode = false;
     }
 
-    bool Done = false;
+    bool Done{false};
 };
 
-class ScriptRecorder {
+class ScriptRecorder final {
 private:
     std::vector<DemoInput> m_Script;
 
-    bool m_Recording = false;
+    bool m_Recording{false};
 
     uint8_t m_InitialLevel;
 

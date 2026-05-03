@@ -4,6 +4,11 @@
 #include "World.hpp"
 #include "Renderer.hpp"
 
+[[nodiscard]]
+static constexpr inline float SubspeedToPixelsPerSecond(float subSpeed) noexcept {
+    return subSpeed / 256.f / 16.f;
+}
+
 Player::Player() {
     m_Size = Small;
 
@@ -317,8 +322,8 @@ void Player::on_key_press_right() {
 #pragma region Physics
 
 float Player::getAcceleration() const {
-    constexpr float AccelerationWalk = 152.f / 256.f / 16.f;
-    constexpr float AccelerationSprint = 228.f / 256.f / 16.f;
+    constexpr float AccelerationWalk = SubspeedToPixelsPerSecond(152.f);
+    constexpr float AccelerationSprint = SubspeedToPixelsPerSecond(228.f);
 
     if (
         !m_SwimmingPhysics &&
@@ -368,11 +373,11 @@ uint8_t Player::getFallingGravity() const {
 
 void Player::applyFriction() {
     if (m_OnGround && m_Velocity.x && !m_Frozen && (sideButtonsNotPressed() || m_State == Stopping || m_DownKeyHeld)) {
-        float friction = 152.f / 256.f / 16.f;
+        float friction = SubspeedToPixelsPerSecond(152.f);
 
         if (m_State == Stopping) {
             if (m_WasRunningBeforeCurrentAction) {
-                friction = 416.f / 256.f / 16.f;
+                friction = SubspeedToPixelsPerSecond(416.f);
             } else {
                 friction *= 2.f;
             }

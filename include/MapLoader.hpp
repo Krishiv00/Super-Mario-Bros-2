@@ -3,7 +3,7 @@
 #include "World.hpp"
 #include "Renderer.hpp"
 
-class MapLoader {
+class MapLoader final {
 private:
     struct SceneData {
         int8_t Terrain;
@@ -17,7 +17,6 @@ private:
     static void hiddenOneUpLogic(World& world);
     static void loadMapProperties(World& world);
     static void setTheme(uint8_t mapAttribute);
-    static void createNewPage(World& world);
     static void loadPage(World& world);
     static void parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned int pageColumnOffset);
     static void parseBadGuysObject(uint8_t b1, uint8_t b2, bool globalDifficulty, World& world, unsigned int pageColumnOffset);
@@ -113,8 +112,6 @@ private:
     static inline bool LastBadGuysObjectWasPageSkip;
     static inline bool LastBadGuysObjectWasBalanceLift;
 
-    static inline uint8_t CurrentMazeScore;
-
     static inline uint8_t HoleBufferLength;
     static inline std::vector<std::pair<unsigned int, SceneData>> BackgroundModifiers;
 
@@ -125,7 +122,8 @@ public:
 
     static void Update(World& world);
 
-    static uint8_t GetCurrentPage() {
+    [[nodiscard]]
+    static uint8_t GetCurrentPage() noexcept {
         return CurrentPage;
     }
 };

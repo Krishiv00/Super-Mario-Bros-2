@@ -112,30 +112,32 @@ bool Enemy::shouldDespawn(float cameraPosition, float maxThreshold = World::MaxS
     const float boundLeft = std::max(cameraPosition - maxThreshold, 0.f);
     const float boundRight = cameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
 
-    // height of the game (240 pixels)
-    constexpr float boundBottom = gbl::Height;
-
     const float enemyX = xPosition();
     const float enemyY = yPosition();
 
-    return enemyX < boundLeft || (m_Direction == gbl::Direction::Right && enemyX > boundRight) || enemyY > boundBottom;
+    return (
+        enemyX < boundLeft ||
+        (m_Direction == gbl::Direction::Right && enemyX > boundRight) ||
+        enemyY > gbl::Height
+    );
 }
 
 void Enemy::onCollide(World& world) {
-    if (
-        player.Damage(world) &&
-        !player.IsSwimming() &&
-        m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar &&
-        !Is(this, EnemyComponents::Shell)
-    ) {
-        SetDirectionRelativeToPlayer();
+    if (player.Damage(world)) {
+        if (
+            !player.IsSwimming() &&
+            m_Type != EnemyType::PiranhaPlant && m_Type != EnemyType::Firebar &&
+            !Is(this, EnemyComponents::Shell)
+        ) {
+            SetDirectionRelativeToPlayer();
+        }
     }
 }
 
 void Enemy::onBlockDefeat(World& world, float blockPosition) {
     ToRemove = true;
 
-    if (!HasComponent(this, EnemyComponents::ShellEnemy)) {
+    if (!HasComponent(this, EnemyComponents::ShellSpawner)) {
         spawnDeathAnimation(world, xPosition() >= blockPosition ? 1 : -1);
     }
 }
@@ -185,7 +187,7 @@ void Enemy::OnNoCollision() noexcept {
 #pragma region Enemy Components
 
 namespace EnemyComponents {
-    void SideToSideMovement::update(World& world, float speed = 0.5f, bool make_sound = false) {
+    void SideToSideMovement::update(World& world, float speed = 0.5f, bool isShell = false) {
         Position.x += speed * m_Direction;
 
         const float top = yPosition();
@@ -197,7 +199,7 @@ namespace EnemyComponents {
             if (world.PointInTile(sidePoint)) {
                 m_Direction *= -1;
 
-                if (make_sound) {
+                if (isShell) {
                     audioPlayer.Play(AudioPlayer::BlockHit);
                 }
             }
@@ -221,10 +223,10 @@ namespace EnemyComponents {
                 Position.y = (static_cast<int>(bottom / TileSize) - 2) * TileSize;
                 m_YVelocity = 0.f;
 
+                // Note: when an enemy lands it turns to face the player
+                // with some enemies being exceptions
                 if (
-                    // just landed
                     !oldOnGround &&
-                    // exceptions
                     !Is(this, Goomba) && !Is(this, EnemyComponents::Shell) && !Is(this, RedKoopaTroopa)
                 ) {
                     SetDirectionRelativeToPlayer();
@@ -234,6 +236,7 @@ namespace EnemyComponents {
     }
 
     void CollideWithOtherEnemies::update(World& world) {
+        // Enemies don't collide with each other in water stages
         if (player.IsSwimming()) return;
 
         auto sprites = world.getSprites();
@@ -297,7 +300,7 @@ namespace EnemyComponents {
         CollideWithOtherEnemies::update(world);
     }
 
-    std::unique_ptr<Shell> ShellEnemy::getShellObj() const {
+    std::unique_ptr<Shell> ShellSpawner::getShellObj() const {
         std::unique_ptr<Shell> shell;
 
         if (m_Type == EnemyType::KoopaTroopa) {
@@ -315,7 +318,7 @@ namespace EnemyComponents {
         return shell;
     }
 
-    void ShellEnemy::onBlockDefeat(World& world, float blockPosition) {
+    void ShellSpawner::onBlockDefeat(World& world, float blockPosition) {
         Enemy::onBlockDefeat(world, blockPosition);
 
         std::unique_ptr<Shell> shell = getShellObj();
@@ -328,7 +331,7 @@ namespace EnemyComponents {
         world.ReplaceSprite(std::move(shell), SlotIndex);
     }
 
-    void ShellEnemy::onStomp(World& world) {
+    void ShellSpawner::onStomp(World& world) {
         Stompable::onStomp(world);
 
         std::unique_ptr<Shell> shell = getShellObj();
@@ -460,9 +463,7 @@ namespace EnemyComponents {
             return;
         }
 
-        --m_RevivalTimer;
-
-        if (m_RevivalTimer != 0u) {
+        if (--m_RevivalTimer != 0u) {
             if (m_RevivalTimer == 4u) {
                 m_Animate = true;
             }
@@ -470,7 +471,7 @@ namespace EnemyComponents {
             return;
         }
 
-        std::unique_ptr<ShellEnemy> enemy;
+        std::unique_ptr<ShellSpawner> enemy;
 
         if (m_Type == EnemyType::KoopaTroopaShell) {
             enemy = std::make_unique<KoopaTroopa>(Position);
@@ -480,7 +481,7 @@ namespace EnemyComponents {
             enemy = std::make_unique<BuzzyBeetle>(Position);
         } else return;
 
-        // 50-50 chance that enemy moves to right when woken up
+        // 50-50 chance that new enemy moves to right when woken up
         if (Rand::RandomInt(Rand::OffsetSpawning) & 0x01u) {
             enemy->m_Direction *= -1;
         }
@@ -649,10 +650,13 @@ void RedKoopaParatroopa::Update(World& world) {
 void RedKoopaParatroopa::onStomp(World& world) {
     Stompable::onStomp(world);
 
+    // Red koopa troopa spawned from red parrot koopa is different from the regular red koopa troopa
+    // it's behaviour is like regular koopa troopa, only difference being the pallete being red
+    // it doesn't turn around at ledges
     std::unique_ptr<KoopaTroopa> koopa = std::make_unique<KoopaTroopa>(Position);
-
-    // spawn normal koopa just with red pallete
+    
     koopa->SubPalleteIndex = SubPalleteIndex;
+
     if (!player.IsSwimming()) koopa->SetDirectionRelativeToPlayer();
 
     world.ReplaceSprite(std::move(koopa), SlotIndex);
@@ -840,6 +844,7 @@ HammerBrother::HammerBrother(sf::Vector2f position) : Enemy(EnemyType::HammerBro
 void HammerBrother::HandleMovement(World& world) {
     GravityMovement::update(world);
 
+    // always face the player
     m_Direction = gbl::sign(player.xPosition() - xPosition());
 }
 
@@ -928,7 +933,7 @@ void Firebar::handleCollision(World& world) {
     const float angleSin = std::sin(angleRad);
     const float angleCos = std::cos(angleRad);
 
-    uint8_t ballChecks = m_Size - 1;
+    const uint8_t ballChecks = m_Size - 1;
 
     for (uint8_t i = 0u; i < ballChecks; ++i) {
         float radius = i * TileSize * 0.5f;

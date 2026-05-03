@@ -86,9 +86,7 @@ sf::Vector2f BouncingBlock::getPosition() const {
         0, -2, 0, 2, 3, 5, 5, 6, 7, 7, 6, 6, 5, 2, 1, 0
     };
 
-    const int8_t offset = BounceTable[m_BumpTimerRef];
-
-    return sf::Vector2f(Position.x, Position.y - static_cast<float>(offset));
+    return sf::Vector2f(Position.x, Position.y - static_cast<float>(BounceTable[m_BumpTimerRef]));
 }
 
 #pragma region Flag

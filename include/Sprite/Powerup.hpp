@@ -25,11 +25,11 @@ protected:
 
     int8_t m_Direction;
 
-    uint8_t m_GetOutTimer = static_cast<uint8_t>(12.f / GetOutSpeed);
+    uint8_t m_GetOutTimer{static_cast<uint8_t>(12.f / GetOutSpeed)};
 
     uint8_t m_Type;
 
-    float m_Velocity = 0.f;
+    float m_Velocity{0.f};
 
 public:
     Powerup() = default;
@@ -46,7 +46,7 @@ public:
     }
 };
 
-class OneUp : public Powerup {
+class OneUp final : public Powerup {
 public:
     OneUp(sf::Vector2f position);
 
@@ -55,7 +55,7 @@ public:
     virtual void GrantPower(World& world) override;
 };
 
-class SuperMushroom : public Powerup {
+class SuperMushroom final : public Powerup {
 public:
     SuperMushroom(sf::Vector2f position);
 
@@ -64,10 +64,10 @@ public:
     virtual void GrantPower(World& world) override;
 };
 
-class FireFlower : public Powerup {
+class FireFlower final : public Powerup {
 private:
 
-    uint8_t m_PalleteAnimationTimer = PalleteAnimationDuration;
+    uint8_t m_PalleteAnimationTimer{PalleteAnimationDuration};
 
 public:
     FireFlower(sf::Vector2f position);
@@ -77,11 +77,11 @@ public:
     virtual void GrantPower(World& world) override;
 };
 
-class Starman : public Powerup {
+class Starman final : public Powerup {
 private:
     virtual void on_feet_collision() override;
 
-    uint8_t m_PalleteAnimationTimer = PalleteAnimationDuration;
+    uint8_t m_PalleteAnimationTimer{PalleteAnimationDuration};
 
 public:
     Starman(sf::Vector2f position);

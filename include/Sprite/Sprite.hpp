@@ -24,9 +24,9 @@ public:
 
     virtual void Update(World& world) = 0;
 
-    bool ToRemove = false;
+    bool ToRemove{false};
 
-    uint8_t SubPalleteIndex = 0u;
+    uint8_t SubPalleteIndex{0u};
 
     sf::Vector2f Position;
 };

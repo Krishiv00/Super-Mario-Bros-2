@@ -1331,8 +1331,6 @@ void MapLoader::onMazeTrigger(uint8_t targetPage) {
     TileDataIterator = 0x03u;
     BadGuysDataIterator = 0x00u;
 
-    CurrentMazeScore = 0x00u;
-
     LastTileObjectPageFlag = false;
     LastBadGuysObjectPageFlag = false;
     LastBadGuysObjectWasPageSkip = false;
@@ -1402,7 +1400,7 @@ void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
     auto it = std::lower_bound(
         world.m_SpritePool.begin(), world.m_SpritePool.end(), sprite->Position.x,
         [](const std::vector<std::unique_ptr<Sprite>>& group, float xValue) {
-        return group.front()->Position.x < xValue;
+            return group.front()->Position.x < xValue;
     }
     );
 
@@ -1953,8 +1951,6 @@ void MapLoader::NewLevel(World& world, uint8_t areaPointer) {
 
     TileSkipToPage = 0x00u;
     BadGuysSkipToPage = 0x00u;
-
-    CurrentMazeScore = 0x00u;
 
     LastTileObjectPageFlag = false;
     LastBadGuysObjectPageFlag = false;
@@ -2522,7 +2518,7 @@ void MapLoader::Update(World& world) {
             ) {
                 lift->m_Start -= Factor;
             }
-        };
+            };
 
         for (auto& sprite : world.m_Sprites) {
             if (sprite) {

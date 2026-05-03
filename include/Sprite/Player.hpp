@@ -9,7 +9,7 @@
 
 class World;
 
-class uint24_t {
+class uint24_t final {
 private:
     uint8_t m_Values[3u]{};
 
@@ -33,18 +33,18 @@ struct PlayerData {
 
     PlayerData(bool type) : Type(type) {}
 
-    bool Type = 0u;
-    bool DiedAfterHalfPage = false;
+    bool Type{0u};
+    bool DiedAfterHalfPage{false};
 
-    uint8_t World = 1u;
-    uint8_t Level = 1u;
-    uint8_t Lives = 3u;
-    uint8_t Coins = 0u;
+    uint8_t World{1u};
+    uint8_t Level{1u};
+    uint8_t Lives{3u};
+    uint8_t Coins{0u};
 
     uint24_t Score;
 };
 
-class Player : public Sprite {
+class Player final : public Sprite {
     friend class Renderer;
     friend class MapLoader;
     friend class World;
@@ -277,7 +277,7 @@ public:
 
     [[nodiscard]]
     inline bool walkingAtFullSpeed() const noexcept {
-        float vel = currentAbsoluteSpeed();
+        const float vel = currentAbsoluteSpeed();
 
         return vel >= 1.f && vel <= MaxWalkingSpeed;
     }

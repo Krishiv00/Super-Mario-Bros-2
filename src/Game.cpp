@@ -264,13 +264,9 @@ void Game::temporaryBlackScreen(uint8_t time) {
 }
 
 void Game::pauseGameFor(uint8_t time) {
-    while (true) {
+    while (time--) {
         m_Window.clear();
         m_Window.display();
-
-        if (--time == 0u) {
-            break;
-        }
     }
 }
 

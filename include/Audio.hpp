@@ -6,7 +6,7 @@
 #include "Globals.hpp"
 #include "SFML/Audio.hpp"
 
-class AudioPlayer {
+class AudioPlayer final {
 public:
     enum AudioEffects : uint8_t {
         PlayerJump1,
@@ -56,7 +56,7 @@ public:
     }
 };
 
-class MusicPlayer {
+class MusicPlayer final {
 public:
     enum Music : uint8_t {
         Clear_1,
@@ -71,7 +71,7 @@ public:
 
 private:
     sf::Music* m_MusicBuffers[Music::Count];
-    uint8_t m_CurrentlyPlayingMusic = 0u;
+    uint8_t m_CurrentlyPlayingMusic{0u};
 
 public:
     MusicPlayer();

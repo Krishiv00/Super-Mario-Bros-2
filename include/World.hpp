@@ -9,7 +9,7 @@
 #include "Sprite/Player.hpp"
 #include "Blocks.hpp"
 
-class World {
+class World final {
     friend class MapLoader;
     friend class Renderer;
     friend class JumpSpring;
@@ -31,7 +31,7 @@ public:
     static constexpr inline const int8_t MaxSpriteDistanceLeftNormal = 72u;
     static constexpr inline const int8_t MaxSpriteDistanceLeftSpecial = 16u;
 
-    static inline bool Difficulty = false;
+    static inline bool Difficulty{false};
 
 private:
     // events
@@ -135,7 +135,7 @@ private:
     std::vector<std::unique_ptr<Blocks::Block>> m_Tiles;
     std::vector<uint8_t> m_AttributeTable;
 
-    uint8_t m_RequiredCoinsForOneUp = 0;
+    uint8_t m_RequiredCoinsForOneUp{0u};
     bool m_SpawnOneUp;
 
     bool m_CheckEnemyCollisions;
@@ -216,5 +216,5 @@ public:
 
     float CameraPosition;
 
-    bool TwoPlayerMode = false;
+    bool TwoPlayerMode{false};
 };

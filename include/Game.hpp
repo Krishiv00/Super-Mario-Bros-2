@@ -6,7 +6,7 @@
 #include "Renderer.hpp"
 #include "Utils/ControllerScript.hpp"
 
-class Game {
+class Game final {
     static constexpr inline const uint8_t FrameruleLength = 21u;
 
 private:
@@ -52,21 +52,21 @@ private:
 
     World m_World;
 
-    bool m_Paused = false;
-    uint8_t m_PauseCooldown = 0u;
+    bool m_Paused{false};
+    uint8_t m_PauseCooldown{0u};
 
     sf::RenderWindow& m_Window;
 
     ScriptRecorder m_ScriptRecorder;
     ScriptPlayer m_ScriptPlayer;
 
-    uint8_t m_BlackScreenTimer = 0u;
-    BlackScreenType m_BlackScreenType = BlackScreenType::None;
+    uint8_t m_BlackScreenTimer{0u};
+    BlackScreenType m_BlackScreenType{BlackScreenType::None};
 
-    bool m_OnTitleScreen = false;
-    uint8_t m_DemoStartTimer = 0u;
+    bool m_OnTitleScreen{false};
+    uint8_t m_DemoStartTimer{0u};
 
-    uint8_t m_FrameruleTimer = FrameruleLength;
+    uint8_t m_FrameruleTimer{FrameruleLength};
 
     uint24_t m_Highscore;
 

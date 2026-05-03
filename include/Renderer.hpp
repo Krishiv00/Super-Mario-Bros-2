@@ -4,7 +4,7 @@
 #include "Blocks.hpp"
 #include "SFML/Graphics.hpp"
 
-class Renderer {
+class Renderer final {
 public:
     static inline sf::Color BackgroundColor;
 
@@ -66,15 +66,15 @@ private:
     static inline sf::Vertex s_Vertices[4u];
 
     static constexpr inline const uint8_t AnimationTimerDuration = 8u;
-    static inline uint8_t s_BlinkAnimationTimer = AnimationTimerDuration;
-    static inline uint8_t s_SpriteAnimationTimer = AnimationTimerDuration;
+    static inline uint8_t s_BlinkAnimationTimer{AnimationTimerDuration};
+    static inline uint8_t s_SpriteAnimationTimer{AnimationTimerDuration};
 
-    static inline char s_BlinkDirection = 1;
+    static inline char s_BlinkDirection{1};
 
-    static inline uint8_t s_BlinkAnimation = 0u;
-    static inline bool s_EnemyAnimation = 0u;
+    static inline uint8_t s_BlinkAnimation{0u};
+    static inline bool s_EnemyAnimation{0u};
 
-    static inline bool s_RenderGameTime = true;
+    static inline bool s_RenderGameTime{true};
 
 public:
     static void LoadResources() noexcept;

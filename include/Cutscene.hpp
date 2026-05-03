@@ -103,16 +103,16 @@ public:
     ~SizeChangingScene();
 };
 
-class GrowingScene : public SizeChangingScene {
+class GrowingScene final : public SizeChangingScene {
 public:
     GrowingScene(World& world);
 
     virtual void Update() override;
 };
 
-class ShrinkingScene : public SizeChangingScene {
+class ShrinkingScene final : public SizeChangingScene {
 private:
-    uint8_t m_CameraMoveTimer = 0u;
+    uint8_t m_CameraMoveTimer{0u};
 
 public:
     ShrinkingScene(World& world);
@@ -120,7 +120,7 @@ public:
     virtual void Update() override;
 };
 
-class FireFlowerScene : public TimedCutscene {
+class FireFlowerScene final : public TimedCutscene {
 public:
     FireFlowerScene(World& world);
     ~FireFlowerScene();
@@ -140,9 +140,9 @@ public:
     virtual bool EndScene() override;
 };
 
-class BounceDeathScene : public DeathScene {
+class BounceDeathScene final : public DeathScene {
 private:
-    uint8_t m_BounceTimer = 16u;
+    uint8_t m_BounceTimer{16u};
 
 public:
     BounceDeathScene(World& world);
@@ -164,7 +164,7 @@ public:
     };
 };
 
-class FlagpoleScene : public LevelClearScene {
+class FlagpoleScene final : public LevelClearScene {
 private:
     enum class Routine : uint8_t {
         None,
@@ -194,7 +194,7 @@ public:
     virtual void OnFramerule() override;
 };
 
-class AxeScene : public LevelClearScene {
+class AxeScene final : public LevelClearScene {
 private:
 
 public:
@@ -205,7 +205,7 @@ public:
     virtual void OnFramerule() override;
 };
 
-class LPipeScene : public LevelClearScene {
+class LPipeScene final : public LevelClearScene {
 private:
     uint8_t m_AutowalkTimer;
 
@@ -216,7 +216,7 @@ public:
     virtual void Update() override;
 };
 
-class DPipeScene : public LevelClearScene {
+class DPipeScene final : public LevelClearScene {
 private:
 
 public:
@@ -226,7 +226,7 @@ public:
     virtual void Update() override;
 };
 
-class AutowalkScene : public Cutscene {
+class AutowalkScene final : public Cutscene {
 public:
     AutowalkScene(World& world);
     ~AutowalkScene();
@@ -237,7 +237,7 @@ public:
     };
 };
 
-class PlayerSpawnScene : public TimedCutscene {
+class PlayerSpawnScene final : public TimedCutscene {
 public:
     PlayerSpawnScene(World& world, uint8_t posIdx);
     ~PlayerSpawnScene();

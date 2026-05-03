@@ -59,15 +59,15 @@ protected:
     virtual void onBlockDefeat(World& world, float blockPosition);
     virtual void onFireballDeath(World& world, int8_t fireballDirection);
 
-    int8_t m_Direction = -1;
+    int8_t m_Direction{-1};
 
     EnemyType::Type m_Type;
 
-    bool m_Animate = true;
+    bool m_Animate{true};
 
-    uint8_t SlotIndex = 0;
+    uint8_t SlotIndex{0};
 
-    bool m_TouchingPlayer = true;
+    bool m_TouchingPlayer{true};
 
     Enemy() = default;
     Enemy(EnemyType::Type type, sf::Vector2f position);
@@ -93,13 +93,13 @@ public:
 namespace EnemyComponents {
     class SideToSideMovement : virtual public Enemy {
     protected:
-        void update(World& world, float speed, bool make_sound);
+        void update(World& world, float speed, bool isShell);
     };
 
     class GravityMovement : virtual public Enemy {
     protected:
-        bool m_OnGround = true;
-        float m_YVelocity = 0.f;
+        bool m_OnGround{true};
+        float m_YVelocity{0.f};
 
         void update(World& world, float gravityForce);
     };
@@ -122,7 +122,7 @@ namespace EnemyComponents {
         virtual void Update(World& world) override;
     };
 
-    class ShellEnemy : public EnemyComponents::GroundEnemy, public EnemyComponents::Stompable {
+    class ShellSpawner : public EnemyComponents::GroundEnemy, public EnemyComponents::Stompable {
         friend class Shell;
 
     private:
@@ -133,7 +133,7 @@ namespace EnemyComponents {
     };
 
     class Shell : public EnemyComponents::SideToSideMovement, public EnemyComponents::GravityMovement, public EnemyComponents::CollideWithOtherEnemies, public EnemyComponents::Stompable {
-        friend class ShellEnemy;
+        friend class ShellSpawner;
 
     private:
         void setMovingState();
@@ -167,8 +167,8 @@ namespace EnemyComponents {
 
     class OscillatingMovement {
     private:
-        uint8_t m_Phase = 0u;
-        uint8_t m_Frame = 0u;
+        uint8_t m_Phase{0u};
+        uint8_t m_Frame{0u};
 
     protected:
         [[nodiscard]]
@@ -206,7 +206,7 @@ public:
     virtual sf::FloatRect getHitbox() const override;
 };
 
-class KoopaTroopa : public EnemyComponents::ShellEnemy {
+class KoopaTroopa : public EnemyComponents::ShellSpawner {
 protected:
     KoopaTroopa() = default;
 
@@ -285,7 +285,7 @@ public:
     virtual sf::FloatRect getHitbox() const override;
 };
 
-class BuzzyBeetle final : public EnemyComponents::ShellEnemy {
+class BuzzyBeetle final : public EnemyComponents::ShellSpawner {
 private:
     virtual void onFireballDeath(World& world, int8_t fireballDirection) override;
 

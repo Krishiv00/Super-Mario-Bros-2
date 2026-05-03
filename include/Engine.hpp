@@ -4,7 +4,7 @@
 
 #include "Game.hpp"
 
-class Engine {
+class Engine final {
 private:
     void handleWindowResize(sf::Vector2u newSize);
 
@@ -17,8 +17,8 @@ private:
     sf::RenderWindow m_Window;
     sf::Vector2u m_LastWindowSize;
 
-    uint8_t m_StepPressTime = 0u;
-    bool m_Paused = false;
+    uint8_t m_StepPressTime{0u};
+    bool m_Paused{false};
 
     Game m_Game{m_Window};
 

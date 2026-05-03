@@ -2,10 +2,10 @@
 
 #include <chrono>
 
-class StopWatch {
+class StopWatch final {
 private:
     static inline std::chrono::high_resolution_clock::time_point s_startTime;
-    static inline bool s_Running = false;
+    static inline bool s_Running{false};
 
 public:
     static void Start() {
@@ -24,7 +24,7 @@ public:
     }
 
     [[nodiscard]]
-    static inline bool Running() {
+    static inline bool Running() noexcept {
         return s_Running;
     }
 };
