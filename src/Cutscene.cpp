@@ -153,8 +153,8 @@ void Cutscene::startLevel(uint8_t newWorld, uint8_t newLevel, bool levelTransiti
         m_WorldRef.m_NewArea = true;
     }
 
-    player.Data.World = std::move(newWorld);
-    player.Data.Level = std::move(newLevel);
+    player.Data.World = newWorld;
+    player.Data.Level = newLevel;
 }
 
 void Cutscene::restartLevel() const {

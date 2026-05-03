@@ -83,7 +83,7 @@ protected:
     uint8_t m_Timer;
 
 public:
-    TimedCutscene(World& world, uint8_t initialTimer) : Cutscene(world), m_Timer(std::move(initialTimer)) {}
+    TimedCutscene(World& world, uint8_t initialTimer) : Cutscene(world), m_Timer(initialTimer) {}
 
     virtual void Update() override {
         --m_Timer;

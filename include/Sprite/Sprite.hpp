@@ -7,8 +7,8 @@ class World;
 class Sprite {
 public:
     Sprite() = default;
-    Sprite(sf::Vector2f position) : Position(std::move(position)) {}
-    Sprite(sf::Vector2f position, uint8_t subPalleteIndex) : Position(std::move(position)), SubPalleteIndex(subPalleteIndex) {}
+    Sprite(sf::Vector2f position) : Position(position) {}
+    Sprite(sf::Vector2f position, uint8_t subPalleteIndex) : Position(position), SubPalleteIndex(subPalleteIndex) {}
 
     virtual ~Sprite() = default;
 

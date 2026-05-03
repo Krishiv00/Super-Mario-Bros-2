@@ -64,7 +64,7 @@ void Engine::ProcessEvents() {
         }
         
         else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
-            handleWindowResize(std::move(resized->size));
+            handleWindowResize(resized->size);
         }
 
         if (!m_Paused) {
@@ -142,7 +142,7 @@ void Engine::handleWindowResize(sf::Vector2u newSize) {
     }
 
     m_Window.setSize(newSize);
-    m_LastWindowSize = std::move(newSize);
+    m_LastWindowSize = newSize;
 }
 
 #pragma region Render

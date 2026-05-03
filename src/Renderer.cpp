@@ -955,12 +955,12 @@ void Renderer::textAddChar(char character, sf::Vector2f position, sf::VertexArra
     const sf::Vertex bottomleft = sf::Vertex(sf::Vector2f(position.x, position.y + 8.f), sf::Color::White, sf::Vector2f(tx_left, tx_bottom));
 
     vertices.append(topleft);
-    vertices.append(std::move(topright));
+    vertices.append(topright);
     vertices.append(bottomright);
 
-    vertices.append(std::move(topleft));
-    vertices.append(std::move(bottomright));
-    vertices.append(std::move(bottomleft));
+    vertices.append(topleft);
+    vertices.append(bottomright);
+    vertices.append(bottomleft);
 }
 
 void Renderer::textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept {

@@ -74,7 +74,7 @@ void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, 
     if (slot) {
         for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
             if (!m_DeathAnimations[i]) {
-                slotIndex = std::move(i);
+                slotIndex = i;
                 break;
             }
         }
@@ -108,14 +108,14 @@ void World::handleSpriteLoading() {
 void World::SpawnFloateyNum(const FloateyNum& num) {
     for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
         if (!m_FloateyNums[i]) {
-            SpawnFloateyNum(std::move(num), i);
+            SpawnFloateyNum(num, i);
             break;
         }
     }
 }
 
 void World::SpawnFloateyNum(const FloateyNum& num, uint8_t index) {
-    m_FloateyNums[index] = std::move(num);
+    m_FloateyNums[index] = num;
 }
 
 bool World::SpawnFireball(sf::Vector2f position, bool direction) {

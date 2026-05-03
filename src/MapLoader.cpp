@@ -1393,7 +1393,7 @@ void MapLoader::handleMaze(World& world) {
 
 void MapLoader::placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
     world.m_Tiles[tileIndex] = std::move(block);
-    world.m_AttributeTable[tileIndex] = std::move(subPalleteIndex);
+    world.m_AttributeTable[tileIndex] = subPalleteIndex;
 }
 
 void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
@@ -1410,7 +1410,7 @@ void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
 void MapLoader::placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
     if (!world.m_Tiles[tileIndex]) {
         world.m_Tiles[tileIndex] = std::move(block);
-        world.m_AttributeTable[tileIndex] = std::move(subPalleteIndex);
+        world.m_AttributeTable[tileIndex] = subPalleteIndex;
     }
 }
 
@@ -1652,7 +1652,7 @@ void MapLoader::placeHole(uint8_t length, unsigned int tileIndex, World& world) 
     if (holeRight > 0x10u) {
         uint8_t extraLength = holeRight - 0x10;
         placeLength -= extraLength;
-        HoleBufferLength = std::move(extraLength);
+        HoleBufferLength = extraLength;
     }
 
     if (world.CurrentTheme == 0x00u) {
