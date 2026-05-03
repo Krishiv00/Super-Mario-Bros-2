@@ -284,7 +284,7 @@ bool World::resolvePlayerHeadCollisions(float playerTop) {
 
                             player.Data.Score += 50u;
 
-                            handleBlockDefeat(sf::Vector2f(col, row) * TileSize);
+                            handleBlockDefeat(sf::Vector2f(col, row + 2u) * TileSize);
                         } else {
                             // hit the block, spawn powerup or coin if present (handled by the on_block_hit_from_bottom method)
 
