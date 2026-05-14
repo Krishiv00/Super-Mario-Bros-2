@@ -28,7 +28,7 @@ Replicate the original engine without reinterpretation. This is not a remake or 
 - Object parsing controls spawns, interactions, and placement
 
 ### Two-Player Behavior
-- Mario/Luigi alternating-turn gameplay fully implemented
+- Mario/Luigi alternating-turn gameplay in 2 player mode
 - Toggle available on the title screen, matching original UX
 
 ---

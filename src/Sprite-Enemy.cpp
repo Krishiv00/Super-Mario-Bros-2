@@ -227,7 +227,8 @@ namespace EnemyComponents {
                 // with some enemies being exceptions
                 if (
                     !oldOnGround &&
-                    !Is(this, Goomba) && !Is(this, EnemyComponents::Shell) && !Is(this, RedKoopaTroopa)
+                    !Is(this, KoopaParatroopa) && !Is(this, Goomba) &&
+                    !Is(this, EnemyComponents::Shell) && !Is(this, RedKoopaTroopa)
                 ) {
                     SetDirectionRelativeToPlayer();
                 }
