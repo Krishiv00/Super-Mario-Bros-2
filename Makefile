@@ -3,60 +3,87 @@ INCLUDE_DIR := include
 SFML_INCLUDE := C:/SFML/include
 SFML_LIB := C:/SFML/lib
 BUILD_DIR := build
+OUT_DIR := dist
 EXE_NAME := Super Mario
 
-CXXFLAGS := -I$(SFML_INCLUDE) -I$(INCLUDE_DIR) -std=c++23 -O2 -ffunction-sections -fdata-sections -fstrict-aliasing -fno-plt -fno-exceptions -fvisibility=hidden -fvisibility-inlines-hidden -fmerge-all-constants -fno-semantic-interposition -ffast-math -MMD -MP
+DIST_ASSETS := Resources
+
+CXX := g++
+EXTRA_LDFLAGS :=
+
+MAKEFLAGS += -j
 
 CPP_FILES := $(wildcard $(SRC_DIR)/*.cpp)
-OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_FILES))
+DEV_DIR := $(BUILD_DIR)/dev
+REL_DIR := $(BUILD_DIR)/release
+DEV_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(DEV_DIR)/%.o,$(CPP_FILES))
+REL_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(REL_DIR)/%.o,$(CPP_FILES))
+RES_OBJ := $(BUILD_DIR)/resource.o
+DEV_EXE := $(EXE_NAME).exe
+REL_EXE := $(OUT_DIR)/$(EXE_NAME).exe
+ASSET_TARGETS := $(addprefix copy-asset-,$(DIST_ASSETS))
 
-LIBRARIES := -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
-LINK_FLAGS := -Wl,--gc-sections -O2 -s --icf=all
+COMMON_FLAGS := -I$(SFML_INCLUDE) -I$(INCLUDE_DIR) -std=c++23 -fno-exceptions -ffast-math
 
-all: precompile compile dynamic clean run
+DEV_FLAGS := $(COMMON_FLAGS) -Os -pipe -MMD -MP
+DEV_LIBS  := -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
 
-precompile: $(BUILD_DIR) $(BUILD_DIR)/resource.o
+REL_FLAGS   := $(COMMON_FLAGS) -O3 -DNDEBUG -DSFML_STATIC -ffunction-sections -fdata-sections -fmerge-all-constants
+REL_LDFLAGS := -static -s -mwindows -Wl,--gc-sections
+REL_LIBS := -lsfml-graphics-s -lsfml-window-s -lsfml-audio-s -lsfml-system-s \
+            -lfreetype -lopengl32 -lgdi32 -lwinmm \
+            -lflac -lvorbisenc -lvorbisfile -lvorbis -logg \
+            -lpthread
 
-$(BUILD_DIR)/resource.o:
-	@echo Running Scripts:
-	@echo     -resource.rc
-	@echo IDI_ICON1 ICON "E:/Projects/C++/My Games/Mario 2/Resources/icon.ico" > resource.rc
+mkdir_cmd = if not exist "$(subst /,\,$1)" mkdir "$(subst /,\,$1)"
+
+.PHONY: all dev release clean FORCE $(ASSET_TARGETS)
+
+all: dev
+	@echo Running $(DEV_EXE)
+	@"$(DEV_EXE)"
+	@cls
+
+dev: $(DEV_OBJ) $(RES_OBJ)
+	@echo Linking $(DEV_EXE)
+	@$(CXX) $(EXTRA_LDFLAGS) -L$(SFML_LIB) $(DEV_OBJ) $(RES_OBJ) -o "$(DEV_EXE)" $(DEV_LIBS)
+
+$(DEV_DIR)/%.o: $(SRC_DIR)/%.cpp Makefile | $(DEV_DIR)
+	@echo Compiling $<
+	@$(CXX) $(DEV_FLAGS) -c $< -o $@
+
+release: $(RES_OBJ) $(REL_OBJ) $(ASSET_TARGETS) | $(OUT_DIR)
+	@echo Linking $(REL_EXE)
+	@$(CXX) $(REL_LDFLAGS) $(EXTRA_LDFLAGS) -L$(SFML_LIB) $(REL_OBJ) $(RES_OBJ) -o "$(REL_EXE)" $(REL_LIBS)
+	@echo Checking DLL imports - Windows system DLLs only is good:
+	@objdump -p "$(REL_EXE)" | findstr /C:"DLL Name"
+	@echo Done $(OUT_DIR)/ is ready to ship
+
+$(REL_DIR)/%.o: $(SRC_DIR)/%.cpp FORCE | $(REL_DIR)
+	@echo Compiling $<
+	@$(CXX) $(REL_FLAGS) -c $< -o $@
+
+FORCE:
+
+$(ASSET_TARGETS): copy-asset-%: | $(OUT_DIR)
+	@echo Copying $*
+	@if exist "$(subst /,\,$*)\" (if exist "$(OUT_DIR)\$(subst /,\,$*)" rmdir /S /Q "$(OUT_DIR)\$(subst /,\,$*)")
+	@if exist "$(subst /,\,$*)\" (xcopy "$(subst /,\,$*)" "$(OUT_DIR)\$(subst /,\,$*)" /E /I /Y /Q >nul) else (copy /Y "$(subst /,\,$*)" "$(OUT_DIR)" >nul)
+
+$(RES_OBJ): Resources/icon.ico | $(BUILD_DIR)
+	@echo Compiling Resources/icon.ico
+	@echo IDI_ICON1 ICON "Resources/icon.ico" > resource.rc
 	@windres resource.rc -o $@
 	@del /Q resource.rc
-	@echo.
 
-print_compile_title:
-	@echo Compiling Source:
+$(BUILD_DIR) $(OUT_DIR):
+	@$(call mkdir_cmd,$@)
 
-compile: print_compile_title $(OBJ_FILES)
-
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	@echo     -$<
-	@g++ $(CXXFLAGS) -c $< -o $@
-
-dynamic: precompile compile link_dynamic clean run
-
-link_dynamic: LINK_FLAGS :=
-link_dynamic: link
-
-build_static: LIBRARIES += -lfreetype -lvorbis -lvorbisfile -lflac -logg -mwindows -lopengl32 -lgdi32 -lwinmm -static-libstdc++ -static-libgcc
-build_static: LINK_FLAGS := -static
-build_static: precompile compile link clean
-
-static:
-	@make build_static -B
-
-link:
-	@echo.
-	@echo Linking Libraries:
-	@for %%L in ($(LIBRARIES)) do echo     %%L
-	@g++ $(LINK_FLAGS) -L$(SFML_LIB) $(OBJ_FILES) -o "$(EXE_NAME).exe" $(BUILD_DIR)/resource.o $(LIBRARIES)
-	@echo.
+$(DEV_DIR) $(REL_DIR): | $(BUILD_DIR)
+	@$(call mkdir_cmd,$@)
 
 clean:
-	@strip "$(EXE_NAME).exe"
+	@echo Cleaning $(BUILD_DIR)/
+	@if exist "$(BUILD_DIR)" rmdir /S /Q "$(BUILD_DIR)"
 
-run:
-	@echo Running: $(EXE_NAME).exe
-	@$(EXE_NAME).exe
-	@cls
+-include $(DEV_OBJ:.o=.d)
