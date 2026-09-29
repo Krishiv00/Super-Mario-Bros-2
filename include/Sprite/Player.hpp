@@ -206,6 +206,9 @@ public:
     void ResetData();
 
     [[nodiscard]]
+    bool CapsLocked() const;
+
+    [[nodiscard]]
     inline uint8_t getState() const noexcept {
         return m_State;
     }

@@ -352,6 +352,14 @@ void Game::renderUi() {
     Renderer::RenderUi(m_Window, m_World, m_OnTitleScreen);
 }
 
+void Game::renderHUD() {
+    // set the camera position
+    m_Window.setView(sf::View(sf::FloatRect({0.f, 0.f}, {gbl::Width, gbl::Height})));
+
+    // render
+    Renderer::RenderHUD(m_Window);
+}
+
 void Game::renderGame() {
     // set the camera position
     m_Window.setView(generateCameraView());
@@ -385,6 +393,8 @@ void Game::Render() {
         if (m_OnTitleScreen && MapLoader::GetCurrentPage() <= 3u && m_World.CameraPosition < 256.f) {
             Renderer::RenderTitleScreen(m_Window, m_Highscore, m_World.TwoPlayerMode);
         }
+
+        renderHUD();
     }
 
     m_Window.display();

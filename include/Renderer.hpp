@@ -89,6 +89,7 @@ public:
     static void UpdatePalleteColors() noexcept;
 
     static void RenderUi(sf::RenderTarget& target, const World& world, bool onTitleScreen) noexcept;
+    static void RenderHUD(sf::RenderTarget& target) noexcept;
     static void RenderGame(sf::RenderTarget& target, const World& world) noexcept;
     static void RenderPlayer(sf::RenderTarget& target) noexcept;
 

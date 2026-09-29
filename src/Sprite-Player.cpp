@@ -192,6 +192,10 @@ void Player::OnFramerule(World& world) {
 
 #pragma region Input
 
+bool Player::CapsLocked() const {
+    return GetKeyState(VK_CAPITAL) & 0x0001;
+}
+
 void Player::resetInputs() {
     m_SprintKeyHeld = 0u;
     m_LeftKeyHeld = false;
@@ -228,7 +232,7 @@ void Player::keyboardControl() {
 
     if (
         sf::Keyboard::isKeyPressed(sf::Keyboard::Scancode::LControl) ^
-        GetKeyState(VK_CAPITAL) & 0x0001
+        CapsLocked()
     ) {
         m_SprintKeyHeld = SprintBufferLength;
     }

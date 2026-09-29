@@ -29,6 +29,7 @@ private:
     void pauseGameFor(uint8_t time);
 
     void renderUi();
+    void renderHUD();
     void renderGame();
 
     void handleKeyPress(sf::Keyboard::Scancode key);

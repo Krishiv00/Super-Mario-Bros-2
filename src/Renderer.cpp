@@ -872,28 +872,44 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, bool onTit
     // score
     textAddString(intToStringFixedSize(player.Data.Score, 6u), sf::Vector2f(24.f, 20.f), vertices);
 
-    // coins
-    const std::string coinsText = "x" + intToStringFixedSize(player.Data.Coins, 2u);
-    textAddString(coinsText, sf::Vector2f(96.f, 20.f), vertices);
+    /* coins */ {
+        const std::string coinsText = "x" + intToStringFixedSize(player.Data.Coins, 2u);
+        textAddString(coinsText, sf::Vector2f(96.f, 20.f), vertices);
+    }
 
     /* coin graphic */ {
         s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
-        
+
         createVertices(sf::Vector2f(88.f, 20.f), sf::Vector2f(0.f, 0.f), sf::Vector2f(8.f, 8.f));
         renderVertices(s_UiTexture, 3u, target);
     }
 
-    // world
-    textAddString("WORLD", sf::Vector2f(144.f, 10.f), vertices);
+    /* world */ {
+        textAddString("WORLD", sf::Vector2f(144.f, 10.f), vertices);
 
-    const std::string worldText = std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
-    textAddString(worldText, sf::Vector2f(152.f, 20.f), vertices);
+        const std::string worldText = std::to_string(player.Data.World) + "-" + std::to_string(player.Data.Level);
+        textAddString(worldText, sf::Vector2f(152.f, 20.f), vertices);
+    }
 
-    // time
-    textAddString("TIME", sf::Vector2f(200.f, 10.f), vertices);
+    /* time */ {
+        textAddString("TIME", sf::Vector2f(200.f, 10.f), vertices);
 
-    if (s_RenderGameTime && !onTitleScreen) {
-        textAddString(intToStringFixedSize(world.m_GameTime, 3u), sf::Vector2f(204.f, 20.f), vertices);
+        if (s_RenderGameTime && !onTitleScreen) {
+            textAddString(intToStringFixedSize(world.m_GameTime, 3u), sf::Vector2f(204.f, 20.f), vertices);
+        }
+    }
+
+    textFlush(target, vertices);
+}
+
+void Renderer::RenderHUD(sf::RenderTarget& target) noexcept {
+    if (!player.CapsLocked()) return;
+
+    sf::VertexArray vertices(sf::PrimitiveType::Triangles);
+
+    /* run locked */ {
+        const std::string string = "RUN LOCKED";
+        textAddString(string, sf::Vector2f(gbl::Width - 8 * string.size() - 4, gbl::Height - 12), vertices);
     }
 
     textFlush(target, vertices);
