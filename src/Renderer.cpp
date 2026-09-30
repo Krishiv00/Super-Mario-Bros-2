@@ -5,73 +5,6 @@
 #pragma region Graphics
 
 void Renderer::LoadResources() noexcept {
-    /*
-    const auto LoadIndexedTextureFromMemory = [](const uint8_t* data) -> sf::Texture {
-        sf::Vector2u size = sf::Vector2u(data[0], data[1]) * 8u;
-
-        unsigned int blocksPerRow = size.x / 4u;
-
-        sf::Image reconstructed;
-        reconstructed.resize(sf::Vector2u(size.x, size.y));
-
-        for (unsigned int y = 0; y < size.y; ++y) {
-            for (unsigned int x = 0; x < size.x; ++x) {
-                unsigned int pixelInBlock = x % 4;
-                unsigned int shift = (3 - pixelInBlock) * 2;
-
-                uint8_t byte = data[y * blocksPerRow + x / 4 + 2u];
-                uint8_t paletteIndex = (byte >> shift) & 0x03;
-                uint8_t grayValue = paletteIndex * 64;
-
-                reconstructed.setPixel(sf::Vector2u(x, y), sf::Color(grayValue, grayValue, grayValue, 255 * (bool)grayValue));
-            }
-        }
-
-        sf::Texture texture;
-
-        texture.setSmooth(false);
-
-        if (!texture.loadFromImage(reconstructed)) {
-            LOG_ERROR("Failed To Load Indexed Texture");
-        }
-
-        return texture;
-    };
-
-    const auto LoadBitTextureFromMemory = [](const uint8_t* data) -> sf::Texture {
-        sf::Vector2u size = sf::Vector2u(data[0], data[1]) * 8u;
-
-        unsigned int blocksPerRow = size.x / 8u;
-
-        sf::Image reconstructed;
-        reconstructed.resize(size);
-
-        for (unsigned int y = 0; y < size.y; ++y) {
-            for (unsigned int x = 0; x < size.x; ++x) {
-                unsigned int blockX = x / 8;
-                unsigned int pixelInBlock = x % 8;
-                unsigned int bitShift = 7 - pixelInBlock;
-
-                unsigned int byteIndex = y * blocksPerRow + blockX + 2u;
-                uint8_t byte = data[byteIndex];
-
-                bool isOn = (byte >> bitShift) & 1;
-                reconstructed.setPixel(sf::Vector2u(x, y), sf::Color(255, 255, 255, 255 * isOn));
-            }
-        }
-
-        sf::Texture texture;
-
-        texture.setSmooth(false);
-
-        if (!texture.loadFromImage(reconstructed)) {
-            LOG_ERROR("Failed To Load Bit Texture");
-        }
-
-        return texture;
-    };
-    */
-
     const auto LoadTextureFromFile = [](const char* filename) -> sf::Texture {
         const std::string path = "Resources/Textures/";
         const std::string filepath = path + filename + ".png";
@@ -85,48 +18,6 @@ void Renderer::LoadResources() noexcept {
         return texture;
         };
 
-    /*
-    constexpr uint8_t FontTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t TilesetTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t PlayerTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t SpritesTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t PowerupsTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t UiCoinTextureData[] = {
-        0u
-    };
-
-    constexpr uint8_t JumpSpringTexture[] = {
-        0u
-    };
-
-    constexpr uint8_t EndOfLevelSpritesTexture[] = {
-        0u
-    };
-
-    constexpr uint8_t FloateyNumsTexture[] = {
-        0u
-    };
-
-    constexpr uint8_t MiscSpritesTexture[] = {
-        0u
-    };
-    */
-
     s_FontTexture = LoadTextureFromFile("Font");
     s_TilesetTexture = LoadTextureFromFile("Tileset");
     s_PlayerTexture = LoadTextureFromFile("Player");
@@ -137,19 +28,6 @@ void Renderer::LoadResources() noexcept {
     s_FloateyNumsTexture = LoadTextureFromFile("Floatey Nums");
     s_MiscSpritesTexture = LoadTextureFromFile("Misc Sprites");
     s_BannerTexture = LoadTextureFromFile("Banner");
-
-    /*
-    s_FontTexture = LoadBitTextureFromMemory(FontTextureData);
-    s_TilesetTexture = LoadIndexedTextureFromMemory(TilesetTextureData);
-    s_PlayerTexture = LoadIndexedTextureFromMemory(PlayerTextureData);
-    s_SpritesTexture = LoadIndexedTextureFromMemory(SpritesTextureData);
-    s_PowerupsTexture = LoadIndexedTextureFromMemory(PowerupsTextureData);
-    s_UiTexture = LoadIndexedTextureFromMemory(UiCoinTextureData);
-    s_JumpSpringTexture = LoadIndexedTextureFromMemory(JumpSpringTexture);
-    s_EndOfLevelSpritesTexture = LoadIndexedTextureFromMemory(EndOfLevelSpritesTexture);
-    s_FloateyNumsTexture = LoadIndexedTextureFromMemory(FloateyNumsTexture);
-    s_MiscSpritesTexture = LoadIndexedTextureFromMemory(MiscSpritesTexture);
-    */
 
     if (!s_PaletteShader.loadFromFile("Resources/Shaders/Pallete.fsh", sf::Shader::Type::Fragment)) {
         LOG_ERROR("Failed To Load Pallete Shader");
