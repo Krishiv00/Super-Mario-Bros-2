@@ -8,7 +8,7 @@
 #pragma region Jump Spring
 
 JumpSpring::JumpSpring(float position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
     Position = sf::Vector2f(position, (gbl::Rows - 4) * TileSize);
 }
 
@@ -67,13 +67,13 @@ void JumpSpring::Activate(World& world) {
 
 #pragma region Bouncing Block
 
-BouncingBlock::BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item_id, uint8_t& bumpTimerRef, unsigned int x, unsigned int y, uint8_t subPalleteIndex) : ItemId(item_id), m_BumpTimerRef(bumpTimerRef) {
+BouncingBlock::BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item_id, uint8_t& bumpTimerRef, unsigned int x, unsigned int y, uint8_t subPaletteIndex) : ItemId(item_id), m_BumpTimerRef(bumpTimerRef) {
     Position = sf::Vector2f(static_cast<float>(x), static_cast<float>(y + 2u)) * 16.f;
     m_Block = std::move(block);
 
     block = std::make_unique<Blocks::Collideable>();
 
-    SubPalleteIndex = subPalleteIndex;
+    SubPaletteIndex = subPaletteIndex;
 }
 
 void BouncingBlock::Update(World& world) {
@@ -94,7 +94,7 @@ sf::Vector2f BouncingBlock::getPosition() const {
 #pragma region Flag
 
 Flag::Flag(sf::Vector2f position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
     m_Moving = false;
     Position = position;
 }
@@ -113,7 +113,7 @@ void Flag::Update(World& world) {
 #pragma region Star Flag
 
 StarFlag::StarFlag(sf::Vector2f position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
     Position = position;
 }
 
@@ -123,7 +123,7 @@ void StarFlag::Update(World&) {
 
 #pragma region Death Animation
 
-DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity) : Sprite(position, subPalleteIndex), m_Type(type), m_Direction(direction), m_Velocity(initialVelocity) {}
+DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPaletteIndex, uint8_t type, int8_t direction, float initialVelocity) : Sprite(position, subPaletteIndex), m_Type(type), m_Direction(direction), m_Velocity(initialVelocity) {}
 
 void DeathAnimation::Update(World& world) {
     Position.y += m_Velocity;

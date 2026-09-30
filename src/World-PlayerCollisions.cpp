@@ -238,9 +238,9 @@ void World::resolvePlayerTileCollisions() {
 #pragma region Head
 
 bool World::resolvePlayerHeadCollisions(float playerTop) {
-    if (playerTop >= (player.isVisualyBig() ? 32.f : 16.f)) {
+    if (playerTop >= (player.isVisuallyBig() ? 32.f : 16.f)) {
         const float pointX = static_cast<float>(PlayerInteractionX[0u]) + player.xPosition();
-        const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
+        const float pointY = static_cast<float>(PlayerInteractionY[player.isVisuallyBig() ? (player.m_SwimmingPhysics ? 1u : 0u) : 2u]) + playerTop;
 
         const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
         const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -268,7 +268,7 @@ bool World::resolvePlayerHeadCollisions(float playerTop) {
             // moving upwards
             if (player.m_Velocity.y < 0.f) {
                 // penetration is under threshold
-                if (pointY >= row * TileSize + TilePenetrationThreshhold) {
+                if (pointY >= row * TileSize + TilePenetrationThreshold) {
                     if (m_BumpTimer || player.m_SwimmingPhysics || !HasComponent(block, Components::Hitable)) {
                         collisions_BonkHead();
                     } else {
@@ -365,7 +365,7 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
                     return ROUTINE_CONTINUE_SIGNAL;
                 } else {
                     // penetration is under threshold
-                    if (pointY - 32.f <= (static_cast<float>(row) * TileSize + TilePenetrationThreshhold)) {
+                    if (pointY - 32.f <= (static_cast<float>(row) * TileSize + TilePenetrationThreshold)) {
                         collisions_LandOnTile(block);
 
                         if (player.m_DownKeyHeld && (player.xPosition() >= col * TileSize + 4.f) && HasComponent(block, Components::Warp)) {
@@ -428,7 +428,7 @@ bool World::resolvePlayerFootCollisions(float playerTop) {
                     return ROUTINE_CONTINUE_SIGNAL;
                 } else {
                     // penetration is under threshold
-                    if (pointY - 32.f <= (static_cast<float>(row) * TileSize + TilePenetrationThreshhold)) {
+                    if (pointY - 32.f <= (static_cast<float>(row) * TileSize + TilePenetrationThreshold)) {
                         collisions_LandOnTile(block);
                     } else {
                         collisions_PushOutOfBlockLeftwards();
@@ -451,7 +451,7 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 
         /* topleft side */ {
             const float pointX = static_cast<float>(PlayerInteractionX[3u]) + player.xPosition();
-            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisuallyBig() ? 4u : 5u]) + playerTop;
 
             const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
             const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;
@@ -485,7 +485,7 @@ bool World::resolvePlayerSideCollisions(float playerTop) {
 
         /* topright side */ {
             const float pointX = static_cast<float>(PlayerInteractionX[4u]) + player.xPosition();
-            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisualyBig() ? 4u : 5u]) + playerTop;
+            const float pointY = static_cast<float>(PlayerInteractionY[player.isVisuallyBig() ? 4u : 5u]) + playerTop;
 
             const unsigned int col = static_cast<unsigned int>(pointX / TileSize);
             const unsigned int row = static_cast<unsigned int>(pointY / TileSize) - 2;

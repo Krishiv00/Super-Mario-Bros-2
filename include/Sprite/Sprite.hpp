@@ -10,7 +10,7 @@ class Sprite {
 public:
     Sprite() = default;
     Sprite(sf::Vector2f position) : Position(position) {}
-    Sprite(sf::Vector2f position, uint8_t subPalleteIndex) : Position(position), SubPalleteIndex(subPalleteIndex) {}
+    Sprite(sf::Vector2f position, uint8_t subPaletteIndex) : Position(position), SubPaletteIndex(subPaletteIndex) {}
 
     virtual ~Sprite() = default;
 
@@ -28,7 +28,7 @@ public:
 
     bool ToRemove{false};
 
-    uint8_t SubPalleteIndex{0u};
+    uint8_t SubPaletteIndex{0u};
 
     sf::Vector2f Position;
 };

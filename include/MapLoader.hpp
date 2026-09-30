@@ -17,17 +17,17 @@ private:
         int8_t background;
     };
 
-    static void placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world);
+    static void placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPaletteIndex, World& world);
     static void spawnSprite(std::unique_ptr<Sprite> sprite, World& world);
-    static void placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world);
+    static void placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPaletteIndex, World& world);
     static void hiddenOneUpLogic(World& world);
     static void loadMapProperties(World& world);
     static void setTheme(uint8_t mapAttribute);
     static void loadPage(World& world);
     static void parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned int pageColumnOffset);
     static void parseBadGuysObject(uint8_t b1, uint8_t b2, bool globalDifficulty, World& world, unsigned int pageColumnOffset);
-    static std::vector<std::pair<unsigned int, SceneData>> getBackgroundodifiers();
-    static void handleCellingTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world);
+    static std::vector<std::pair<unsigned int, SceneData>> getBackgroundModifiers();
+    static void handleCeilingTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world);
     static void handleMiddleTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world);
     static void handleSurfaceTerrain(uint8_t length, uint8_t block_1, uint8_t block_2, unsigned int colIndex, World& world);
     static void handleInWaterBackground(unsigned int colIndex, World& world);
@@ -39,21 +39,21 @@ private:
     static void handleMaze(World& world);
 
     template <typename BlockType, typename... Args>
-    static inline void placeHorizontalRow(unsigned int index, uint8_t length, uint8_t subPalleteIndex, World& world, Args&&... args) {
+    static inline void placeHorizontalRow(unsigned int index, uint8_t length, uint8_t subPaletteIndex, World& world, Args&&... args) {
         for (uint8_t i = 0u; i < length; ++i) {
-            placeBlock(index + i * 13u, std::make_unique<BlockType>(args...), subPalleteIndex, world);
+            placeBlock(index + i * 13u, std::make_unique<BlockType>(args...), subPaletteIndex, world);
         }
     }
 
     template <typename BlockType, typename... Args>
-    static inline void placeVerticalRow(unsigned int index, uint8_t length, uint8_t subPalleteIndex, World& world, Args&&... args) {
+    static inline void placeVerticalRow(unsigned int index, uint8_t length, uint8_t subPaletteIndex, World& world, Args&&... args) {
         for (uint8_t i = 0u; i < length; ++i) {
             unsigned int tileIndex = index + i;
 
             auto& block = world.m_Tiles[tileIndex];
 
             if (!block || !Is(block.get(), Blocks::Coin)) {
-                placeBlock(tileIndex, std::make_unique<BlockType>(args...), subPalleteIndex, world);
+                placeBlock(tileIndex, std::make_unique<BlockType>(args...), subPaletteIndex, world);
             }
         }
     }

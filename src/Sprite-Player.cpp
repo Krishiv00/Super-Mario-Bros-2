@@ -51,7 +51,7 @@ void Player::Update(World& world) {
     updateInputTimers();
 
     animateFrame();
-    animatePallete();
+    animatePalette();
 }
 
 void Player::Reset() {
@@ -78,7 +78,7 @@ void Player::Reset() {
     m_AnimationTimer = getAnimationTimer();
     m_FireballThrowAnimation = false;
 
-    stopPalleteAnimation();
+    stopPaletteAnimation();
 }
 
 #pragma region Properties
@@ -87,13 +87,13 @@ void Player::Grow(World& world) {
     if (m_Size == Small) {
         m_Size = Big;
 
-        world.on_otaining_supermushroom();
+        world.on_obtaining_supermushroom();
     } else if (m_Size == Big) {
         m_Size = Fiery;
 
         Renderer::SetPlayerTheme(2u);
 
-        world.on_otaining_fireflower();
+        world.on_obtaining_fireflower();
     }
 }
 
@@ -143,9 +143,9 @@ void Player::ExtraLife() {
 
 void Player::StartStarman(World& world) {
     m_StarmanTimer = 35u;
-    startPalleteAnimation(2u);
+    startPaletteAnimation(2u);
 
-    world.on_otaining_starman();
+    world.on_obtaining_starman();
 }
 
 #pragma region Events
@@ -176,11 +176,11 @@ void Player::OnFramerule(World& world) {
         --m_StarmanTimer;
 
         if (m_StarmanTimer == 0u) {
-            stopPalleteAnimation();
+            stopPaletteAnimation();
         } else if (m_StarmanTimer == 3u) {
             world.StartThemeMusic();
         } else if (m_StarmanTimer == StarmanSlowdownThreshold) {
-            m_PalleteAnimationTimerDuration = 8u;
+            m_PaletteAnimationTimerDuration = 8u;
         }
     }
 
@@ -571,7 +571,7 @@ void Player::updateDirection() {
 void Player::handleCrouching() {
     if (m_OnGround) {
         if (m_DownKeyHeld && sideButtonsNotPressed()) {
-            if (isVisualyBig()) {
+            if (isVisuallyBig()) {
                 m_State = Crouching;
             }
         } else if (isCrouching()) {
@@ -655,24 +655,24 @@ void Player::animateFrame() {
     }
 }
 
-#pragma region Sub Pallete
+#pragma region Sub Palette
 
-void Player::startPalleteAnimation(uint8_t duration) {
-    m_AnimatePallete = true;
+void Player::startPaletteAnimation(uint8_t duration) {
+    m_AnimatePalette = true;
 
-    m_PalleteAnimationTimerDuration = duration;
-    m_PalleteAnimationTimer = duration;
+    m_PaletteAnimationTimerDuration = duration;
+    m_PaletteAnimationTimer = duration;
 }
 
-void Player::stopPalleteAnimation() {
-    m_AnimatePallete = false;
-    SubPalleteIndex = 0u;
+void Player::stopPaletteAnimation() {
+    m_AnimatePalette = false;
+    SubPaletteIndex = 0u;
 }
 
-void Player::animatePallete() {
-    if (m_AnimatePallete && --m_PalleteAnimationTimer == 0u) {
-        m_PalleteAnimationTimer = m_PalleteAnimationTimerDuration;
-        SubPalleteIndex = (SubPalleteIndex + 1u) % 4u;
+void Player::animatePalette() {
+    if (m_AnimatePalette && --m_PaletteAnimationTimer == 0u) {
+        m_PaletteAnimationTimer = m_PaletteAnimationTimerDuration;
+        SubPaletteIndex = (SubPaletteIndex + 1u) % 4u;
     }
 }
 

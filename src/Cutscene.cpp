@@ -203,15 +203,15 @@ void Cutscene::setPlayerDirection(bool dir) {
     player.m_Direction = dir;
 }
 
-void Cutscene::startPlayerPalleteAnimation(uint8_t duration) {
-    player.startPalleteAnimation(duration);
+void Cutscene::startPlayerPaletteAnimation(uint8_t duration) {
+    player.startPaletteAnimation(duration);
 }
 
-void Cutscene::stopPlayerPalleteAnimation() {
+void Cutscene::stopPlayerPaletteAnimation() {
     if (player.HasStarman()) {
-        player.startPalleteAnimation(player.m_StarmanTimer <= Player::StarmanSlowdownThreshold ? 8u : 2u);
+        player.startPaletteAnimation(player.m_StarmanTimer <= Player::StarmanSlowdownThreshold ? 8u : 2u);
     } else {
-        player.stopPalleteAnimation();
+        player.stopPaletteAnimation();
     }
 }
 
@@ -267,11 +267,11 @@ void ShrinkingScene::Update() {
 FireFlowerScene::FireFlowerScene(World& world) : TimedCutscene(world, 64u) {
     freezeGame();
     landPlayer();
-    startPlayerPalleteAnimation(4u);
+    startPlayerPaletteAnimation(4u);
 }
 
 FireFlowerScene::~FireFlowerScene() {
-    stopPlayerPalleteAnimation();
+    stopPlayerPaletteAnimation();
     unFreezeGame();
 }
 

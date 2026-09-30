@@ -14,14 +14,14 @@ class Powerup : public Sprite {
     static constexpr inline const float GetOutSpeed = 0.25f;
 
 protected:
-    static constexpr inline const uint8_t PalleteAnimationDuration = 2u;
+    static constexpr inline const uint8_t PaletteAnimationDuration = 2u;
 
     void handle_movement(World& world);
     virtual void on_feet_collision();
 
     bool moving_out();
 
-    void animatePallete(uint8_t& animationTimer);
+    void animatePalette(uint8_t& animationTimer);
 
     int8_t m_Direction;
 
@@ -67,7 +67,7 @@ public:
 class FireFlower final : public Powerup {
 private:
 
-    uint8_t m_PalleteAnimationTimer{PalleteAnimationDuration};
+    uint8_t m_PaletteAnimationTimer{PaletteAnimationDuration};
 
 public:
     FireFlower(sf::Vector2f position);
@@ -81,7 +81,7 @@ class Starman final : public Powerup {
 private:
     virtual void on_feet_collision() override;
 
-    uint8_t m_PalleteAnimationTimer{PalleteAnimationDuration};
+    uint8_t m_PaletteAnimationTimer{PaletteAnimationDuration};
 
 public:
     Starman(sf::Vector2f position);

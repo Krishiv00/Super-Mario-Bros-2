@@ -30,24 +30,24 @@ void Renderer::LoadResources() noexcept {
     s_MiscSpritesTexture = LoadTextureFromFile("Misc Sprites");
     s_BannerTexture = LoadTextureFromFile("Banner");
 
-    if (!s_PaletteShader.loadFromFile("Resources/Shaders/Pallete.fsh", sf::Shader::Type::Fragment)) {
-        LOG_ERROR("Failed To Load Pallete Shader");
+    if (!s_PaletteShader.loadFromFile("Resources/Shaders/Palette.fsh", sf::Shader::Type::Fragment)) {
+        LOG_ERROR("Failed To Load Palette Shader");
     }
 
-    if (!s_SpritePallete.resize(sf::Vector2u(4u, 4u))) {
-        LOG_ERROR("Failed To Resize Sprite Pallete Texture");
+    if (!s_SpritePalette.resize(sf::Vector2u(4u, 4u))) {
+        LOG_ERROR("Failed To Resize Sprite Palette Texture");
     }
 }
 
-#pragma region Palletes
+#pragma region Palettes
 
-void Renderer::SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, uint8_t bodyColsIndex) noexcept {
+void Renderer::SetBackgroundTheme(bool skyColIndex, uint8_t foliageColsIndex, uint8_t bodyColsIndex) noexcept {
     constexpr std::array<uint8_t, 3u> BackgroundColorSets[] = {
         {0u, 0u, 0u},
         {93u, 150u, 255u}
     };
 
-    constexpr std::array<std::array<uint8_t, 3u>, 3u> FolliageColorSets[] = {
+    constexpr std::array<std::array<uint8_t, 3u>, 3u> FoliageColorSets[] = {
         {{
             {231u, 0u, 89u}, {32u, 56u, 239u}, {255u, 117u, 182u}
             }},
@@ -96,7 +96,7 @@ void Renderer::SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, u
     }
 
     for (uint8_t i = 0u; i < 3u; ++i) {
-        const auto& c = FolliageColorSets[folliageColsIndex][i];
+        const auto& c = FoliageColorSets[foliageColsIndex][i];
         img.setPixel(sf::Vector2u(i + 1u, 0u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
@@ -105,13 +105,13 @@ void Renderer::SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, u
         img.setPixel(sf::Vector2u(i % 4u, i / 4u + 1u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
-    if (!s_BackgroundPallete.loadFromImage(img)) {
-        LOG_ERROR("Failed To Load Background Pallete");
+    if (!s_BackgroundPalette.loadFromImage(img)) {
+        LOG_ERROR("Failed To Load Background Palette");
     }
 
-    BackgroundColor = s_BackgroundPallete.copyToImage().getPixel(sf::Vector2u(0u, 0u));
+    BackgroundColor = s_BackgroundPalette.copyToImage().getPixel(sf::Vector2u(0u, 0u));
 
-    UpdatePalleteColors();
+    UpdatePaletteColors();
 }
 
 void Renderer::SetSpriteTheme(uint8_t theme, uint8_t endIndex) noexcept {
@@ -138,15 +138,15 @@ void Renderer::SetSpriteTheme(uint8_t theme, uint8_t endIndex) noexcept {
             }}
     };
 
-    sf::Image img = s_SpritePallete.copyToImage();
+    sf::Image img = s_SpritePalette.copyToImage();
 
     for (uint8_t i = 0u; i < endIndex; ++i) {
         const auto& c = SpriteColorSets[theme][i];
         img.setPixel(sf::Vector2u(i % 4u, i / 4u + 1u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
-    if (!s_SpritePallete.loadFromImage(img)) {
-        LOG_ERROR("Failed To Load Sprite Pallete");
+    if (!s_SpritePalette.loadFromImage(img)) {
+        LOG_ERROR("Failed To Load Sprite Palette");
     }
 }
 
@@ -163,31 +163,31 @@ void Renderer::SetPlayerTheme(uint8_t theme) noexcept {
             }},
     };
 
-    sf::Image img = s_SpritePallete.copyToImage();
+    sf::Image img = s_SpritePalette.copyToImage();
 
     for (uint8_t i = 0u; i < 4u; ++i) {
         const auto& c = PlayerColorSets[theme][i];
         img.setPixel(sf::Vector2u(i, 0u), sf::Color(c[0u], c[1u], c[2u]));
     }
 
-    if (!s_SpritePallete.loadFromImage(img)) {
-        LOG_ERROR("Failed To Load Sprite Pallete");
+    if (!s_SpritePalette.loadFromImage(img)) {
+        LOG_ERROR("Failed To Load Sprite Palette");
     }
 }
 
 #pragma region Animation
 
-void Renderer::UpdatePalleteColors() noexcept {
-    constexpr sf::Color coinPalleteColors[] = {
+void Renderer::UpdatePaletteColors() noexcept {
+    constexpr sf::Color coinPaletteColors[] = {
         sf::Color(255u, 154u, 56u), sf::Color(203u, 77u, 12u), sf::Color(125u, 8u, 0u)
     };
 
-    const sf::Color& currentColor = coinPalleteColors[s_BlinkAnimation];
+    const sf::Color& currentColor = coinPaletteColors[s_BlinkAnimation];
 
-    sf::Image img = s_BackgroundPallete.copyToImage();
+    sf::Image img = s_BackgroundPalette.copyToImage();
     img.setPixel(sf::Vector2u(13u, 0u), currentColor);
 
-    if (!s_BackgroundPallete.loadFromImage(img)) {
+    if (!s_BackgroundPalette.loadFromImage(img)) {
         LOG_ERROR("Failed To Load Image To Texture");
     }
 }
@@ -207,7 +207,7 @@ void Renderer::Animate() noexcept {
             }
         }
 
-        UpdatePalleteColors();
+        UpdatePaletteColors();
     }
 
     if (--s_SpriteAnimationTimer == 0) {
@@ -225,7 +225,7 @@ void Renderer::ResetAnimations() noexcept {
     s_BlinkAnimation = 0u;
     s_EnemyAnimation = 0u;
 
-    UpdatePalleteColors();
+    UpdatePaletteColors();
 }
 
 #pragma region Rendering
@@ -268,8 +268,8 @@ void Renderer::createVertices(sf::Vector2f position, sf::Vector2f texturePositio
     }
 }
 
-void Renderer::renderVertices(const sf::Texture& texture, uint8_t subPalleteIndex, sf::RenderTarget& target) noexcept {
-    s_PaletteShader.setUniform("subPallete", 0.25f * static_cast<float>(subPalleteIndex));
+void Renderer::renderVertices(const sf::Texture& texture, uint8_t subPaletteIndex, sf::RenderTarget& target) noexcept {
+    s_PaletteShader.setUniform("subPalette", 0.25f * static_cast<float>(subPaletteIndex));
 
     sf::RenderStates state(&texture);
     state.shader = &s_PaletteShader;
@@ -295,7 +295,7 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexc
     textFlush(target, vertices);
 
     /* player sprite */ {
-        s_PaletteShader.setUniform("pallete", s_SpritePallete);
+        s_PaletteShader.setUniform("palette", s_SpritePalette);
 
         constexpr sf::Vector2f Position = sf::Vector2f(96.f, 105.f);
         constexpr sf::Vector2f TexturePos = sf::Vector2f(0.f, TileSize);
@@ -307,7 +307,7 @@ void Renderer::RenderBlackScreen_LevelTransition(sf::RenderTarget& target) noexc
         }
 
         createVertices(Position, TexturePos);
-        renderVertices(s_PlayerTexture, player.SubPalleteIndex, target);
+        renderVertices(s_PlayerTexture, player.SubPaletteIndex, target);
 
         if (isFiery) {
             SetPlayerTheme(0x02u);
@@ -352,10 +352,10 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
     const sf::Vector2f position = sf::Vector2f(player.xPosition(), player.yPosition());
     const sf::Vector2f texturePos = sf::Vector2f(static_cast<float>(col) * TileSize, static_cast<float>(row) * TileSize);
 
-    s_PaletteShader.setUniform("pallete", s_SpritePallete);
+    s_PaletteShader.setUniform("palette", s_SpritePalette);
 
     createVertices(position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), player.m_Direction == gbl::Direction::Left);
-    renderVertices(s_PlayerTexture, player.SubPalleteIndex, target);
+    renderVertices(s_PlayerTexture, player.SubPaletteIndex, target);
 
 #if RENDER_HITBOXES
     sf::VertexArray hitboxes(sf::PrimitiveType::Triangles);
@@ -368,11 +368,11 @@ void Renderer::RenderPlayer(sf::RenderTarget& target) noexcept {
 
 #pragma region Tile
 
-void Renderer::render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPalleteIndex, sf::Vector2f position) noexcept {
+void Renderer::render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPaletteIndex, sf::Vector2f position) noexcept {
     const sf::Vector2f texturePos = sf::Vector2f((textureId - 1) * TileSize, 0.f);
 
     createVertices(position, texturePos);
-    renderVertices(s_TilesetTexture, subPalleteIndex, target);
+    renderVertices(s_TilesetTexture, subPaletteIndex, target);
 }
 
 #pragma region Enemy
@@ -383,7 +383,7 @@ void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexAr
     ) * TileSize;
 
     createVertices(enemy.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), enemy.m_Direction == 1);
-    renderVertices(s_SpritesTexture, enemy.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, enemy.SubPaletteIndex, target);
 
 #if RENDER_HITBOXES
     appendHitbox(hitboxes, enemy.getHitbox());
@@ -396,7 +396,7 @@ void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
     const sf::Vector2f texturePos = sf::Vector2f(npc.m_Animate, EnemyType::NPC * 2u) * TileSize;
 
     createVertices(npc.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f));
-    renderVertices(s_SpritesTexture, npc.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, npc.SubPaletteIndex, target);
 }
 
 #pragma region Shell
@@ -413,7 +413,7 @@ void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& sh
     }
 
     createVertices(position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), shell.m_Direction == 1, shell.IsFlipped());
-    renderVertices(s_SpritesTexture, shell.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, shell.SubPaletteIndex, target);
 
 #if RENDER_HITBOXES
     appendHitbox(hitboxes, shell.getHitbox());
@@ -438,7 +438,7 @@ void Renderer::render(sf::RenderTarget& target, const Firebar& firebar) noexcept
         );
 
         createVertices(position, texturePos);
-        renderVertices(s_SpritesTexture, firebar.SubPalleteIndex, target);
+        renderVertices(s_SpritesTexture, firebar.SubPaletteIndex, target);
     }
 }
 
@@ -455,7 +455,7 @@ void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::Vert
     const sf::Vector2f texturePos = sf::Vector2f(powerup.m_Type * TileSize, 0.f);
 
     createVertices(powerup.Position, texturePos);
-    renderVertices(s_PowerupsTexture, powerup.SubPalleteIndex, target);
+    renderVertices(s_PowerupsTexture, powerup.SubPaletteIndex, target);
 
 #if RENDER_HITBOXES
     appendHitbox(hitboxes, powerup.getHitbox());
@@ -468,21 +468,21 @@ void Renderer::render(sf::RenderTarget& target, const JumpSpring& spring) noexce
     const sf::Vector2f texturePos = sf::Vector2f(spring.getCurrentStage() * TileSize, 0.f);
 
     createVertices(spring.Position, texturePos, sf::Vector2f(TileSize, TileSize * 1.5f));
-    renderVertices(s_JumpSpringTexture, spring.SubPalleteIndex, target);
+    renderVertices(s_JumpSpringTexture, spring.SubPaletteIndex, target);
 }
 
 #pragma region Flag
 
 void Renderer::render(sf::RenderTarget& target, const Flag& flag) noexcept {
     createVertices(flag.Position, sf::Vector2f(0.f, (EnemyType::Flag * 2u + 1u) * TileSize));
-    renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, flag.SubPaletteIndex, target);
 
     if (flag.m_FloateyNumType >= 0) {
         const sf::Vector2f position = sf::Vector2f(flag.Position.x + 21.f, flag.m_FloateyNumYPos);
         const sf::Vector2f texturePos = sf::Vector2f(flag.m_FloateyNumType * TileSize, 0.f);
 
         createVertices(position, texturePos);
-        renderVertices(s_FloateyNumsTexture, flag.SubPalleteIndex, target);
+        renderVertices(s_FloateyNumsTexture, flag.SubPaletteIndex, target);
     }
 }
 
@@ -492,7 +492,7 @@ void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
     const sf::Vector2f texturePos = sf::Vector2f(1.f, EnemyType::Flag * 2u + 1u) * TileSize;
 
     createVertices(flag.Position, texturePos);
-    renderVertices(s_SpritesTexture, flag.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, flag.SubPaletteIndex, target);
 }
 
 #pragma region Axe
@@ -500,23 +500,23 @@ void Renderer::render(sf::RenderTarget& target, const StarFlag& flag) noexcept {
 void Renderer::render(sf::RenderTarget& target, const Axe& axe) noexcept {
     const sf::Vector2f texturePos = sf::Vector2f(0.f, EnemyType::Axe * 2u * TileSize);
 
-    s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
+    s_PaletteShader.setUniform("palette", s_BackgroundPalette);
 
     createVertices(axe.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f));
-    renderVertices(s_SpritesTexture, axe.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, axe.SubPaletteIndex, target);
 
-    s_PaletteShader.setUniform("pallete", s_SpritePallete);
+    s_PaletteShader.setUniform("palette", s_SpritePalette);
 }
 
 #pragma region Lift
 
 void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept {
     if (balanceLift && lift.Position.y > 48.f) {
-        s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
+        s_PaletteShader.setUniform("palette", s_BackgroundPalette);
 
         render(target, gbl::TextureId::Block::String_2, 1u, sf::Vector2f(lift.Position.x + 16.f, std::max(40.f, lift.Position.y - 16.f)));
 
-        s_PaletteShader.setUniform("pallete", s_SpritePallete);
+        s_PaletteShader.setUniform("palette", s_SpritePalette);
     }
 
     const sf::Vector2f texturePos = sf::Vector2f(lift.m_Animate, EnemyType::Lift * 2u + 1u) * TileSize;
@@ -525,7 +525,7 @@ void Renderer::render(sf::RenderTarget& target, const Lift& lift, bool balanceLi
         const sf::Vector2f position = sf::Vector2f(lift.Position.x + i * TileSize, lift.Position.y);
 
         createVertices(position, texturePos);
-        renderVertices(s_SpritesTexture, lift.SubPalleteIndex, target);
+        renderVertices(s_SpritesTexture, lift.SubPaletteIndex, target);
     }
 }
 
@@ -535,7 +535,7 @@ void Renderer::render(sf::RenderTarget& target, const Fireball& ball) noexcept {
     const sf::Vector2f texturePos = fireballTexturePos();
 
     createVertices(ball.Position, texturePos);
-    renderVertices(s_SpritesTexture, ball.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, ball.SubPaletteIndex, target);
 }
 
 #pragma region Misc Sprite
@@ -549,12 +549,12 @@ void Renderer::render(sf::RenderTarget& target, const DecorSprite& sprite) noexc
 
 #pragma region Floatey Num
 
-void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept {
+void Renderer::render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPaletteIndex, float cameraPos) noexcept {
     const sf::Vector2f position = floateyNum.getPosition(cameraPos);
     const sf::Vector2f texturePos = sf::Vector2f(floateyNum.getType() * TileSize, 0.f);
 
     createVertices(position, texturePos);
-    renderVertices(s_FloateyNumsTexture, subPalleteIndex, target);
+    renderVertices(s_FloateyNumsTexture, subPaletteIndex, target);
 }
 
 #pragma region Death Animation
@@ -563,7 +563,7 @@ void Renderer::render(sf::RenderTarget& target, const DeathAnimation& animation)
     const sf::Vector2f texturePos = sf::Vector2f(0.f, animation.getType() * 2u * TileSize);
 
     createVertices(animation.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), false, true);
-    renderVertices(s_SpritesTexture, animation.SubPalleteIndex, target);
+    renderVertices(s_SpritesTexture, animation.SubPaletteIndex, target);
 }
 
 #pragma region Utils
@@ -589,7 +589,7 @@ sf::Vector2f Renderer::fireballTexturePos() {
 #pragma region Tiles
 
 void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcept {
-    s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
+    s_PaletteShader.setUniform("palette", s_BackgroundPalette);
 
     const unsigned int startCol = static_cast<unsigned int>((world.CameraPosition) / TileSize);
     const unsigned int endCol = (world.CameraPosition + gbl::Width) / TileSize;
@@ -619,7 +619,7 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
     }
 
     if (BouncingBlock* bouncingBlock = world.m_BouncingBlock.get()) {
-        render(target, GetComponent(bouncingBlock->getBlock(), const Components::Render)->TextureId, bouncingBlock->SubPalleteIndex, bouncingBlock->getPosition());
+        render(target, GetComponent(bouncingBlock->getBlock(), const Components::Render)->TextureId, bouncingBlock->SubPaletteIndex, bouncingBlock->getPosition());
     }
 
     // draw page borders
@@ -641,7 +641,7 @@ void Renderer::renderTiles(sf::RenderTarget& target, const World& world) noexcep
 #pragma region Sprites
 
 void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool drawHidden) noexcept {
-    s_PaletteShader.setUniform("pallete", s_SpritePallete);
+    s_PaletteShader.setUniform("palette", s_SpritePalette);
 
     sf::VertexArray hitboxes(sf::PrimitiveType::Triangles);
 
@@ -757,7 +757,7 @@ void Renderer::RenderUi(sf::RenderTarget& target, const World& world, bool onTit
     }
 
     /* coin graphic */ {
-        s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
+        s_PaletteShader.setUniform("palette", s_BackgroundPalette);
 
         createVertices(sf::Vector2f(88.f, 20.f), sf::Vector2f(0.f, 0.f), sf::Vector2f(8.f, 8.f));
         renderVertices(s_UiTexture, 3u, target);
@@ -866,10 +866,10 @@ void Renderer::textAddString(const std::string& string, sf::Vector2f position, s
     }
 }
 
-void Renderer::textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPalleteIndex) noexcept {
-    s_PaletteShader.setUniform("pallete", s_BackgroundPallete);
+void Renderer::textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPaletteIndex) noexcept {
+    s_PaletteShader.setUniform("palette", s_BackgroundPalette);
 
-    s_PaletteShader.setUniform("subPallete", 0.25f * static_cast<float>(subPalleteIndex));
+    s_PaletteShader.setUniform("subPalette", 0.25f * static_cast<float>(subPaletteIndex));
 
     sf::RenderStates state(&s_FontTexture);
     state.shader = &s_PaletteShader;

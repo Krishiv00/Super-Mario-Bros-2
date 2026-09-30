@@ -180,11 +180,11 @@ void World::on_enter_warp_zone() {
     m_SpawnOneUp = true;
 }
 
-void World::on_otaining_supermushroom() {
+void World::on_obtaining_supermushroom() {
     StartCutscene(std::make_unique<GrowingScene>(*this));
 }
 
-void World::on_otaining_fireflower() {
+void World::on_obtaining_fireflower() {
     StartCutscene(std::make_unique<FireFlowerScene>(*this));
 
     for (auto& ball : m_Fireballs) {
@@ -192,7 +192,7 @@ void World::on_otaining_fireflower() {
     }
 }
 
-void World::on_otaining_starman() {
+void World::on_obtaining_starman() {
     musicPlayer.Play(MusicPlayer::Star, true);
 }
 

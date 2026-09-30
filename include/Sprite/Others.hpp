@@ -39,7 +39,7 @@ private:
     const uint8_t& m_BumpTimerRef;
 
 public:
-    BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item_id, uint8_t& bumpTimerRef, unsigned int x, unsigned int y, uint8_t subPalleteIndex);
+    BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item_id, uint8_t& bumpTimerRef, unsigned int x, unsigned int y, uint8_t subPaletteIndex);
 
     virtual void Update(World& world) override;
 
@@ -91,7 +91,7 @@ private:
     float m_Velocity;
 
 public:
-    DeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity);
+    DeathAnimation(sf::Vector2f position, uint8_t subPaletteIndex, uint8_t type, int8_t direction, float initialVelocity);
 
     virtual void Update(World& world) override;
 

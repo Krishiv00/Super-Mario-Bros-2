@@ -168,17 +168,17 @@ private:
 
     bool m_FireballThrowAnimation;
 
-    // pallete
+    // palette
     static constexpr inline const uint8_t StarmanSlowdownThreshold = 7u;
 
-    void startPalleteAnimation(uint8_t duration);
-    void stopPalleteAnimation();
-    void animatePallete();
+    void startPaletteAnimation(uint8_t duration);
+    void stopPaletteAnimation();
+    void animatePalette();
 
-    uint8_t m_PalleteAnimationTimer{0u};
-    uint8_t m_PalleteAnimationTimerDuration{0u};
+    uint8_t m_PaletteAnimationTimer{0u};
+    uint8_t m_PaletteAnimationTimerDuration{0u};
 
-    bool m_AnimatePallete{false};
+    bool m_AnimatePalette{false};
 
     PlayerData m_SecondPlayerData{1u};
 
@@ -234,7 +234,7 @@ public:
     }
 
     [[nodiscard]]
-    inline bool isVisualyBig() const noexcept {
+    inline bool isVisuallyBig() const noexcept {
         return isBig() && !isCrouching();
     }
 
@@ -307,7 +307,7 @@ public:
 
     [[nodiscard]]
     inline sf::FloatRect getHitbox() const noexcept {
-        if (isVisualyBig()) {
+        if (isVisuallyBig()) {
             return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 7.f), sf::Vector2f(13.f, 25.f));
         } else {
             return sf::FloatRect(sf::Vector2f(xPosition() + 3.f, yPosition() + 19.f), sf::Vector2f(13.f, 13.f));

@@ -64,8 +64,8 @@ protected:
     static void setPlayerVisible(bool value);
     static void setPlayerDirection(bool dir);
 
-    static void startPlayerPalleteAnimation(uint8_t duration);
-    static void stopPlayerPalleteAnimation();
+    static void startPlayerPaletteAnimation(uint8_t duration);
+    static void stopPlayerPaletteAnimation();
 
     World& m_WorldRef;
 

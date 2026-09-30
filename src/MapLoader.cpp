@@ -216,7 +216,7 @@ static constexpr inline uint8_t getbackgroundTile(uint8_t x, uint8_t y, uint8_t 
 }
 
 [[nodiscard]]
-static constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
+static constexpr uint8_t GetSubPaletteIndex(uint8_t blockId, uint8_t row = 255u, uint8_t mapTheme = 255u) {
     constexpr uint8_t GrassThreshold = 10u;
 
     if (
@@ -369,7 +369,7 @@ static constexpr inline uint8_t getBasicBlock(uint8_t mapAttribute) {
 }
 
 [[nodiscard]]
-std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundodifiers() {
+std::vector<std::pair<unsigned int, MapLoader::SceneData>> MapLoader::getBackgroundModifiers() {
     std::vector<std::pair<unsigned int, SceneData>> backgroundModifiers;
 
     uint8_t page = CurrentPage;
@@ -1215,7 +1215,7 @@ static const uint8_t* GetBadGuysData(uint8_t areaPointer) {
     return Data[areaPointer].data();
 }
 
-static constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, uint8_t mapAttribute, uint8_t terrainType) {
+static constexpr inline void getTerrainData(uint8_t& ceilingLength, uint8_t& middleLength, uint8_t& surfaceLength, uint8_t& terrainBlock_1, uint8_t& terrainBlock_2, uint8_t mapAttribute, uint8_t terrainType) {
     if (mapAttribute == 0x00u) {
         terrainBlock_1 = gbl::TextureId::Block::Floor_2;
         terrainBlock_2 = gbl::TextureId::Block::Floor_2;
@@ -1241,75 +1241,75 @@ static constexpr inline void getTerrainData(uint8_t& cellingLength, uint8_t& mid
     }
 
     else if (terrainType == 0x02u) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x03u) {
-        cellingLength = 0x03u;
+        ceilingLength = 0x03u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x04u) {
-        cellingLength = 0x04u;
+        ceilingLength = 0x04u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x05u) {
-        cellingLength = 0x08u;
+        ceilingLength = 0x08u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x06u) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         surfaceLength = 0x05u;
     }
 
     else if (terrainType == 0x07u) {
-        cellingLength = 0x03u;
+        ceilingLength = 0x03u;
         surfaceLength = 0x05u;
     }
 
     else if (terrainType == 0x08u) {
-        cellingLength = 0x04u;
+        ceilingLength = 0x04u;
         surfaceLength = 0x05u;
     }
 
     else if (terrainType == 0x09u) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         surfaceLength = 0x06u;
     }
 
     else if (terrainType == 0x0Au) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         surfaceLength = 0x00u;
     }
 
     else if (terrainType == 0x0Bu) {
-        cellingLength = 0x04u;
+        ceilingLength = 0x04u;
         surfaceLength = 0x06u;
     }
 
     else if (terrainType == 0x0Cu) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         surfaceLength = 0x09u;
     }
 
     else if (terrainType == 0x0Du) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         middleLength = 0x05u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x0Eu) {
-        cellingLength = 0x01u;
+        ceilingLength = 0x01u;
         middleLength = 0x04u;
         surfaceLength = 0x02u;
     }
 
     else if (terrainType == 0x0Fu) {
         // Brick:All
-        cellingLength = 0x0Bu;
+        ceilingLength = 0x0Bu;
         surfaceLength = 0x02u;
     }
 }
@@ -1370,7 +1370,7 @@ void MapLoader::onMazeTrigger(uint8_t targetPage) {
         }
     }
 
-    BackgroundModifiers = getBackgroundodifiers();
+    BackgroundModifiers = getBackgroundModifiers();
 }
 
 void MapLoader::handleMaze(World& world) {
@@ -1391,9 +1391,9 @@ void MapLoader::handleMaze(World& world) {
     }
 }
 
-void MapLoader::placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
+void MapLoader::placeBlock(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPaletteIndex, World& world) {
     world.m_Tiles[tileIndex] = std::move(block);
-    world.m_AttributeTable[tileIndex] = subPalleteIndex;
+    world.m_AttributeTable[tileIndex] = subPaletteIndex;
 }
 
 void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
@@ -1407,10 +1407,10 @@ void MapLoader::spawnSprite(std::unique_ptr<Sprite> sprite, World& world) {
     world.m_SpritePool.insert(it, std::vector<std::unique_ptr<Sprite>>{})->push_back(std::move(sprite));
 }
 
-void MapLoader::placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPalleteIndex, World& world) {
+void MapLoader::placeBlockIfEmpty(unsigned int tileIndex, std::unique_ptr<Blocks::Block> block, uint8_t subPaletteIndex, World& world) {
     if (!world.m_Tiles[tileIndex]) {
         world.m_Tiles[tileIndex] = std::move(block);
-        world.m_AttributeTable[tileIndex] = subPalleteIndex;
+        world.m_AttributeTable[tileIndex] = subPaletteIndex;
     }
 }
 
@@ -1486,7 +1486,7 @@ void MapLoader::loadMapProperties(World& world) {
 void MapLoader::setTheme(uint8_t mapAttribute) {
     uint8_t colorBackground = TileData[0x00u] & 0x07u;
 
-    std::vector<std::pair<unsigned int, SceneData>> backgroundModifiersForColor = getBackgroundodifiers();
+    std::vector<std::pair<unsigned int, SceneData>> backgroundModifiersForColor = getBackgroundModifiers();
     for (const auto& modifier : backgroundModifiersForColor) {
         if (modifier.second.background > 0x03) {
             colorBackground = static_cast<uint8_t>(modifier.second.background);
@@ -1496,7 +1496,7 @@ void MapLoader::setTheme(uint8_t mapAttribute) {
     uint8_t colorAttribute = colorBackground == 7u ? 3u : mapAttribute;
 
     bool skyColIndex;
-    uint8_t folliageColsIndex = colorAttribute;
+    uint8_t foliageColsIndex = colorAttribute;
     uint8_t bodyColsIndex = colorAttribute;
 
     if (colorBackground == 0x04u || colorBackground == 0x06u || colorBackground == 0x07u) {
@@ -1510,24 +1510,24 @@ void MapLoader::setTheme(uint8_t mapAttribute) {
     }
 
     if (MapType == 0x01u) {
-        folliageColsIndex = 4u;
+        foliageColsIndex = 4u;
     } else if (colorBackground == 0x05u || colorBackground == 0x06u) {
-        folliageColsIndex = 3u;
+        foliageColsIndex = 3u;
     }
 
-    Renderer::SetBackgroundTheme(skyColIndex, folliageColsIndex, bodyColsIndex);
+    Renderer::SetBackgroundTheme(skyColIndex, foliageColsIndex, bodyColsIndex);
     Renderer::SetSpriteTheme(colorAttribute);
 }
 
-void MapLoader::handleCellingTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world) {
+void MapLoader::handleCeilingTerrain(uint8_t length, uint8_t block, unsigned int colIndex, World& world) {
     for (uint8_t i = 0u; i < length; ++i) {
         unsigned int index = colIndex + i;
 
         if (!world.m_Tiles[index]) {
             if (block == gbl::TextureId::Block::Brick_1 || block == gbl::TextureId::Block::Brick_2) {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideableBreakable>(block), GetSubPalleteIndex(block), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideableBreakable>(block), GetSubPaletteIndex(block), world);
             } else {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block), GetSubPalleteIndex(block), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block), GetSubPaletteIndex(block), world);
             }
         }
     }
@@ -1539,9 +1539,9 @@ void MapLoader::handleMiddleTerrain(uint8_t length, uint8_t block, unsigned int 
 
         if (!world.m_Tiles[index]) {
             if (block == gbl::TextureId::Block::Brick_1 || block == gbl::TextureId::Block::Brick_2) {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideableBreakable>(block), GetSubPalleteIndex(block), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideableBreakable>(block), GetSubPaletteIndex(block), world);
             } else {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block), GetSubPalleteIndex(block), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block), GetSubPaletteIndex(block), world);
             }
         }
     }
@@ -1553,7 +1553,7 @@ void MapLoader::handleSurfaceTerrain(uint8_t length, uint8_t block_1, uint8_t bl
             unsigned int index = colIndex + 11u + i;
 
             if (!world.m_Tiles[index]) {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block_2), GetSubPalleteIndex(block_2), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block_2), GetSubPaletteIndex(block_2), world);
             }
         }
     }
@@ -1563,7 +1563,7 @@ void MapLoader::handleSurfaceTerrain(uint8_t length, uint8_t block_1, uint8_t bl
             unsigned int index = colIndex + 13u - length + i;
 
             if (!world.m_Tiles[index]) {
-                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block_1), GetSubPalleteIndex(block_1), world);
+                placeBlock(index, std::make_unique<Blocks::RenderableCollideable>(block_1), GetSubPaletteIndex(block_1), world);
             }
         }
     }
@@ -1959,7 +1959,7 @@ void MapLoader::NewLevel(World& world, uint8_t areaPointer) {
 
     HoleBufferLength = 0x00u;
 
-    BackgroundModifiers = getBackgroundodifiers();
+    BackgroundModifiers = getBackgroundModifiers();
     setTheme(world.CurrentTheme);
 
     extendMap(world);
@@ -2017,27 +2017,27 @@ void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned i
 
         else if (metadata == 0x04u) {
             world.m_Tiles[tileIndex] = std::make_unique<Blocks::RenderableCollideableItem>(basicBrick, gbl::ItemType::SuperMushroom);
-            world.m_AttributeTable[tileIndex] = GetSubPalleteIndex(basicBrick);
+            world.m_AttributeTable[tileIndex] = GetSubPaletteIndex(basicBrick);
         }
 
         else if (metadata == 0x05u) {
             world.m_Tiles[tileIndex] = std::make_unique<Blocks::RenderableCollideableItem>(basicBrick, gbl::ItemType::Vine);
-            world.m_AttributeTable[tileIndex] = GetSubPalleteIndex(basicBrick);
+            world.m_AttributeTable[tileIndex] = GetSubPaletteIndex(basicBrick);
         }
 
         else if (metadata == 0x06u) {
             world.m_Tiles[tileIndex] = std::make_unique<Blocks::RenderableCollideableItem>(basicBrick, gbl::ItemType::Starman);
-            world.m_AttributeTable[tileIndex] = GetSubPalleteIndex(basicBrick);
+            world.m_AttributeTable[tileIndex] = GetSubPaletteIndex(basicBrick);
         }
 
         else if (metadata == 0x07u) {
             world.m_Tiles[tileIndex] = std::make_unique<Blocks::RenderableCollideableItem>(basicBrick, gbl::ItemType::Coin);
-            world.m_AttributeTable[tileIndex] = GetSubPalleteIndex(basicBrick);
+            world.m_AttributeTable[tileIndex] = GetSubPaletteIndex(basicBrick);
         }
 
         else if (metadata == 0x08u) {
             world.m_Tiles[tileIndex] = std::make_unique<Blocks::RenderableCollideableItem>(basicBrick, gbl::ItemType::OneUp);
-            world.m_AttributeTable[tileIndex] = GetSubPalleteIndex(basicBrick);
+            world.m_AttributeTable[tileIndex] = GetSubPaletteIndex(basicBrick);
         }
 
         else if (metadata == 0x09u) {
@@ -2083,7 +2083,7 @@ void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned i
 
         else {
             // Horizontal Bricks
-            placeHorizontalRow<Blocks::RenderableCollideableBreakable>(tileIndex, length, GetSubPalleteIndex(basicBrick), world, basicBrick);
+            placeHorizontalRow<Blocks::RenderableCollideableBreakable>(tileIndex, length, GetSubPaletteIndex(basicBrick), world, basicBrick);
         }
     }
 
@@ -2098,7 +2098,7 @@ void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned i
 
         else {
             // Horizontal Blocks
-            placeHorizontalRow<Blocks::RenderableCollideable>(tileIndex, length, GetSubPalleteIndex(basicBlock), world, basicBlock);
+            placeHorizontalRow<Blocks::RenderableCollideable>(tileIndex, length, GetSubPaletteIndex(basicBlock), world, basicBlock);
         }
     }
 
@@ -2163,7 +2163,7 @@ void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned i
 
         else if (yPos != 0x0Du) {
             // Vertical Bricks
-            placeVerticalRow<Blocks::RenderableCollideableBreakable>(tileIndex, length, GetSubPalleteIndex(basicBrick), world, basicBrick);
+            placeVerticalRow<Blocks::RenderableCollideableBreakable>(tileIndex, length, GetSubPaletteIndex(basicBrick), world, basicBrick);
         }
     }
 
@@ -2174,7 +2174,7 @@ void MapLoader::parseTileObject(uint8_t b1, uint8_t b2, World& world, unsigned i
 
         else if (yPos != 0x0Du && yPos != 0x0Fu) {
             // Vertical Blocks
-            placeVerticalRow<Blocks::RenderableCollideable>(tileIndex, length, GetSubPalleteIndex(basicBlock), world, basicBlock);
+            placeVerticalRow<Blocks::RenderableCollideable>(tileIndex, length, GetSubPaletteIndex(basicBlock), world, basicBlock);
         }
     }
 
@@ -2359,23 +2359,23 @@ void MapLoader::loadPage(World& world) {
                 unsigned int tileIndex = colIndex + y;
 
                 if (const uint8_t tile = getbackgroundTile(x, y, CurrentPage, CurrentSceneryType)) {
-                    placeBlockIfEmpty(tileIndex, std::make_unique<Blocks::Renderable>(tile), GetSubPalleteIndex(tile, y), world);
+                    placeBlockIfEmpty(tileIndex, std::make_unique<Blocks::Renderable>(tile), GetSubPaletteIndex(tile, y), world);
                 }
             }
         }
 
         if (CurrentTerrainType) {
             // place terrain
-            uint8_t cellingLength = 0x00u;
+            uint8_t ceilingLength = 0x00u;
             uint8_t middleLength = 0x00u;
             uint8_t surfaceLength = 0x00u;
             uint8_t terrainBlock_1;
             uint8_t terrainBlock_2;
 
-            getTerrainData(cellingLength, middleLength, surfaceLength, terrainBlock_1, terrainBlock_2, world.CurrentTheme, CurrentTerrainType);
+            getTerrainData(ceilingLength, middleLength, surfaceLength, terrainBlock_1, terrainBlock_2, world.CurrentTheme, CurrentTerrainType);
 
-            if (cellingLength) {
-                handleCellingTerrain(cellingLength, terrainBlock_1, colIndex, world);
+            if (ceilingLength) {
+                handleCeilingTerrain(ceilingLength, terrainBlock_1, colIndex, world);
             }
 
             if (middleLength) {

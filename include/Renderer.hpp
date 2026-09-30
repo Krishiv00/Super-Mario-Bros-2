@@ -16,9 +16,9 @@ private:
 #endif // RENDER_HITBOXES
 
     static void createVertices(sf::Vector2f position, sf::Vector2f texturePosition, sf::Vector2f size, bool flipHorizontally, bool flipVertically) noexcept;
-    static void renderVertices(const sf::Texture& texture, uint8_t subPalleteIndex, sf::RenderTarget& target) noexcept;
+    static void renderVertices(const sf::Texture& texture, uint8_t subPaletteIndex, sf::RenderTarget& target) noexcept;
 
-    static void render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPalleteIndex, sf::Vector2f position) noexcept;
+    static void render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPaletteIndex, sf::Vector2f position) noexcept;
     static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const NPC& npc) noexcept;
     static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
@@ -31,7 +31,7 @@ private:
     static void render(sf::RenderTarget& target, const Lift& lift, bool balanceLift) noexcept;
     static void render(sf::RenderTarget& target, const Fireball& ball) noexcept;
     static void render(sf::RenderTarget& target, const DecorSprite& sprite) noexcept;
-    static void render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPalleteIndex, float cameraPos) noexcept;
+    static void render(sf::RenderTarget& target, const FloateyNum& floateyNum, uint8_t subPaletteIndex, float cameraPos) noexcept;
     static void render(sf::RenderTarget& target, const DeathAnimation& animation) noexcept;
 
     static void renderTiles(sf::RenderTarget& target, const World& world) noexcept;
@@ -45,7 +45,7 @@ private:
 
     static void textAddChar(char character, sf::Vector2f position, sf::VertexArray& vertices) noexcept;
     static void textAddString(const std::string& string, sf::Vector2f position, sf::VertexArray& vertices) noexcept;
-    static void textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPalleteIndex = 2u) noexcept;
+    static void textFlush(sf::RenderTarget& target, sf::VertexArray& vertices, uint8_t subPaletteIndex = 2u) noexcept;
 
     static inline sf::Texture s_PlayerTexture;
     static inline sf::Texture s_SpritesTexture;
@@ -58,8 +58,8 @@ private:
     static inline sf::Texture s_MiscSpritesTexture;
     static inline sf::Texture s_FontTexture;
 
-    static inline sf::Texture s_BackgroundPallete;
-    static inline sf::Texture s_SpritePallete;
+    static inline sf::Texture s_BackgroundPalette;
+    static inline sf::Texture s_SpritePalette;
 
     static inline sf::Shader s_PaletteShader;
 
@@ -79,14 +79,14 @@ private:
 public:
     static void LoadResources() noexcept;
 
-    static void SetBackgroundTheme(bool skyColIndex, uint8_t folliageColsIndex, uint8_t bodyColsIndex) noexcept;
+    static void SetBackgroundTheme(bool skyColIndex, uint8_t foliageColsIndex, uint8_t bodyColsIndex) noexcept;
     static void SetSpriteTheme(uint8_t theme, uint8_t endIndex = 12u) noexcept;
     static void SetPlayerTheme(uint8_t theme) noexcept;
     static void SetGameTimeRendering(bool state) noexcept;
 
     static void Animate() noexcept;
     static void ResetAnimations() noexcept;
-    static void UpdatePalleteColors() noexcept;
+    static void UpdatePaletteColors() noexcept;
 
     static void RenderUi(sf::RenderTarget& target, const World& world, bool onTitleScreen) noexcept;
     static void RenderHUD(sf::RenderTarget& target) noexcept;

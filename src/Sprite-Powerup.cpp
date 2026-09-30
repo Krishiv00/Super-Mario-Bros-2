@@ -7,10 +7,10 @@ Powerup::Powerup(sf::Vector2f position) {
     m_Direction = 1;
 }
 
-void Powerup::animatePallete(uint8_t& animationTimer) {
+void Powerup::animatePalette(uint8_t& animationTimer) {
     if (--animationTimer == 0u) {
-        animationTimer = PalleteAnimationDuration;
-        SubPalleteIndex = (SubPalleteIndex + 1u) % 4u;
+        animationTimer = PaletteAnimationDuration;
+        SubPaletteIndex = (SubPaletteIndex + 1u) % 4u;
     }
 }
 
@@ -88,7 +88,7 @@ void Powerup::on_feet_collision() {
 #pragma region OneUp
 
 OneUp::OneUp(sf::Vector2f position) : Powerup(position) {
-    SubPalleteIndex = 1;
+    SubPaletteIndex = 1;
 
     m_Type = gbl::PowerupType::OneUp;
 }
@@ -106,7 +106,7 @@ void OneUp::Update(World& world) {
 #pragma region SuperMushroom
 
 SuperMushroom::SuperMushroom(sf::Vector2f position) : Powerup(position) {
-    SubPalleteIndex = 2;
+    SubPaletteIndex = 2;
 
     m_Type = gbl::PowerupType::SuperMushroom;
 }
@@ -126,7 +126,7 @@ void SuperMushroom::Update(World& world) {
 #pragma region FireFlower
 
 FireFlower::FireFlower(sf::Vector2f position) : Powerup(position) {
-    SubPalleteIndex = 3;
+    SubPaletteIndex = 3;
 
     m_Type = gbl::PowerupType::FireFlower;
 
@@ -136,7 +136,7 @@ FireFlower::FireFlower(sf::Vector2f position) : Powerup(position) {
 void FireFlower::Update(World&) {
     moving_out();
 
-    animatePallete(m_PalleteAnimationTimer);
+    animatePalette(m_PaletteAnimationTimer);
 }
 
 void FireFlower::GrantPower(World& world) {
@@ -148,7 +148,7 @@ void FireFlower::GrantPower(World& world) {
 #pragma region Starman
 
 Starman::Starman(sf::Vector2f position) : Powerup(position) {
-    SubPalleteIndex = 1;
+    SubPaletteIndex = 1;
 
     m_Type = gbl::PowerupType::Starman;
     m_Velocity = -1.f;
@@ -169,5 +169,5 @@ void Starman::Update(World& world) {
         handle_movement(world);
     }
 
-    animatePallete(m_PalleteAnimationTimer);
+    animatePalette(m_PaletteAnimationTimer);
 }

@@ -40,9 +40,9 @@ private:
     // events
     void on_block_hit_from_bottom(unsigned int x, unsigned int y);
     void on_enter_warp_zone();
-    void on_otaining_supermushroom();
-    void on_otaining_fireflower();
-    void on_otaining_starman();
+    void on_obtaining_supermushroom();
+    void on_obtaining_fireflower();
+    void on_obtaining_starman();
     void on_player_damage();
     void on_player_death(bool pit_death);
 
@@ -105,7 +105,7 @@ private:
     static constexpr inline const uint8_t XCollision = 0b10;
     static constexpr inline const uint8_t YCollision = 0b01;
 
-    static constexpr inline const float TilePenetrationThreshhold = 5.f;
+    static constexpr inline const float TilePenetrationThreshold = 5.f;
 
     void collisions_PushOutOfBlockRightwards();
     void collisions_PushOutOfBlockLeftwards();
@@ -167,7 +167,7 @@ public:
     bool AddSprite(std::unique_ptr<Sprite>& sprite);
     void ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex);
 
-    void SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity, uint8_t slotIndex);
+    void SpawnDeathAnimation(sf::Vector2f position, uint8_t subPaletteIndex, uint8_t type, int8_t direction, float initialVelocity, uint8_t slotIndex);
 
     void SpawnFloateyNum(const FloateyNum& num);
     void SpawnFloateyNum(const FloateyNum& num, uint8_t index);

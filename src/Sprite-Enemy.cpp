@@ -77,7 +77,7 @@ void Enemy::spawnDeathAnimation(World& world, int8_t direction, float initialVel
         const uint8_t type = GetDeathAnimationSpriteType(m_Type);
         const float offset = (type != EnemyType::HammerBrother) * TileSize;
 
-        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPalleteIndex, type, direction, initialVelocity, SlotIndex);
+        world.SpawnDeathAnimation(sf::Vector2f(Position.x, Position.y + offset), SubPaletteIndex, type, direction, initialVelocity, SlotIndex);
     }
 }
 
@@ -314,7 +314,7 @@ namespace EnemyComponents {
             return nullptr;
         }
 
-        shell->SubPalleteIndex = SubPalleteIndex;
+        shell->SubPaletteIndex = SubPaletteIndex;
 
         return shell;
     }
@@ -518,7 +518,7 @@ namespace EnemyComponents {
 #pragma region Goomba
 
 Goomba::Goomba(sf::Vector2f position) : Enemy(EnemyType::Goomba, position) {
-    SubPalleteIndex = 3u;
+    SubPaletteIndex = 3u;
 }
 
 void Goomba::onStomp(World& world) {
@@ -534,7 +534,7 @@ sf::FloatRect Goomba::getHitbox() const {
 #pragma region Dead Goomba
 
 DeadGoomba::DeadGoomba(sf::Vector2f position) : Enemy(EnemyType::DeadGoomba, position) {
-    SubPalleteIndex = 3u;
+    SubPaletteIndex = 3u;
 
     m_Direction = 0;
 
@@ -561,7 +561,7 @@ sf::FloatRect DeadGoomba::getHitbox() const {
 #pragma region Koopa Troopa
 
 KoopaTroopa::KoopaTroopa(sf::Vector2f position) : Enemy(EnemyType::KoopaTroopa, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 }
 
 sf::FloatRect KoopaTroopa::getHitbox() const {
@@ -579,7 +579,7 @@ sf::FloatRect KoopaTroopaShell::getHitbox() const {
 #pragma region Koopa Paratroopa
 
 KoopaParatroopa::KoopaParatroopa(sf::Vector2f position) : Enemy(EnemyType::KoopaParatroopa, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 }
 
 void KoopaParatroopa::HandleMovement(World& world) {
@@ -617,7 +617,7 @@ sf::FloatRect KoopaParatroopa::getHitbox() const {
 #pragma region Red Koopa Troopa
 
 RedKoopaTroopa::RedKoopaTroopa(sf::Vector2f position) : Enemy(EnemyType::RedKoopaTroopa, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 }
 
 void RedKoopaTroopa::Update(World& world) {
@@ -632,7 +632,7 @@ void RedKoopaTroopa::Update(World& world) {
 #pragma region Red Koopa paratroopa
 
 RedKoopaParatroopa::RedKoopaParatroopa(sf::Vector2f position) : Enemy(EnemyType::RedKoopaParatroopa, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 
     m_Starty = position.y;
 }
@@ -652,11 +652,11 @@ void RedKoopaParatroopa::onStomp(World& world) {
     Stompable::onStomp(world);
 
     // Red koopa troopa spawned from red parrot koopa is different from the regular red koopa troopa
-    // it's behaviour is like regular koopa troopa, only difference being the pallete being red
+    // it's behaviour is like regular koopa troopa, only difference being the palette being red
     // it doesn't turn around at ledges
     std::unique_ptr<KoopaTroopa> koopa = std::make_unique<KoopaTroopa>(Position);
 
-    koopa->SubPalleteIndex = SubPalleteIndex;
+    koopa->SubPaletteIndex = SubPaletteIndex;
 
     if (!player.IsSwimming()) koopa->SetDirectionRelativeToPlayer();
 
@@ -670,7 +670,7 @@ sf::FloatRect RedKoopaParatroopa::getHitbox() const {
 #pragma region Piranha Plant
 
 PiranhaPlant::PiranhaPlant(sf::Vector2f position) : Enemy(EnemyType::PiranhaPlant, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 
     m_PauseTimer = 64u;
 }
@@ -706,7 +706,7 @@ sf::FloatRect PiranhaPlant::getHitbox() const {
 #pragma region Buzzy Beetle
 
 BuzzyBeetle::BuzzyBeetle(sf::Vector2f position) : Enemy(EnemyType::BuzzyBeetle, position) {
-    SubPalleteIndex = 3u;
+    SubPaletteIndex = 3u;
 }
 
 void BuzzyBeetle::onFireballDeath(World&, int8_t) {
@@ -734,7 +734,7 @@ sf::FloatRect BuzzyBeetleShell::getHitbox() const {
 #pragma region Spiny Egg
 
 SpinyEgg::SpinyEgg(sf::Vector2f position) : Enemy(EnemyType::SpinyEgg, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 }
 
 void SpinyEgg::HandleMovement(World& world) {
@@ -762,7 +762,7 @@ sf::FloatRect SpinyEgg::getHitbox() const {
 #pragma region Spiny
 
 Spiny::Spiny(sf::Vector2f position) : Enemy(EnemyType::Spiny, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 }
 
 sf::FloatRect Spiny::getHitbox() const {
@@ -772,7 +772,7 @@ sf::FloatRect Spiny::getHitbox() const {
 #pragma region Bloober
 
 Bloober::Bloober(sf::Vector2f position) : Enemy(EnemyType::Bloober, position) {
-    SubPalleteIndex = 3u;
+    SubPaletteIndex = 3u;
 
     m_Animate = false;
 }
@@ -795,7 +795,7 @@ sf::FloatRect Bloober::getHitbox() const {
 #pragma region Cheep Cheep
 
 CheepCheep::CheepCheep(sf::Vector2f position) : Enemy(EnemyType::CheepCheep, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 }
 
 void CheepCheep::HandleMovement(World&) {
@@ -816,7 +816,7 @@ sf::FloatRect CheepCheep::getHitbox() const {
 #pragma region Lakitu
 
 Lakitu::Lakitu(sf::Vector2f position) : Enemy(EnemyType::Lakitu, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 
     m_Animate = false;
 }
@@ -839,7 +839,7 @@ sf::FloatRect Lakitu::getHitbox() const {
 #pragma region Hammer Brother
 
 HammerBrother::HammerBrother(sf::Vector2f position) : Enemy(EnemyType::HammerBrother, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 }
 
 void HammerBrother::HandleMovement(World& world) {
@@ -863,7 +863,7 @@ sf::FloatRect HammerBrother::getHitbox() const {
 #pragma region Bullet Bill
 
 BulletBill::BulletBill(sf::Vector2f position) : Enemy(EnemyType::BulletBill, position) {
-    SubPalleteIndex = 1u;
+    SubPaletteIndex = 1u;
 }
 
 void BulletBill::HandleMovement(World&) {
@@ -884,7 +884,7 @@ sf::FloatRect BulletBill::getHitbox() const {
 #pragma region Firebar
 
 Firebar::Firebar(sf::Vector2f position, bool size, bool direction, bool fast) : Enemy(EnemyType::Firebar, position), m_Size(6u * (size + 1u)), m_Speed(fast) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 
     m_MoveState = false;
     m_MoveTimer = 6u;
@@ -928,7 +928,7 @@ void Firebar::handleCollision(World& world) {
     const float cy = Position.y + TileSize * 0.5f;
 
     const float px = player.xPosition() + 8.f;
-    const float py = player.yPosition() + (player.isVisualyBig() ? 16.f : 24.f);
+    const float py = player.yPosition() + (player.isVisuallyBig() ? 16.f : 24.f);
 
     const float angleRad = getAngle();
     const float angleSin = std::sin(angleRad);
@@ -959,7 +959,7 @@ void Firebar::handleCollision(World& world) {
 #pragma region Podoboo
 
 Podoboo::Podoboo(sf::Vector2f position) : Enemy(EnemyType::Podoboo, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
 
     m_Animate = false;
 }
@@ -982,7 +982,7 @@ sf::FloatRect Podoboo::getHitbox() const {
 #pragma region Axe
 
 Axe::Axe(sf::Vector2f position) : Enemy(EnemyType::Axe, position) {
-    SubPalleteIndex = 3u;
+    SubPaletteIndex = 3u;
 
     m_Animate = false;
 }
@@ -1000,7 +1000,7 @@ sf::FloatRect Axe::getHitbox() const {
 #pragma region Lift
 
 Lift::Lift(sf::Vector2f position, bool size) : Enemy(EnemyType::Lift, position), m_Size(2u + size) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
     m_Animate = false;
 }
 
@@ -1082,6 +1082,6 @@ void LiftBalance::OnPlayerLand(World& world) {
 #pragma region NPC
 
 NPC::NPC(sf::Vector2f position, bool type) : Enemy(EnemyType::NPC, position) {
-    SubPalleteIndex = 2u;
+    SubPaletteIndex = 2u;
     m_Animate = type;
 }
