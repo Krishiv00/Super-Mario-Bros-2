@@ -26,9 +26,9 @@ ASSET_TARGETS := $(addprefix copy-asset-,$(DIST_ASSETS))
 COMMON_FLAGS := -I$(SFML_INCLUDE) -I$(INCLUDE_DIR) -std=c++23 -fno-exceptions -ffast-math
 
 DEV_FLAGS := $(COMMON_FLAGS) -Os -pipe -MMD -MP
-DEV_LIBS  := -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
+DEV_LIBS := -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
 
-REL_FLAGS   := $(COMMON_FLAGS) -O3 -DNDEBUG -DSFML_STATIC -ffunction-sections -fdata-sections -fmerge-all-constants
+REL_FLAGS := $(COMMON_FLAGS) -O3 -DNDEBUG -DSFML_STATIC -ffunction-sections -fdata-sections -fmerge-all-constants
 REL_LDFLAGS := -static -s -mwindows -Wl,--gc-sections
 REL_LIBS := -lsfml-graphics-s -lsfml-window-s -lsfml-audio-s -lsfml-system-s \
             -lfreetype -lopengl32 -lgdi32 -lwinmm \
