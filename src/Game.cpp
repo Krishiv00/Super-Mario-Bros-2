@@ -1,4 +1,5 @@
 #include <fstream>
+#include <filesystem>
 
 #include "Game.hpp"
 #include "MapLoader.hpp"
@@ -506,6 +507,8 @@ std::string Game::saveCustomScript() {
     const std::string directory = "Scripts/";
     const std::string baseName = "Script";
     const std::string extension = ".tas";
+
+    std::filesystem::create_directories(directory);
 
     std::string filepath = directory + baseName + extension; {
         uint8_t count = 1u;

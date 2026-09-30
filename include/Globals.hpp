@@ -10,6 +10,7 @@ constexpr inline float toRad(float degrees) {
 }
 
 #include <cmath>
+#include <cstdint>
 
 #include "Utils/Rand.hpp"
 

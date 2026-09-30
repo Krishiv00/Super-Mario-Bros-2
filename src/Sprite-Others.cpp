@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Sprite/Others.hpp"
 
 #include "Sprite/Player.hpp"
@@ -231,17 +233,17 @@ FloateyNum::FloateyNum(sf::Vector2f position, float cameraPosition, uint8_t type
 
 uint8_t FloateyNum::GetType(uint16_t points) {
     switch (points) {
-        case 100u: return 0u;
-        case 200u: return 1u;
-        case 400u: return 2u;
-        case 500u: return 3u;
-        case 800u: return 4u;
-        case 1000u: return 5u;
-        case 2000u: return 6u;
-        case 4000u: return 7u;
-        case 5000u: return 8u;
-        case 8000u: return 9u;
-        default: return 10u;
+    case 100u: return 0u;
+    case 200u: return 1u;
+    case 400u: return 2u;
+    case 500u: return 3u;
+    case 800u: return 4u;
+    case 1000u: return 5u;
+    case 2000u: return 6u;
+    case 4000u: return 7u;
+    case 5000u: return 8u;
+    case 8000u: return 9u;
+    default: return 10u;
     }
 }
 

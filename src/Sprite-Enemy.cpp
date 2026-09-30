@@ -17,7 +17,7 @@ constexpr inline uint16_t GetStompScore(uint8_t stompChain, uint8_t enemyType) n
         return 200u;
     } else {
         constexpr uint8_t StompChainPoints[] = {1u, 2u, 4u, 5u, 8u, 10u, 20u, 40u, 50u, 80u};
-    
+
         if (stompChain < 10u) {
             return StompChainPoints[stompChain] * 100u;
         } else {
@@ -251,7 +251,7 @@ namespace EnemyComponents {
                         other->getHitbox().findIntersection(getHitbox())
                     ) {
                         m_Direction *= -1;
-        
+
                         if (!Is(other, Shell)) {
                             other->m_Direction *= -1;
                         }
@@ -402,7 +402,7 @@ namespace EnemyComponents {
 
     void Shell::setMovingState() {
         m_Direction = gbl::sign(xPosition() - player.xPosition());
-        
+
         m_Moving = true;
         m_Animate = false;
 
@@ -493,12 +493,12 @@ namespace EnemyComponents {
     float OscillatingMovement::getOffset(uint8_t phaseDuration, uint8_t halfwayDistance) {
         constexpr auto EaseIn = [](float t) -> float {
             return t * t * t;
-        };
+            };
 
         constexpr auto EaseOut = [](float t) -> float {
             t = 1.f - t;
             return 1.f - t * t * t;
-        };
+            };
 
         constexpr uint8_t PhaseBase[] = {0u, 1u, 2u, 1u};
         constexpr int8_t PhaseDir[] = {1, 1, -1, -1};
@@ -655,7 +655,7 @@ void RedKoopaParatroopa::onStomp(World& world) {
     // it's behaviour is like regular koopa troopa, only difference being the pallete being red
     // it doesn't turn around at ledges
     std::unique_ptr<KoopaTroopa> koopa = std::make_unique<KoopaTroopa>(Position);
-    
+
     koopa->SubPalleteIndex = SubPalleteIndex;
 
     if (!player.IsSwimming()) koopa->SetDirectionRelativeToPlayer();

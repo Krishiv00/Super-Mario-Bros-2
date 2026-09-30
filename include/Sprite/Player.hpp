@@ -91,14 +91,14 @@ private:
     void on_key_press_left();
     void on_key_press_right();
 
-    uint8_t m_SprintKeyHeld;
-    bool m_LeftKeyHeld;
-    bool m_RightKeyHeld;
-    bool m_UpKeyHeld;
-    bool m_DownKeyHeld;
-    bool m_JumpKeyHeld;
-    bool m_JumpKeyHeldLastFrame;
-    bool m_SprintKeyHeldLastFrame;
+    uint8_t m_SprintKeyHeld{0u};
+    bool m_LeftKeyHeld{false};
+    bool m_RightKeyHeld{false};
+    bool m_UpKeyHeld{false};
+    bool m_DownKeyHeld{false};
+    bool m_JumpKeyHeld{false};
+    bool m_JumpKeyHeldLastFrame{false};
+    bool m_SprintKeyHeldLastFrame{false};
 
     bool m_AcceptPlayerControls;
     bool m_TasMode;
@@ -175,10 +175,10 @@ private:
     void stopPalleteAnimation();
     void animatePallete();
 
-    uint8_t m_PalleteAnimationTimer;
-    uint8_t m_PalleteAnimationTimerDuration;
+    uint8_t m_PalleteAnimationTimer{0u};
+    uint8_t m_PalleteAnimationTimerDuration{0u};
 
-    bool m_AnimatePallete;
+    bool m_AnimatePallete{false};
 
     PlayerData m_SecondPlayerData{1u};
 

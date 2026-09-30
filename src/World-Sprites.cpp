@@ -69,9 +69,7 @@ void World::ReplaceSprite(std::unique_ptr<Sprite> sprite, uint8_t slotIndex) {
 }
 
 void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, uint8_t type, int8_t direction, float initialVelocity, uint8_t slotIndex) {
-    auto& slot = m_DeathAnimations[slotIndex];
-
-    if (slot) {
+    if (m_DeathAnimations[slotIndex]) {
         for (uint8_t i = 0u; i < EnemySpriteSlots; ++i) {
             if (!m_DeathAnimations[i]) {
                 slotIndex = i;
@@ -80,7 +78,7 @@ void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPalleteIndex, 
         }
     }
 
-    slot = std::make_unique<DeathAnimation>(position, subPalleteIndex, type, direction, initialVelocity);
+    m_DeathAnimations[slotIndex] = std::make_unique<DeathAnimation>(position, subPalleteIndex, type, direction, initialVelocity);
 }
 
 void World::handleSpriteLoading() {
@@ -157,7 +155,7 @@ void World::spawnCoinAnimation(unsigned int x, unsigned int y) {
 void World::updateSprites() {
     // sprite update and collision
     sf::FloatRect player_hitbox;
-    
+
     const bool checkCollisions = m_CheckEnemyCollisions && !player.IsFrozen();
 
     if (checkCollisions) {
@@ -209,9 +207,9 @@ void World::updateSprites() {
                         enemy->getHitbox().findIntersection(ballHitbox)
                     ) {
                         SpawnFirework(ball->Position, true);
-                        
+
                         enemy->onFireballDeath(*this, ball->getDirection());
-                        
+
                         ball.reset();
 
                         break;

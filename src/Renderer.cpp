@@ -1,4 +1,5 @@
 #include <sstream>
+#include <iomanip>
 
 #include "Renderer.hpp"
 
@@ -457,7 +458,7 @@ void Renderer::render(sf::RenderTarget& target, const Powerup& powerup, sf::Vert
     renderVertices(s_PowerupsTexture, powerup.SubPalleteIndex, target);
 
 #if RENDER_HITBOXES
-    appendHitbox(hitboxes, powerup.m_Hitbox);
+    appendHitbox(hitboxes, powerup.getHitbox());
 #endif // RENDER_HITBOXES
 }
 

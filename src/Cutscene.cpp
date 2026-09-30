@@ -454,7 +454,7 @@ void FlagpoleScene::Update() {
 }
 
 void FlagpoleScene::OnFramerule() {
-    if (--m_LevelClearTimer == 0u) {
+    if (m_CurrentRoutine == Routine::None && --m_LevelClearTimer == 0u) {
         startLevel(player.Data.World, player.Data.Level + 1u, true);
     }
 }

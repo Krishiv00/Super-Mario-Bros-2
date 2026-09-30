@@ -182,9 +182,9 @@ private:
     void handleRoutineTimerCountdown();
 
     Routine m_CurrentRoutine;
-    uint8_t m_RoutineTimer;
-    uint8_t m_LevelClearTimer;
-    Flag* m_FlagRef;
+    uint8_t m_RoutineTimer{0u};
+    uint8_t m_LevelClearTimer{0u};
+    Flag* m_FlagRef{nullptr};
 
 public:
     FlagpoleScene(World& world);
@@ -232,7 +232,7 @@ public:
     ~AutowalkScene();
 
     virtual void Update() override;
-    virtual bool EndScene() {
+    virtual bool EndScene() override {
         return false;
     };
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -129,7 +131,7 @@ namespace EnemyComponents {
         std::unique_ptr<Shell> getShellObj() const;
 
         virtual void onStomp(World& world) override;
-        virtual void onBlockDefeat(World& world, float blockPosition);
+        virtual void onBlockDefeat(World& world, float blockPosition) override;
     };
 
     class Shell : public EnemyComponents::SideToSideMovement, public EnemyComponents::GravityMovement, public EnemyComponents::CollideWithOtherEnemies, public EnemyComponents::Stompable {
@@ -519,5 +521,5 @@ class BowserPart_1 final : public EnemyComponents::BowserPart {
 };
 
 class BowserPart_2 final : public EnemyComponents::BowserPart {
-    
+
 };

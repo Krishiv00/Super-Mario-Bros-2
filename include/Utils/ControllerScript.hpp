@@ -22,18 +22,23 @@ namespace ButtonInput {
 
 class ScriptPlayer final {
 private:
-    uint8_t m_CurrentIndex;
-    uint8_t m_FrameTimer;
+    std::size_t m_CurrentIndex{0u};
+    uint8_t m_FrameTimer{0u};
 
     std::vector<DemoInput> m_Script;
 
 public:
     // start the demo
     void Start(std::vector<DemoInput>& script) {
+        if (script.empty()) {
+            Done = true;
+            return;
+        }
+
         m_Script = std::move(script);
 
         player.m_TasMode = true;
-        
+
         m_CurrentIndex = 0u;
         m_FrameTimer = m_Script[m_CurrentIndex].duration;
 

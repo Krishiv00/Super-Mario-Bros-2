@@ -1,5 +1,11 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+#include <utility>
+#include <algorithm>
+#include <cstdint>
+
 #include "World.hpp"
 #include "Renderer.hpp"
 
@@ -35,7 +41,7 @@ private:
     template <typename BlockType, typename... Args>
     static inline void placeHorizontalRow(unsigned int index, uint8_t length, uint8_t subPalleteIndex, World& world, Args&&... args) {
         for (uint8_t i = 0u; i < length; ++i) {
-            placeBlock(index + i * 13u, std::make_unique<BlockType>(std::forward<Args>(args)...), subPalleteIndex, world);
+            placeBlock(index + i * 13u, std::make_unique<BlockType>(args...), subPalleteIndex, world);
         }
     }
 
@@ -45,9 +51,9 @@ private:
             unsigned int tileIndex = index + i;
 
             auto& block = world.m_Tiles[tileIndex];
-            
+
             if (!block || !Is(block.get(), Blocks::Coin)) {
-                placeBlock(tileIndex, std::make_unique<BlockType>(std::forward<Args>(args)...), subPalleteIndex, world);
+                placeBlock(tileIndex, std::make_unique<BlockType>(args...), subPalleteIndex, world);
             }
         }
     }
@@ -59,7 +65,7 @@ private:
         auto it = std::lower_bound(
             world.m_SpritePool.begin(), world.m_SpritePool.end(), xPos,
             [](const std::vector<std::unique_ptr<Sprite>>& group, float xValue) {
-            return group.front()->Position.x < xValue;
+                return group.front()->Position.x < xValue;
         }
         );
 
@@ -116,7 +122,7 @@ private:
     static inline std::vector<std::pair<unsigned int, SceneData>> BackgroundModifiers;
 
 public:
-    static uint8_t GetIfDuplicate(uint8_t level, uint8_t stage);
+    static uint8_t GetIfDuplicate(uint8_t world, uint8_t level);
 
     static void NewLevel(World& world, uint8_t areaPointer);
 

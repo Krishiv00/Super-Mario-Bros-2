@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Globals.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -37,7 +39,6 @@ private:
     const uint8_t& m_BumpTimerRef;
 
 public:
-    BouncingBlock() = default;
     BouncingBlock(std::unique_ptr<Blocks::Block>& block, uint8_t item_id, uint8_t& bumpTimerRef, unsigned int x, unsigned int y, uint8_t subPalleteIndex);
 
     virtual void Update(World& world) override;

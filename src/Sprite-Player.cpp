@@ -67,7 +67,6 @@ void Player::Reset() {
     m_RisingFromJump = false;
 
     m_WasRunningBeforeCurrentAction = false;
-    m_WasRunningBeforeCurrentAction = false;
 
     m_Direction = gbl::Direction::Right;
     m_Velocity = sf::Vector2f();
@@ -681,6 +680,10 @@ void Player::animatePallete() {
 Player player;
 
 void uint24_t::operator=(uint32_t val) noexcept {
+    m_Values[0u] = 0;
+    m_Values[1u] = 0;
+    m_Values[2u] = 0;
+
     operator+=(val);
 }
 

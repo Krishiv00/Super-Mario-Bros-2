@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include "Engine.hpp"
 
 #pragma region Initialisation
@@ -9,18 +11,18 @@ Engine::Engine(int argc, char** argv) {
     const unsigned int windowHeight = gbl::Height * windowScale;
 
     m_Window.create(sf::VideoMode(sf::Vector2u(windowWidth, windowHeight)), "Super Mario Bros", sf::Style::Default);
-    
+
     m_Window.clear();
     m_Window.display();
 
     m_Window.setKeyRepeatEnabled(false);
     m_Window.setFramerateLimit(gbl::Fps);
-    
+
     m_LastWindowSize = m_Window.getSize();
 
-    m_Game.Create(argc, argv);
-
     Rand::Reset();
+
+    m_Game.Create(argc, argv);
 }
 
 #pragma region Events
@@ -30,12 +32,12 @@ void Engine::ProcessEvents() {
         if (event->is<sf::Event::Closed>()) {
             return m_Window.close();
         }
-        
+
         else if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
             if (key->scancode == sf::Keyboard::Scancode::Escape) {
                 return m_Window.close();
             }
-            
+
             else if (key->scancode == sf::Keyboard::Scancode::Backslash) {
                 if (m_Paused) {
                     update_internal();
@@ -43,7 +45,7 @@ void Engine::ProcessEvents() {
                     setPaused(true);
                 }
             }
-            
+
             else if (key->scancode == sf::Keyboard::Scancode::Insert) {
                 setPaused(false);
             }
@@ -52,7 +54,7 @@ void Engine::ProcessEvents() {
                 saveScreenshot();
             }
         }
-        
+
         else if (const auto* key = event->getIf<sf::Event::KeyReleased>()) {
             if (key->scancode == sf::Keyboard::Scancode::Backslash) {
                 if (m_StepPressTime) {
@@ -62,7 +64,7 @@ void Engine::ProcessEvents() {
                 }
             }
         }
-        
+
         else if (const auto* resized = event->getIf<sf::Event::Resized>()) {
             handleWindowResize(resized->size);
         }
@@ -119,7 +121,7 @@ void Engine::Update() {
 
 void Engine::setPaused(bool paused) {
     m_Paused = paused;
-    
+
     audioPlayer.SetMuted(paused || m_Game.SoundDisabled());
     musicPlayer.SetMuted(paused || m_Game.SoundDisabled());
 }

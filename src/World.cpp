@@ -131,13 +131,14 @@ void World::on_block_hit_from_bottom(unsigned int x, unsigned int y) {
     auto& block = m_Tiles[World::GetIndex(x, y)];
 
     if (const Components::Item* itemComponent = GetComponent(block.get(), const Components::Item)) {
+        const uint8_t itemId = itemComponent->ItemId;
         bool use = true;
 
-        if (gbl::ItemType::isPowerupItem(itemComponent->ItemId)) {
+        if (gbl::ItemType::isPowerupItem(itemId)) {
             m_Sprites[SpecialSpriteSlot].reset();
 
             audioPlayer.Play(AudioPlayer::PowerupSpawn);
-        } else if (gbl::ItemType::isCoinItem(itemComponent->ItemId)) {
+        } else if (gbl::ItemType::isCoinItem(itemId)) {
             if (
                 const Components::Render* renderComponent = GetComponent(block.get(), const Components::Render);
                 renderComponent &&
@@ -163,7 +164,7 @@ void World::on_block_hit_from_bottom(unsigned int x, unsigned int y) {
             block = std::make_unique<Blocks::RenderableCollideable>(gbl::TextureId::Block::Question_used);
         }
 
-        m_BouncingBlock = std::make_unique<BouncingBlock>(block, itemComponent->ItemId, m_BumpTimer, x, y, m_AttributeTable[World::GetIndex(x, y)]);
+        m_BouncingBlock = std::make_unique<BouncingBlock>(block, itemId, m_BumpTimer, x, y, m_AttributeTable[World::GetIndex(x, y)]);
 
         handleBlockDefeat(m_BouncingBlock->Position);
     } else if (HasComponent(block.get(), Components::Hitable)) {

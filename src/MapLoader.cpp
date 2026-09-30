@@ -322,24 +322,24 @@ static constexpr uint8_t GetSubPalleteIndex(uint8_t blockId, uint8_t row = 255u,
 }
 
 [[nodiscard]]
-uint8_t MapLoader::GetIfDuplicate(uint8_t level, uint8_t stage) {
-    if (level == 0x05u && stage == 0x03u) {
+uint8_t MapLoader::GetIfDuplicate(uint8_t world, uint8_t level) {
+    if (world == 0x05u && level == 0x03u) {
         return 0x01u;
     }
 
-    if (level == 0x05u && stage == 0x04u) {
+    if (world == 0x05u && level == 0x04u) {
         return 0x02u;
     }
 
-    if (level == 0x06u && stage == 0x04u) {
+    if (world == 0x06u && level == 0x04u) {
         return 0x01u;
     }
 
-    if (level == 0x07u && (stage == 0x02u || stage == 0x03u)) {
+    if (world == 0x07u && (level == 0x02u || level == 0x03u)) {
         return 0x02u;
     }
 
-    return level;
+    return world;
 }
 
 [[nodiscard]]
