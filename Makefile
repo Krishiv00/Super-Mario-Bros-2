@@ -13,12 +13,15 @@ EXTRA_LDFLAGS :=
 
 MAKEFLAGS += -j
 
-CPP_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+rwildcard = $(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
+CPP_FILES := $(call rwildcard,$(SRC_DIR),*.cpp)
 DEV_DIR := $(BUILD_DIR)/dev
 REL_DIR := $(BUILD_DIR)/release
 DEV_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(DEV_DIR)/%.o,$(CPP_FILES))
 REL_OBJ := $(patsubst $(SRC_DIR)/%.cpp,$(REL_DIR)/%.o,$(CPP_FILES))
-RES_OBJ := $(BUILD_DIR)/resource.o
+OBJ_DIRS := $(sort $(patsubst %/,%,$(dir $(DEV_OBJ) $(REL_OBJ))))
+ICON_FILE := Resources/icon.ico
+RES_OBJ := $(if $(wildcard $(ICON_FILE)),$(BUILD_DIR)/resource.o)
 DEV_EXE := $(EXE_NAME).exe
 REL_EXE := $(OUT_DIR)/$(EXE_NAME).exe
 ASSET_TARGETS := $(addprefix copy-asset-,$(DIST_ASSETS))
@@ -37,18 +40,20 @@ REL_LIBS := -lsfml-graphics-s -lsfml-window-s -lsfml-audio-s -lsfml-system-s \
 
 mkdir_cmd = if not exist "$(subst /,\,$1)" mkdir "$(subst /,\,$1)"
 
+.SECONDEXPANSION:
+
 .PHONY: all dev release clean FORCE $(ASSET_TARGETS)
 
 all: dev
 	@echo Running $(DEV_EXE)
-	@"$(DEV_EXE)"
+	@.\"$(DEV_EXE)"
 	@cls
 
 dev: $(DEV_OBJ) $(RES_OBJ)
 	@echo Linking $(DEV_EXE)
 	@$(CXX) $(EXTRA_LDFLAGS) -L$(SFML_LIB) $(DEV_OBJ) $(RES_OBJ) -o "$(DEV_EXE)" $(DEV_LIBS)
 
-$(DEV_DIR)/%.o: $(SRC_DIR)/%.cpp Makefile | $(DEV_DIR)
+$(DEV_DIR)/%.o: $(SRC_DIR)/%.cpp Makefile | $$(@D)
 	@echo Compiling $<
 	@$(CXX) $(DEV_FLAGS) -c $< -o $@
 
@@ -59,7 +64,7 @@ release: $(RES_OBJ) $(REL_OBJ) $(ASSET_TARGETS) | $(OUT_DIR)
 	@objdump -p "$(REL_EXE)" | findstr /C:"DLL Name"
 	@echo Done $(OUT_DIR)/ is ready to ship
 
-$(REL_DIR)/%.o: $(SRC_DIR)/%.cpp FORCE | $(REL_DIR)
+$(REL_DIR)/%.o: $(SRC_DIR)/%.cpp FORCE | $$(@D)
 	@echo Compiling $<
 	@$(CXX) $(REL_FLAGS) -c $< -o $@
 
@@ -70,16 +75,18 @@ $(ASSET_TARGETS): copy-asset-%: | $(OUT_DIR)
 	@if exist "$(subst /,\,$*)\" (if exist "$(OUT_DIR)\$(subst /,\,$*)" rmdir /S /Q "$(OUT_DIR)\$(subst /,\,$*)")
 	@if exist "$(subst /,\,$*)\" (xcopy "$(subst /,\,$*)" "$(OUT_DIR)\$(subst /,\,$*)" /E /I /Y /Q >nul) else (copy /Y "$(subst /,\,$*)" "$(OUT_DIR)" >nul)
 
-$(RES_OBJ): Resources/icon.ico | $(BUILD_DIR)
-	@echo Compiling Resources/icon.ico
-	@echo IDI_ICON1 ICON "Resources/icon.ico" > resource.rc
+ifneq ($(RES_OBJ),)
+$(RES_OBJ): $(ICON_FILE) | $(BUILD_DIR)
+	@echo Compiling $(ICON_FILE)
+	@echo IDI_ICON1 ICON "$(ICON_FILE)" > resource.rc
 	@windres resource.rc -o $@
 	@del /Q resource.rc
+endif
 
 $(BUILD_DIR) $(OUT_DIR):
 	@$(call mkdir_cmd,$@)
 
-$(DEV_DIR) $(REL_DIR): | $(BUILD_DIR)
+$(OBJ_DIRS): | $(BUILD_DIR)
 	@$(call mkdir_cmd,$@)
 
 clean:

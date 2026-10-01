@@ -1,6 +1,6 @@
 # Super Mario Bros (Authentic Clone)
 
-A precision-focused, reverse-engineered recreation of the original *Super Mario Bros.*  
+A precision-focused, reverse-engineered recreation of the original *Super Mario Bros.*
 This project targets cycle-accurate behavior, preserving every quirk, exploit, and low-level detail that defined the NES release. If a speedrunner or TAS author can do it on hardware, they can do it here.
 
 ---
@@ -98,5 +98,5 @@ Perfect for runners validating setups, testing theories, or hunting new tech.
 ---
 
 ## 📜 Legal
-This is a technical study. No copyrighted assets or source code from Nintendo are distributed.  
+This is a technical study. No copyrighted assets or source code from Nintendo are distributed.
 Users must supply their own legally obtained resources where required.
