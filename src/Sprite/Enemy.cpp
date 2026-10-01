@@ -774,11 +774,81 @@ sf::FloatRect Spiny::getHitbox() const {
 Bloober::Bloober(sf::Vector2f position) : Enemy(EnemyType::Bloober, position) {
     SubPaletteIndex = 3u;
 
-    m_Animate = false;
+    m_Animate = true;
+
+    m_MoveCounter = 0u;
+    m_FrameTimer = 0u;
+
+    m_IntervalTimer = 0u;
+
+    m_MoveForce = 0.f;
+    m_MoveSpeed = 0.f;
+}
+
+void Bloober::OnFramerule(World&) {
+    if (m_IntervalTimer) {
+        --m_IntervalTimer;
+    }
 }
 
 void Bloober::HandleMovement(World&) {
+    const uint8_t mask = World::Difficulty ? 0b00000011u : 0b00111111u;
 
+    if ((Rand::RandomInt(Rand::OffsetMovement) & mask) == 0u) {
+        if (SlotIndex & 1u) {
+            // odd sprite slots aim directly at the player's own facing direction
+            m_Direction = player.getFacingDirection() == gbl::Direction::Left ? -1 : 1;
+        } else {
+            // face left except when player is to the left then face right
+            m_Direction = xPosition() >= player.xPosition() ? -1 : 1;
+        }
+    }
+
+    procSwimming();
+
+    if (yPosition() - m_MoveForce >= 32.f) {
+        Position.y -= m_MoveForce;
+    }
+
+    Position.x += m_MoveSpeed * m_Direction;
+
+    m_Animate = m_IntervalTimer;
+}
+
+void Bloober::procSwimming() noexcept {
+    if (m_MoveCounter & 0b10u) {
+        if (m_IntervalTimer || yPosition() + 16.f < player.yPosition()) {
+            if (m_FrameTimer++ & 1u) {
+                Position.y += 1.f;
+            }
+        } else {
+            m_MoveCounter = 0u;
+        }
+
+        return;
+    }
+
+    // every eighth frame, increase the swim force up or down
+    if ((m_FrameTimer++ & 0b111u) != 0u) {
+        return;
+    }
+
+    if (m_MoveCounter & 0b01u) {
+        m_MoveForce -= 1.f;
+        m_MoveSpeed = m_MoveForce;
+
+        if (m_MoveForce == 0.f) {
+            m_MoveCounter |= 0b10u;
+            m_IntervalTimer = 2u;
+        }
+    } else {
+        m_MoveForce += 1.f;
+        m_MoveSpeed = m_MoveForce;
+
+        if (m_MoveForce == 2.f) {
+            m_MoveCounter |= 0b01u;
+        }
+    }
 }
 
 void Bloober::Update(World& world) {

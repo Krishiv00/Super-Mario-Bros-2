@@ -20,6 +20,7 @@ private:
 
     static void render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPaletteIndex, sf::Vector2f position) noexcept;
     static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const Bloober& bloober, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const NPC& npc) noexcept;
     static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const Firebar& firebar) noexcept;

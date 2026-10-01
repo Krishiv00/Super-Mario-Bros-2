@@ -329,8 +329,20 @@ public:
 };
 
 class Bloober final : public EnemyComponents::Stompable {
+private:
+    void procSwimming() noexcept;
+
+    uint8_t m_MoveCounter;
+    uint8_t m_FrameTimer;
+    uint8_t m_IntervalTimer;
+
+    float m_MoveForce;
+    float m_MoveSpeed;
+
 public:
     Bloober(sf::Vector2f position);
+
+    virtual void OnFramerule(World&) override;
 
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;

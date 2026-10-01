@@ -390,6 +390,25 @@ void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexAr
 #endif // RENDER_HITBOXES
 }
 
+#pragma region Bloober
+
+void Renderer::render(sf::RenderTarget& target, const Bloober& bloober, sf::VertexArray& hitboxes) noexcept {
+    sf::Vector2f position = bloober.Position;
+
+    if (bloober.m_Animate) {
+        position.y += 3.f;
+    }
+
+    const sf::Vector2f texturePos = sf::Vector2f(bloober.m_Animate, (bloober.m_Type & 0x7F) * 2u) * TileSize;
+
+    createVertices(position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), bloober.m_Direction == 1);
+    renderVertices(s_SpritesTexture, bloober.SubPaletteIndex, target);
+
+#if RENDER_HITBOXES
+    appendHitbox(hitboxes, bloober.getHitbox());
+#endif // RENDER_HITBOXES
+}
+
 #pragma region NPC
 
 void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
@@ -651,6 +670,8 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
                 if (hiddenSlot(enemy) == drawHidden) {
                     if (const EnemyComponents::Shell* shell = GetIf(enemy, const EnemyComponents::Shell)) {
                         render(target, *shell, hitboxes);
+                    } else if (const Bloober* bloober = GetIf(enemy, const Bloober)) {
+                        render(target, *bloober, hitboxes);
                     } else if (const Firebar* firebar = GetIf(enemy, const Firebar)) {
                         render(target, *firebar);
                     } else if (const Lift* lift = GetIf(enemy, const Lift)) {
