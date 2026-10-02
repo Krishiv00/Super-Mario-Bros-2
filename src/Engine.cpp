@@ -5,7 +5,7 @@
 #pragma region Initialisation
 
 Engine::Engine(int argc, char** argv) {
-    const float windowScale = 3.f;
+    const float windowScale = 4.f;
 
     const unsigned int windowWidth = gbl::Width * windowScale;
     const unsigned int windowHeight = gbl::Height * windowScale;

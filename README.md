@@ -6,7 +6,7 @@ This project targets cycle-accurate behavior, preserving every quirk, exploit, a
 ---
 
 ## 🎯 Objective
-Replicate the original engine without reinterpretation. This is not a remake or modernization—this is behavioral authenticity. Physics, rules, bugs, palettes, and rendering choices align with the real thing.
+Replicate the original engine without reinterpretation. This is not a remake or modernization - this is behavioral authenticity. Physics, rules, bugs, palettes, and rendering choices align with the real thing.
 
 ---
 
@@ -15,7 +15,7 @@ Replicate the original engine without reinterpretation. This is not a remake or 
 ### Collision & Physics
 - Interaction-point collision exactly like the NES routine
 - 1:1 acceleration, movement curves, and turnaround rules
-- All edge-cases preserved—no smoothing, no revisionism
+- All edge-cases preserved - no smoothing, no revisionism
 
 ### Rendering Fidelity
 - Palette-driven rendering rather than hard-colored textures
