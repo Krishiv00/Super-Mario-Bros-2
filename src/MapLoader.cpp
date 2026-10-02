@@ -2520,24 +2520,14 @@ void MapLoader::Update(World& world) {
             }
             };
 
-        for (auto& sprite : world.m_Sprites) {
-            if (sprite) {
-                MoveSprite(sprite.get());
-            }
-        }
+    #define MOVE_ALL(x) for (auto& sprite : x) if (sprite) MoveSprite(sprite.get());
+
+        MOVE_ALL(world.m_Sprites);
+        MOVE_ALL(world.m_Fireballs);
+        MOVE_ALL(world.m_Hammers);
 
         for (auto& group : world.m_SpritePool) {
-            for (auto& sprite : group) {
-                if (sprite) {
-                    MoveSprite(sprite.get());
-                }
-            }
-        }
-
-        for (auto& ball : world.m_Fireballs) {
-            if (ball) {
-                MoveSprite(ball.get());
-            }
+            MOVE_ALL(group);
         }
 
         if (world.m_BouncingBlock) {

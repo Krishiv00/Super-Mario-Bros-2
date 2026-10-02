@@ -23,6 +23,10 @@ void World::Reset() {
         ball.reset();
     }
 
+    for (auto& hammer : m_Hammers) {
+        hammer.reset();
+    }
+
     for (FloateyNum& floateyNum : m_FloateyNums) {
         floateyNum.Reset();
     }
@@ -61,6 +65,8 @@ void World::Reset() {
 #pragma region Update
 
 void World::Update() {
+    ++FrameCounter;
+
     if (m_Cutscene) {
         m_Cutscene->Update();
 
@@ -450,7 +456,7 @@ void World::updateSprites() {
     // sprite update and collision
     sf::FloatRect player_hitbox;
 
-    const bool checkCollisions = m_CheckEnemyCollisions && !player.IsFrozen();
+    const bool checkCollisions = checkEnemyCollisions();
 
     if (checkCollisions) {
         player_hitbox = player.getHitbox();
@@ -520,6 +526,8 @@ void World::updateSprites() {
         }
     }
 
+    updateHammers();
+
     // flip enemy collisions check as mario can only interact with enemies every other frame
     m_CheckEnemyCollisions ^= 1u;
 
@@ -538,6 +546,39 @@ void World::updateSprites() {
     // decrement bump timer if active
     if (m_BumpTimer) {
         --m_BumpTimer;
+    }
+}
+
+bool World::SpawnHammer(const Enemy& owner) {
+    constexpr uint8_t EnemySlotData[] = {4u, 4u, 4u, 5u, 5u, 5u, 6u, 6u, 6u};
+
+    const uint8_t random = Rand::RandomInt(Rand::OffsetSpawning);
+    const uint8_t hammerSlot = (random & 0b111u) ? (random & 0b111u) : (random & 0b1000u);
+
+    if (m_Hammers[hammerSlot]) {
+        return false;
+    }
+
+    const uint8_t enemySlot = EnemySlotData[hammerSlot];
+
+    if (enemySlot <= SpecialSpriteSlot && m_Sprites[enemySlot]) {
+        return false;
+    }
+
+    m_Hammers[hammerSlot] = std::make_unique<Hammer>(owner);
+
+    return true;
+}
+
+void World::updateHammers() {
+    for (uint8_t i = HammerSlots; i > 0u; --i) {
+        if (auto& hammer = m_Hammers[i - 1u]) {
+            hammer->Update(*this);
+
+            if (hammer->ToRemove) {
+                hammer.reset();
+            }
+        }
     }
 }
 

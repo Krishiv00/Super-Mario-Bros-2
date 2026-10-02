@@ -287,6 +287,24 @@ namespace EnemyComponents {
         player.setYVelocity(-4.f);
     }
 
+    void EnemyComponents::ThrowsHammer::update(World& world) {
+        // cannot throw hammers from outside the screen
+        if (shouldDespawn(world.CameraPosition, 8.f)) return;
+
+        if (m_ThrowTimer) {
+            --m_ThrowTimer;
+        } else {
+            m_ThrowTimer = World::Difficulty ? 28u : 48u;
+
+            if (world.SpawnHammer(*this)) {
+                m_HoldingHammer = true;
+            } else {
+                // try again if hammer not spawned
+                m_ThrowTimer = 0u;
+            }
+        }
+    }
+
     void GroundEnemy::HandleMovement(World& world) {
         SideToSideMovement::update(world, World::Difficulty ? 0.75f : 0.5f);
         GravityMovement::update(world);
@@ -424,7 +442,7 @@ namespace EnemyComponents {
         if (!m_OnGround) {
             score = 8000u;
         } else if (m_Animate) {
-            if (Renderer::getEnemyAnimation()) {
+            if (Renderer::EnemyFrame() == 1u) {
                 score = 8000u;
             }
         } else if (world.getStompChain()) {
@@ -910,13 +928,152 @@ sf::FloatRect Lakitu::getHitbox() const {
 
 HammerBrother::HammerBrother(sf::Vector2f position) : Enemy(EnemyType::HammerBrother, position) {
     SubPaletteIndex = 1u;
+
+    m_JumpTimer = 0u;
+    m_AirTimer = 0u;
+
+    m_ChargeTimer = World::Difficulty ? 80 : 128;
+}
+
+void HammerBrother::OnFramerule(World&) {
+    if (m_ChargeTimer) {
+        --m_ChargeTimer;
+    }
+}
+
+sf::Vector2f HammerBrother::getSidePoint(int8_t direction, bool inFront) const noexcept {
+    float x = xPosition();
+
+    if (direction == gbl::Direction::Right) {
+        x += inFront ? TileSize : TileSize - 1.f;
+    } else if (inFront) {
+        x -= 1.f;
+    }
+
+    return sf::Vector2f(x, yPosition() + TileSize * 2.f - 1.f);
 }
 
 void HammerBrother::HandleMovement(World& world) {
-    GravityMovement::update(world);
+    if (m_AirTimer) {
+        --m_AirTimer;
+    }
 
-    // always face the player
-    m_Direction = gbl::sign(player.xPosition() - xPosition());
+    if (m_JumpTimer) {
+        --m_JumpTimer;
+
+        ThrowsHammer::update(world);
+    } else if (m_OnGround) {
+        decideJump();
+    }
+
+    // jiggle left and right, switching every 64 frames
+    float xMoveSpeed = (world.FrameCounter & 64) ? 0.25f : -0.25f;
+
+    if (xPosition() < player.xPosition()) {
+        m_Direction = gbl::Direction::Right;
+    } else {
+        m_Direction = gbl::Direction::Left;
+
+        if (m_ChargeTimer == 0u) {
+            xMoveSpeed = -0.5f;
+        }
+    }
+
+    moveHorizontally(xMoveSpeed, world);
+
+    // jump when moving into a block
+    if (m_OnGround && yPosition() >= 24.f && world.PointInTile(getSidePoint(m_Direction, true))) {
+        jump(-6.f, 0u);
+    }
+
+    moveVertically(world);
+
+    m_Animate = m_OnGround;
+}
+
+void HammerBrother::moveHorizontally(float amount, World& world) {
+    const float oldX = Position.x;
+
+    Position.x += amount;
+
+    const float top = yPosition();
+
+    if (top < 24.f || top >= 186.f || !m_OnGround) {
+        return;
+    }
+
+    if (world.PointInTile(getSidePoint(amount < 0.f ? gbl::Direction::Left : gbl::Direction::Right, false))) {
+        Position.x = oldX;
+    }
+}
+
+void HammerBrother::moveVertically(World& world) {
+    constexpr float Gravity = 0x3D / 256.f;
+    constexpr float MaxYVelocity = 3.f;
+
+    if (!m_OnGround) {
+        Position.y += m_YVelocity;
+
+        m_YVelocity += Gravity;
+
+        if (m_YVelocity >= MaxYVelocity + 0.5f) {
+            m_YVelocity = MaxYVelocity;
+        }
+    }
+
+    const float top = yPosition();
+
+    if (top >= 186.f) {
+        m_OnGround = false;
+        return;
+    }
+
+    const float bottom = top + TileSize * 2.f;
+    const float feetX = xPosition() + TileSize * 0.5f;
+
+    if (m_AirTimer == 0u && world.PointInTile(sf::Vector2f(feetX, bottom))) {
+        float landingPos = std::floor(bottom / TileSize) * TileSize;
+
+        while (landingPos > TileSize * 2.f && world.PointInTile(sf::Vector2f(feetX, landingPos - 1.f))) {
+            landingPos -= TileSize;
+        }
+
+        Position.y = landingPos - TileSize * 2.f;
+        m_YVelocity = 0.f;
+
+        m_OnGround = true;
+    } else {
+        m_OnGround = false;
+    }
+}
+
+void HammerBrother::decideJump() {
+    const uint8_t y = static_cast<uint8_t>(yPosition() + 8.f);
+
+    float yVelocity = -6.f;
+    uint8_t jumpMask = 0u;
+
+    if (y < 0x80u) {
+        yVelocity = -3.f;
+
+        if (y < 0x70u) {
+            jumpMask = 1u;
+        } else if ((Rand::RandomInt(Rand::OffsetSpawning + SlotIndex) & 1u) == 0u) {
+            yVelocity = -6.f;
+        }
+    }
+
+    jump(yVelocity, jumpMask);
+}
+
+void HammerBrother::jump(float yVelocity, uint8_t jumpMask) {
+    m_YVelocity = yVelocity;
+    m_OnGround = false;
+
+    m_AirTimer = (World::Difficulty && (jumpMask & Rand::RandomInt(Rand::OffsetMovement + SlotIndex))) ? 0x37u : 0x20u;
+
+    // time until the next jump
+    m_JumpTimer = Rand::RandomInt(Rand::OffsetSpawning + SlotIndex) | 0b11000000u;
 }
 
 void HammerBrother::Update(World& world) {
@@ -927,7 +1084,7 @@ void HammerBrother::Update(World& world) {
 }
 
 sf::FloatRect HammerBrother::getHitbox() const {
-    return sf::FloatRect(sf::Vector2f(xPosition() + 2.f, yPosition() + 11.f), sf::Vector2f(9.f, 25.f));
+    return sf::FloatRect(sf::Vector2f(xPosition() + 4.f, yPosition() + 11.f), sf::Vector2f(9.f, 25.f));
 }
 
 #pragma region Bullet Bill
@@ -937,7 +1094,7 @@ BulletBill::BulletBill(sf::Vector2f position) : Enemy(EnemyType::BulletBill, pos
 }
 
 void BulletBill::HandleMovement(World&) {
-    Position.x -= World::Difficulty ? 0.75f : 0.5f;
+    Position.x -= 1.5f;
 }
 
 void BulletBill::Update(World& world) {

@@ -21,6 +21,7 @@ private:
     static void render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPaletteIndex, sf::Vector2f position) noexcept;
     static void render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const Bloober& bloober, sf::VertexArray& hitboxes) noexcept;
+    static void render(sf::RenderTarget& target, const Hammer& hammer, uint8_t frame, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const NPC& npc) noexcept;
     static void render(sf::RenderTarget& target, const EnemyComponents::Shell& shell, sf::VertexArray& hitboxes) noexcept;
     static void render(sf::RenderTarget& target, const Firebar& firebar) noexcept;
@@ -68,12 +69,11 @@ private:
 
     static constexpr inline const uint8_t AnimationTimerDuration = 8u;
     static inline uint8_t s_BlinkAnimationTimer{AnimationTimerDuration};
-    static inline uint8_t s_SpriteAnimationTimer{AnimationTimerDuration};
 
     static inline char s_BlinkDirection{1};
 
     static inline uint8_t s_BlinkAnimation{0u};
-    static inline bool s_EnemyAnimation{0u};
+    static inline uint8_t s_EnemyFrameCounter{0u};
 
     static inline bool s_RenderGameTime{true};
 
@@ -101,7 +101,7 @@ public:
     static void RenderTitleScreen(sf::RenderTarget& target, uint32_t highscore, bool secondPlayerMode) noexcept;
 
     [[nodiscard]]
-    static inline bool getEnemyAnimation() noexcept {
-        return s_EnemyAnimation;
+    static inline uint8_t EnemyFrame(unsigned int frames = 2) noexcept {
+        return s_EnemyFrameCounter / (16 / frames);
     }
 };

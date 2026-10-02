@@ -32,6 +32,7 @@ namespace EnemyType {
         Lift,
         NPC,
         Flag,
+        Hammer,
 
         // enemies which are actually different but uses the same texture in the renderer
         RedKoopaTroopa = 0x80 | KoopaTroopa,
@@ -47,6 +48,7 @@ namespace EnemyComponents {
 class Enemy : public Sprite {
     friend class Renderer;
     friend class World;
+    friend class Hammer;
 
 protected:
     void spawnDeathAnimation(World& world, int8_t direction, float initialVelocity) noexcept;
@@ -65,11 +67,11 @@ protected:
 
     EnemyType::Type m_Type;
 
-    bool m_Animate{true};
-
     uint8_t SlotIndex{0};
 
+    bool m_Animate{true};
     bool m_TouchingPlayer{true};
+    bool m_HoldingHammer{false};
 
     Enemy() = default;
     Enemy(EnemyType::Type type, sf::Vector2f position);
@@ -116,6 +118,14 @@ namespace EnemyComponents {
         virtual void onStomp(World& world);
 
         bool isStomped();
+    };
+
+    class ThrowsHammer : virtual public Enemy {
+    private:
+        uint8_t m_ThrowTimer{0u};
+
+    protected:
+        void update(World& world);
     };
 
     class GroundEnemy : public EnemyComponents::SideToSideMovement, public EnemyComponents::GravityMovement, public EnemyComponents::CollideWithOtherEnemies {
@@ -362,9 +372,28 @@ public:
     virtual sf::FloatRect getHitbox() const override;
 };
 
-class HammerBrother final : public EnemyComponents::GravityMovement, public EnemyComponents::Stompable {
+class HammerBrother final : public EnemyComponents::Stompable, public EnemyComponents::ThrowsHammer {
+private:
+    [[nodiscard]]
+    sf::Vector2f getSidePoint(int8_t direction, bool inFront) const noexcept;
+
+    void moveHorizontally(float amount, World& world);
+    void moveVertically(World& world);
+
+    void decideJump();
+    void jump(float yVelocity, uint8_t jumpMask);
+
+    bool m_OnGround{true};
+    float m_YVelocity{0.f};
+
+    uint8_t m_JumpTimer;
+    uint8_t m_AirTimer;
+    uint8_t m_ChargeTimer;
+
 public:
     HammerBrother(sf::Vector2f position);
+
+    virtual void OnFramerule(World&) override;
 
     virtual void HandleMovement(World& world) override;
     virtual void Update(World& world) override;

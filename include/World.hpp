@@ -30,6 +30,7 @@ public:
 
     static constexpr inline const uint8_t EnemySpriteSlots = 5u;
     static constexpr inline const uint8_t SpecialSpriteSlot = EnemySpriteSlots + 0u;
+    static constexpr inline const uint8_t HammerSlots = 9u;
 
     static constexpr inline const int8_t MaxSpriteDistanceLeftNormal = 72u;
     static constexpr inline const int8_t MaxSpriteDistanceLeftSpecial = 16u;
@@ -72,6 +73,7 @@ private:
     void updateSprites();
     void updateGrowingPowerup();
     void updateFreezeIndependentSprites();
+    void updateHammers();
     void activateJumpSpring();
     void spawnCoinAnimation(unsigned int x, unsigned int y);
 
@@ -79,6 +81,8 @@ private:
     std::vector<std::vector<std::unique_ptr<Sprite>>> m_SpritePool;
 
     std::unique_ptr<Fireball> m_Fireballs[2u];
+
+    std::unique_ptr<Hammer> m_Hammers[HammerSlots];
 
     FloateyNum m_FloateyNums[EnemySpriteSlots];
 
@@ -173,6 +177,7 @@ public:
     void SpawnFloateyNum(const FloateyNum& num, uint8_t index);
 
     bool SpawnFireball(sf::Vector2f position, bool direction);
+    bool SpawnHammer(const Enemy& owner);
     void SpawnFirework(sf::Vector2f position, bool type);
 
     void StartThemeMusic();
@@ -214,8 +219,15 @@ public:
         return m_ScrollLocked;
     }
 
+    [[nodiscard]]
+    inline bool checkEnemyCollisions() const {
+        return m_CheckEnemyCollisions && !player.IsFrozen();
+    }
+
     uint8_t CurrentTheme;
     uint8_t HalfwayPage;
+
+    uint8_t FrameCounter{0};
 
     float CameraPosition;
 

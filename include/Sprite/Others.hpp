@@ -8,6 +8,7 @@
 #include "Blocks.hpp"
 #include "Sprite/Sprite.hpp"
 #include "Sprite/Powerup.hpp"
+#include "Sprite/Enemy.hpp"
 
 class JumpSpring final : public Sprite {
 private:
@@ -81,6 +82,52 @@ public:
     StarFlag(sf::Vector2f position);
 
     virtual void Update(World& world) override;
+};
+
+class Hammer final : public Sprite {
+private:
+    static constexpr inline const uint8_t InitialState = 0x10u;
+
+    static constexpr inline const float Gravity = 16.f / 256.f;
+    static constexpr inline const float MaxYVelocity = 4.f;
+
+    [[nodiscard]]
+    Enemy* getOwner(World& world) const noexcept;
+
+    void cacheOwner(const Enemy& owner) noexcept;
+    void followOwner() noexcept;
+
+    void release(World& world);
+
+    void collideWithPlayer(World& world);
+
+    [[nodiscard]]
+    bool isOffscreen(float cameraPosition) const noexcept;
+
+    const uint8_t m_OwnerSlot;
+
+    sf::Vector2f m_OwnerPosition;
+    int8_t m_OwnerDirection;
+
+    uint8_t m_State;
+
+    float m_XVelocity{0.f};
+    float m_YVelocity{0.f};
+
+    bool m_Collided{false};
+
+public:
+    Hammer(const Enemy& owner);
+
+    virtual void Update(World& world) override;
+
+    [[nodiscard]]
+    inline bool isThrown() const noexcept {
+        return m_State == 1u;
+    }
+
+    [[nodiscard]]
+    sf::FloatRect getHitbox() const;
 };
 
 class DeathAnimation final : public Sprite {

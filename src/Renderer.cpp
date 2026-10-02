@@ -210,20 +210,16 @@ void Renderer::Animate() noexcept {
         UpdatePaletteColors();
     }
 
-    if (--s_SpriteAnimationTimer == 0) {
-        s_SpriteAnimationTimer = AnimationTimerDuration;
-        s_EnemyAnimation ^= 1u;
-    }
+    s_EnemyFrameCounter = (s_EnemyFrameCounter + 1) % 16;
 }
 
 void Renderer::ResetAnimations() noexcept {
     s_BlinkAnimationTimer = AnimationTimerDuration;
-    s_SpriteAnimationTimer = AnimationTimerDuration;
 
     s_BlinkDirection = 1;
 
     s_BlinkAnimation = 0u;
-    s_EnemyAnimation = 0u;
+    s_EnemyFrameCounter = 0u;
 
     UpdatePaletteColors();
 }
@@ -378,9 +374,8 @@ void Renderer::render(sf::RenderTarget& target, uint8_t textureId, uint8_t subPa
 #pragma region Enemy
 
 void Renderer::render(sf::RenderTarget& target, const Enemy& enemy, sf::VertexArray& hitboxes) noexcept {
-    const sf::Vector2f texturePos = sf::Vector2f(
-        enemy.m_Animate && s_EnemyAnimation, (enemy.m_Type & 0x7F) * 2u
-    ) * TileSize;
+    const uint8_t frame = enemy.m_HoldingHammer * 2 + (enemy.m_Animate ? EnemyFrame() : 0);
+    const sf::Vector2f texturePos = sf::Vector2f(frame, (enemy.m_Type & 0x7F) * 2u) * TileSize;
 
     createVertices(enemy.Position, texturePos, sf::Vector2f(TileSize, TileSize * 2.f), enemy.m_Direction == 1);
     renderVertices(s_SpritesTexture, enemy.SubPaletteIndex, target);
@@ -409,6 +404,20 @@ void Renderer::render(sf::RenderTarget& target, const Bloober& bloober, sf::Vert
 #endif // RENDER_HITBOXES
 }
 
+#pragma region Hammer
+
+void Renderer::render(sf::RenderTarget& target, const Hammer& hammer, uint8_t frame, sf::VertexArray& hitboxes) noexcept {
+    const sf::Vector2f position = sf::Vector2f(hammer.xPosition(), hammer.yPosition());
+    const sf::Vector2f texturePos = sf::Vector2f(hammer.isThrown() ? frame : 0, EnemyType::Hammer * 2 + 1) * TileSize;
+
+    createVertices(position, texturePos, sf::Vector2f(TileSize, TileSize));
+    renderVertices(s_SpritesTexture, hammer.SubPaletteIndex, target);
+
+#if RENDER_HITBOXES
+    appendHitbox(hitboxes, hammer.getHitbox());
+#endif // RENDER_HITBOXES
+}
+
 #pragma region NPC
 
 void Renderer::render(sf::RenderTarget& target, const NPC& npc) noexcept {
@@ -424,7 +433,7 @@ void Renderer::render(sf::RenderTarget& target, const EnemyComponents::Shell& sh
     sf::Vector2f position = shell.Position;
 
     const sf::Vector2f texturePos = sf::Vector2f(
-        shell.m_Animate && s_EnemyAnimation, (shell.m_Type & 0x7F) * 2u
+        shell.m_Animate * EnemyFrame(), (shell.m_Type & 0x7F) * 2u
     ) * TileSize;
 
     if (shell.IsFlipped()) {
@@ -602,7 +611,7 @@ std::string Renderer::intToStringFixedSize(unsigned int _int, uint8_t length) no
 }
 
 sf::Vector2f Renderer::fireballTexturePos() {
-    return sf::Vector2f(s_EnemyAnimation, EnemyType::Firebar * 2u + (s_SpriteAnimationTimer <= 3u)) * TileSize;
+    return sf::Vector2f(EnemyFrame(4), EnemyType::Firebar * 2u + 1u) * TileSize;
 }
 
 #pragma region Tiles
@@ -705,6 +714,14 @@ void Renderer::renderSprites(sf::RenderTarget& target, const World& world, bool 
     }
 
     if (!drawHidden) {
+        const uint8_t hammerFrame = world.m_Frozen ? 0u : EnemyFrame(4);
+
+        for (const auto& hammer : world.m_Hammers) {
+            if (hammer) {
+                render(target, *hammer, hammerFrame, hitboxes);
+            }
+        }
+
         if (player.isFiery()) {
             for (const auto& ball : world.m_Fireballs) {
                 if (ball) {

@@ -121,6 +121,110 @@ void StarFlag::Update(World&) {
 
 }
 
+#pragma region Hammer
+
+Hammer::Hammer(const Enemy& owner) : Sprite(sf::Vector2f(), 3u), m_OwnerSlot(owner.SlotIndex), m_State(InitialState) {
+    cacheOwner(owner);
+    followOwner();
+}
+
+Enemy* Hammer::getOwner(World& world) const noexcept {
+    return GetIf(world.getSprites()[m_OwnerSlot].get(), Enemy);
+}
+
+void Hammer::cacheOwner(const Enemy& owner) noexcept {
+    m_OwnerPosition = sf::Vector2f(owner.xPosition(), owner.yPosition());
+    m_OwnerDirection = owner.m_Direction;
+}
+
+void Hammer::followOwner() noexcept {
+    Position = sf::Vector2f(m_OwnerPosition.x + 2.f, m_OwnerPosition.y - 2.f);
+}
+
+void Hammer::release(World& world) {
+    m_YVelocity = -2.f;
+    m_XVelocity = m_OwnerDirection == gbl::Direction::Right ? 1.f : -1.f;
+
+    // the owner lowers its arm
+    if (Enemy* owner = getOwner(world)) {
+        owner->m_HoldingHammer = false;
+    }
+}
+
+bool Hammer::isOffscreen(float cameraPosition) const noexcept {
+    constexpr float Margin = 8.f;
+    const float boundLeft = std::max(cameraPosition - Margin, 0.f);
+    const float boundRight = cameraPosition + gbl::Width + World::MaxSpriteDistanceLeftNormal;
+
+    const float enemyX = xPosition();
+    const float enemyY = yPosition();
+
+    return (
+        enemyX < boundLeft ||
+        (m_OwnerDirection == gbl::Direction::Right && enemyX > boundRight) ||
+        enemyY > gbl::Height
+    );
+}
+
+void Hammer::collideWithPlayer(World& world) {
+    if (!world.checkEnemyCollisions() || isOffscreen(world.CameraPosition)) {
+        return;
+    }
+
+    if (!getHitbox().findIntersection(player.getHitbox())) {
+        m_Collided = false;
+        return;
+    }
+
+    if (m_Collided) {
+        return;
+    }
+
+    m_Collided = true;
+
+    // unlike enemies, a hammer keeps flying through the player on contact, starman or not
+    if (!player.HasStarman()) {
+        player.Damage(world);
+    }
+}
+
+void Hammer::Update(World& world) {
+    if (const Enemy* owner = getOwner(world)) {
+        cacheOwner(*owner);
+    }
+
+    if (m_State > 1u) {
+        // the owner has not thrown the hammer yet
+        if (m_State == 2u) {
+            release(world);
+        }
+
+        --m_State;
+
+        followOwner();
+    } else {
+        Position.y += m_YVelocity;
+
+        m_YVelocity += Gravity;
+
+        if (m_YVelocity >= MaxYVelocity + 0.5f) {
+            m_YVelocity = MaxYVelocity;
+        }
+
+        Position.x += m_XVelocity;
+
+        collideWithPlayer(world);
+    }
+
+    if (isOffscreen(world.CameraPosition)) {
+        ToRemove = true;
+    }
+}
+
+sf::FloatRect Hammer::getHitbox() const {
+    return sf::FloatRect(sf::Vector2f(xPosition(), yPosition()), sf::Vector2f(9.f, 9.f));
+}
+
 #pragma region Death Animation
 
 DeathAnimation::DeathAnimation(sf::Vector2f position, uint8_t subPaletteIndex, uint8_t type, int8_t direction, float initialVelocity) : Sprite(position, subPaletteIndex), m_Type(type), m_Direction(direction), m_Velocity(initialVelocity) {}
