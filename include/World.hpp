@@ -34,6 +34,7 @@ public:
 
     static constexpr inline const int8_t MaxSpriteDistanceLeftNormal = 72u;
     static constexpr inline const int8_t MaxSpriteDistanceLeftSpecial = 16u;
+    static constexpr inline const uint8_t SpriteLoadDistance = 48u;
 
     static inline bool Difficulty{false};
 

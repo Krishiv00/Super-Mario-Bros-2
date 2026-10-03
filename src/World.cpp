@@ -383,7 +383,7 @@ void World::SpawnDeathAnimation(sf::Vector2f position, uint8_t subPaletteIndex, 
 
 void World::handleSpriteLoading() {
     if (!m_SpritePool.empty()) {
-        const float threshold = CameraPosition + (gbl::Width + TileSize * 3.f);
+        const float threshold = CameraPosition + (gbl::Width + SpriteLoadDistance);
 
         std::vector<std::unique_ptr<Sprite>>& spriteGroup = m_SpritePool.front();
 

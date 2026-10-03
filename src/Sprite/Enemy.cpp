@@ -1232,7 +1232,7 @@ Lift::Lift(sf::Vector2f position, bool size) : Enemy(EnemyType::Lift, position),
 }
 
 void Lift::Update(World& world) {
-    if (shouldDespawn(world.CameraPosition, World::MaxSpriteDistanceLeftSpecial + (m_Size - 1) * TileSize)) {
+    if (shouldDespawn(world.CameraPosition)) {
         ToRemove = true;
         return;
     }
